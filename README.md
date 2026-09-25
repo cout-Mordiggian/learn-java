@@ -13,7 +13,7 @@ Versionen eine Regel gelockert haben, steht ein Hinweis *"Seit Java 25"*.
 ## In 60 Sekunden starten
 
 ```bash
-cd ~/Cloud/_dev/learn/java   # bzw. der Ordner, in dem dieser Kurs liegt
+cd ~/dev/learn-java   # bzw. der Ordner, in den du den Kurs geklont hast
 ./lerne.sh            # Kapiteluebersicht
 ./lerne.sh 01         # Kapitel 1 pruefen (schlaegt anfangs fehl - das ist der Plan)
 ```
@@ -29,10 +29,8 @@ Dann:
    `TIPPS.md` des Kapitels.
 
 Meldet die Shell `Permission denied`, fehlt das Ausfuehrungsrecht:
-`chmod +x lerne.sh projekt/starte.sh`. Liegt der Kurs auf einem Cloud-Laufwerk
-(z. B. per rclone unter `~/Cloud`), speichert das Laufwerk dieses Recht nicht —
-dann statt `./lerne.sh 01` immer **`bash lerne.sh 01`** schreiben (das gilt
-fuer alle Befehle in diesem Kurs, ebenso `bash starte.sh` im Projekt).
+`chmod +x lerne.sh projekt/starte.sh` — oder einfach `bash lerne.sh 01` schreiben.
+(Das passiert z. B. auf Cloud-Laufwerken, die keine Dateirechte speichern.)
 
 > Der wichtigste Lerneffekt entsteht zwischen "es kompiliert nicht" und "es ist gruen".
 > Widerstehe der Versuchung, zu frueh in `loesungen/` zu schauen.

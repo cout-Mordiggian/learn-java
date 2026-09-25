@@ -74,7 +74,7 @@ Fehler *waehrend* du tippst statt erst beim Kompilieren.
 - **IntelliJ IDEA Community** (kostenlos, der De-facto-Standard in der Java-Welt)
 - **Neovim/Helix** + `jdtls` per LSP
 
-Fuer diesen Kurs: oeffne den Kursordner (`~/Cloud/_dev/learn/java`) als Projektordner. Ohne Build-Datei
+Fuer diesen Kurs: oeffne den Kursordner (`~/dev/learn-java`) als Projektordner. Ohne Build-Datei
 erkennt die IDE das als "einfaches Java-Projekt" — das reicht.
 
 ## 4. jshell — Java zum Ausprobieren

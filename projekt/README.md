@@ -172,11 +172,8 @@ Starten:
 Aus dem Kursordner:
 
 ```bash
-cd projekt && bash starte.sh
+cd projekt && ./starte.sh
 ```
-
-(Warum `bash starte.sh` statt `./starte.sh`, steht im Haupt-README: Auf
-Cloud-Laufwerken wie rclone geht das Ausfuehrungsrecht verloren.)
 
 In `src/` liegen bereits drei Startdateien:
 
