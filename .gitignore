@@ -1,0 +1,10 @@
+build/
+*.class
+
+# IDE und Build-Werkzeuge
+.idea/
+*.iml
+.vscode/
+out/
+target/
+.gradle/
