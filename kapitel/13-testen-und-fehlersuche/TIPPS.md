@@ -1,9 +1,9 @@
 # Kapitel 13 — Tipps und Antworten
 
-> Erst selbst probieren. Klappe immer nur die **naechste** Stufe auf — jede verraet mehr.
+> Erst selbst probieren. Klappe immer nur die **nächste** Stufe auf — jede verrät mehr.
 > Die Tests in `tests/Tests.java` zeigen dir ausserdem genau, welche Eingabe welches Ergebnis erwartet.
 
-> **Teil A und Teil B sind unabhaengig.** In Teil A sind die Tests in
+> **Teil A und Teil B sind unabhängig.** In Teil A sind die Tests in
 > `tests/Tests.java` ausnahmsweise *nicht* die Aufgabenstellung, sondern nur
 > der Schiedsrichter. Die Aufgabenstellung ist die Spezifikation in
 > `src/Rabattrechner.java`.
@@ -12,7 +12,7 @@
 
 <details><summary>Tipp 1 — Richtung</summary>
 
-Abschnitt 13.3, Aequivalenzklassen und Grenzwerte, und das durchgerechnete
+Abschnitt 13.3, Äquivalenzklassen und Grenzwerte, und das durchgerechnete
 Versand-Beispiel. Geh die sechs Regeln der Spezifikation einzeln durch und frag
 dich bei jeder: In welche Bereiche teilt diese Regel die Eingaben, und wo
 liegen die Grenzen? Mach dir eine Tabelle auf Papier, Spalten "Preis",
@@ -26,25 +26,25 @@ Eine gute Tabelle deckt mindestens ab:
 
 - je einen **Vertreter** pro Rabattstufe (0 %, 5 %, 10 %),
 - **beide Seiten jeder Grenze**: knapp darunter und genau darauf,
-- die **Null-Faelle**, die die Spezifikation ausdruecklich erlaubt,
+- die **Null-Fälle**, die die Spezifikation ausdrücklich erlaubt,
 - einen Fall, in dem der Rabatt **kein ganzer Cent** ist (Regel 6 hat ein Beispiel),
 - **grosse Werte**, bei denen der Gesamtpreis nicht mehr in einen `int` passt,
 - **jeden** Parameter einzeln negativ, jeweils mit `try`/`catch`.
 
 Zwei Fallen: Wirft ein Aufruf, bei dem du *keine* Exception erwartest, fliegt
-sie aus deiner Methode heraus. Das zaehlt zwar als "nicht bestanden", aber du
-siehst nicht, welche Pruefung es war. Pack solche Aufrufe in ein
+sie aus deiner Methode heraus. Das zählt zwar als "nicht bestanden", aber du
+siehst nicht, welche Prüfung es war. Pack solche Aufrufe in ein
 `try`/`catch`, das `fehlschlag(...)` meldet. Und: Steig nicht mit `return false`
-bei der ersten Abweichung aus. Wenn alle Pruefungen laufen, siehst du alle
+bei der ersten Abweichung aus. Wenn alle Prüfungen laufen, siehst du alle
 Meldungen auf einmal.
 
-Ist schon die Pruefung gegen die **korrekte** Implementierung rot, stimmt
+Ist schon die Prüfung gegen die **korrekte** Implementierung rot, stimmt
 einer deiner erwarteten Werte nicht. Die Meldung `[deine Pruefung] ...` davor
 sagt dir, welcher. Rechne ihn noch einmal von Hand nach.
 
 </details>
 
-<details><summary>Tipp 3 — Geruest</summary>
+<details><summary>Tipp 3 — Gerüst</summary>
 
 ```java
 // Grenze 10: knapp darunter und genau darauf
@@ -71,11 +71,11 @@ Grosse Zahlen schreibst du mit `L` und Unterstrichen: `3_000_000_000L`.
 
 </details>
 
-## Teil A: Ein Mutant ueberlebt
+## Teil A: Ein Mutant überlebt
 
 <details><summary>Tipp 1 — Richtung</summary>
 
-Bei einem ueberlebenden Mutanten schlaegt **keine** deiner Pruefungen an. Er
+Bei einem überlebenden Mutanten schlägt **keine** deiner Prüfungen an. Er
 unterscheidet sich also nur bei Eingaben von der korrekten Version, die du
 noch gar nicht ausprobierst. Geh die Grenzwert-Checkliste aus 13.3 durch:
 Welcher Punkt fehlt in deiner Tabelle noch?
@@ -91,14 +91,14 @@ Welche Regel der Spezifikation der jeweilige Mutant verletzt:
 | 1 | Regel 6: Rundung |
 | 2 | Regel 5: untere Rabattgrenze |
 | 3 | Regel 2: Validierung |
-| 4 | Regel 5: hoechste Rabattstufe |
+| 4 | Regel 5: höchste Rabattstufe |
 | 5 | Regel 4: grosse Werte |
-| 6 | Regel 3: Null-Faelle |
+| 6 | Regel 3: Null-Fälle |
 | 7 | Regel 5: obere Rabattgrenze |
 
 </details>
 
-<details><summary>Tipp 3 — Geruest</summary>
+<details><summary>Tipp 3 — Gerüst</summary>
 
 Eine Eingabe, die den jeweiligen Mutanten entlarvt. Den erwarteten Wert
 rechnest du selbst aus:
@@ -113,7 +113,7 @@ rechnest du selbst aus:
 | 6 | 500 | 0 |
 | 7 | 100 | 50 |
 
-Erst danach, wenn alles gruen ist: `src/Kandidaten.java` lesen und vergleichen,
+Erst danach, wenn alles grün ist: `src/Kandidaten.java` lesen und vergleichen,
 ob du die Fehler richtig vermutet hast.
 
 </details>
@@ -141,15 +141,15 @@ Operanden **vor** der Division zum `double`. Achtung:
 <details><summary>Tipp 1 — Kategorie</summary>
 
 Off-by-one (13.7). Die Meldung sagt `ArrayIndexOutOfBoundsException (Index 4 out of
-bounds for length 4)` samt Zeilennummer. Welche Indizes hat ein Array der Laenge 4?
+bounds for length 4)` samt Zeilennummer. Welche Indizes hat ein Array der Länge 4?
 
 </details>
 
 <details><summary>Tipp 2 — Zeile</summary>
 
-Der Schleifenkopf. Die Bedingung laesst `i` bis `zahlen.length` laufen, der
-letzte gueltige Index ist aber `zahlen.length - 1`. Ein einziges Zeichen ist
-zu viel. (Eine for-each-Schleife haette das Problem gar nicht erst.)
+Der Schleifenkopf. Die Bedingung lässt `i` bis `zahlen.length` laufen, der
+letzte gültige Index ist aber `zahlen.length - 1`. Ein einziges Zeichen ist
+zu viel. (Eine for-each-Schleife hätte das Problem gar nicht erst.)
 
 </details>
 
@@ -157,8 +157,8 @@ zu viel. (Eine for-each-Schleife haette das Problem gar nicht erst.)
 
 <details><summary>Tipp 1 — Kategorie</summary>
 
-`==` bei Strings (13.7 und Kapitel 3.2). Auffaellig: Der Test mit dem Literal
-`"admin"` ist gruen, die mit `new String("admin")` und `substring` sind rot.
+`==` bei Strings (13.7 und Kapitel 3.2). Auffällig: Der Test mit dem Literal
+`"admin"` ist grün, die mit `new String("admin")` und `substring` sind rot.
 
 </details>
 
@@ -182,8 +182,8 @@ liefert den Namen des **folgenden** Tags.
 
 <details><summary>Tipp 2 — Zeile</summary>
 
-`case 5`. Nach `name = "Freitag";` fehlt das `break`, die Ausfuehrung faellt in
-`case 6` durch und ueberschreibt `name` mit `"Samstag"`.
+`case 5`. Nach `name = "Freitag";` fehlt das `break`, die Ausführung fällt in
+`case 6` durch und überschreibt `name` mit `"Samstag"`.
 
 </details>
 
@@ -192,14 +192,14 @@ liefert den Namen des **folgenden** Tags.
 <details><summary>Tipp 1 — Kategorie</summary>
 
 Ergebnis nicht zugewiesen (13.7). Die Kleinschreibung klappt, der Rand-Leerraum
-bleibt aber stehen. Strings sind unveraenderlich (Kapitel 3).
+bleibt aber stehen. Strings sind unveränderlich (Kapitel 3).
 
 </details>
 
 <details><summary>Tipp 2 — Zeile</summary>
 
 `eingabe.strip();` liefert einen **neuen** String und wirft ihn weg, `eingabe`
-bleibt unveraendert. Weise das Ergebnis zu oder haenge beide Aufrufe
+bleibt unverändert. Weise das Ergebnis zu oder hänge beide Aufrufe
 aneinander: `eingabe.strip().toLowerCase()`.
 
 </details>
@@ -208,8 +208,8 @@ aneinander: `eingabe.strip().toLowerCase()`.
 
 <details><summary>Tipp 1 — Kategorie</summary>
 
-Semikolon nach `if` (13.7). Auffaellig: Es kommt **immer** die Grenze heraus,
-auch wenn der Wert darunter liegt. Der Block wird also immer ausgefuehrt.
+Semikolon nach `if` (13.7). Auffällig: Es kommt **immer** die Grenze heraus,
+auch wenn der Wert darunter liegt. Der Block wird also immer ausgeführt.
 
 </details>
 
@@ -217,7 +217,7 @@ auch wenn der Wert darunter liegt. Der Block wird also immer ausgefuehrt.
 
 Die `if`-Zeile. Das `;` direkt hinter `(wert > grenze)` ist der komplette
 Rumpf des `if`, eine leere Anweisung. Der Block `{ ergebnis = grenze; }`
-danach steht fuer sich und laeuft immer. Semikolon weg, fertig.
+danach steht für sich und läuft immer. Semikolon weg, fertig.
 
 </details>
 
@@ -225,45 +225,45 @@ danach steht fuer sich und laeuft immer. Semikolon weg, fertig.
 
 ## Selbstcheck — Antworten
 
-<details><summary>Warum reicht es nicht, fuer eine Staffel "ab 10 Stueck" nur mit 5 und 20 Stueck zu testen?</summary>
+<details><summary>Warum reicht es nicht, für eine Staffel "ab 10 Stück" nur mit 5 und 20 Stück zu testen?</summary>
 
-Weil 5 und 20 mitten in ihren Aequivalenzklassen liegen. Ob die Grenze bei 10
+Weil 5 und 20 mitten in ihren Äquivalenzklassen liegen. Ob die Grenze bei 10
 mit `>=` oder mit `>` programmiert ist, macht dort keinen Unterschied, beide
 Varianten liefern dasselbe. Erst **genau 10** trennt die richtige von der
-falschen Version, und **9** stellt sicher, dass die Grenze nicht zu frueh
-greift. Fehler sitzen bevorzugt an den Raendern, also gehoeren die Raender in
+falschen Version, und **9** stellt sicher, dass die Grenze nicht zu früh
+greift. Fehler sitzen bevorzugt an den Rändern, also gehören die Ränder in
 die Tests.
 
 </details>
 
-<details><summary>Was sagt dir ein Mutant, der deine Tests ueberlebt?</summary>
+<details><summary>Was sagt dir ein Mutant, der deine Tests überlebt?</summary>
 
-Dass deine Tests eine Luecke haben: Es gibt eine fehlerhafte Implementierung,
-die trotzdem alle deine Pruefungen besteht. Genau so ein Fehler koennte also
+Dass deine Tests eine Lücke haben: Es gibt eine fehlerhafte Implementierung,
+die trotzdem alle deine Prüfungen besteht. Genau so ein Fehler könnte also
 auch in echtem Code unbemerkt bleiben. Die Frage ist dann: Bei welcher Eingabe
-verhielte sich der Mutant anders, und warum pruefe ich die nicht? (Selten ist
-ein Mutant "aequivalent", also gar nicht falsch. Dann kann ihn kein Test finden.)
+verhielte sich der Mutant anders, und warum prüfe ich die nicht? (Selten ist
+ein Mutant "äquivalent", also gar nicht falsch. Dann kann ihn kein Test finden.)
 
 </details>
 
-<details><summary>Warum schreibt man nach dem Beheben eines Fehlers noch einen Test dafuer?</summary>
+<details><summary>Warum schreibt man nach dem Beheben eines Fehlers noch einen Test dafür?</summary>
 
-Damit der Fehler nie unbemerkt zurueckkommt. Schon beim Reproduzieren hast du
-eine Eingabe gefunden, die den Fehler ausloest. Als fester Test ist sie ab jetzt
-bei jedem Lauf dabei. Wird der Fehler spaeter durch eine andere Aenderung
-wieder eingebaut (das passiert oefter, als man denkt), ist der Test sofort
+Damit der Fehler nie unbemerkt zurückkommt. Schon beim Reproduzieren hast du
+eine Eingabe gefunden, die den Fehler auslöst. Als fester Test ist sie ab jetzt
+bei jedem Lauf dabei. Wird der Fehler später durch eine andere Änderung
+wieder eingebaut (das passiert öfter, als man denkt), ist der Test sofort
 rot. Ausserdem beweist der Test, dass deine Reparatur wirklich wirkt: vorher
-rot, nachher gruen.
+rot, nachher grün.
 
 </details>
 
 <details><summary>Warum darfst du einen negativen Preis nicht mit <code>assert</code> abweisen?</summary>
 
-Weil Assertions standardmaessig **ausgeschaltet** sind. Ohne `java -ea` wird die
+Weil Assertions standardmäßig **ausgeschaltet** sind. Ohne `java -ea` wird die
 `assert`-Zeile gar nicht ausgewertet, und der negative Preis rutscht im Betrieb
 einfach durch. Ein negativer Preis kommt von aussen, vom Aufrufer, und muss
-immer abgewiesen werden. Das ist ein Fall fuer
-`throw new IllegalArgumentException(...)`. `assert` ist nur fuer interne
+immer abgewiesen werden. Das ist ein Fall für
+`throw new IllegalArgumentException(...)`. `assert` ist nur für interne
 Annahmen gedacht, die bei korrektem Code ohnehin immer gelten.
 
 </details>
@@ -272,9 +272,9 @@ Annahmen gedacht, die bei korrektem Code ohnehin immer gelten.
 
 Weil gleiche String-**Literale** im String-Pool landen und dasselbe Objekt sind.
 Das `"admin"` im Test und das `"admin"` in der Methode sind ein und dasselbe
-Objekt, also ist `==` zufaellig `true`. Der Fehler zeigt sich erst bei einem
+Objekt, also ist `==` zufällig `true`. Der Fehler zeigt sich erst bei einem
 String, der zur Laufzeit entsteht, etwa durch Tastatureingabe, `substring` oder
 `new String("admin")`. Gleicher Inhalt, anderes Objekt, und `==` liefert
-`false`. Ein guter Test waehlt deshalb auch solche Eingaben.
+`false`. Ein guter Test wählt deshalb auch solche Eingaben.
 
 </details>

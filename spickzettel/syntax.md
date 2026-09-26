@@ -1,6 +1,6 @@
 # Java-Syntax auf einen Blick
 
-## Programmgeruest
+## Programmgerüst
 
 ```java
 package de.firma.app;          // optional, muss erste Zeile sein
@@ -118,7 +118,7 @@ public class Kreis extends Figur implements Skalierbar {
 public sealed interface Form permits Kreis2, Quadrat2 { }
 ```
 
-| Modifier | Klasse | Paket | Unterklasse | ueberall |
+| Modifier | Klasse | Paket | Unterklasse | überall |
 |----------|:--:|:--:|:--:|:--:|
 | `private` | X | | | |
 | (nichts) | X | X | | |
@@ -261,7 +261,7 @@ Files.exists(p);  Files.size(p);  Files.createDirectories(p);
 try (Stream<String> z = Files.lines(p, UTF_8)) { }    // MUSS geschlossen werden
 ```
 
-## Nebenlaeufigkeit
+## Nebenläufigkeit
 
 ```java
 Thread t = new Thread(() -> tuWas());  t.start();  t.join();
@@ -278,7 +278,7 @@ public synchronized void m() { }
 Map<K, V> m = new ConcurrentHashMap<>();
 ```
 
-## Nuetzliche Statik
+## Nützliche Statik
 
 ```java
 Math.max/min/abs/pow/sqrt/hypot/round/floor/ceil/random

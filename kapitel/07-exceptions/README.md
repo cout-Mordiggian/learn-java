@@ -1,7 +1,7 @@
 # Kapitel 07 — Exceptions
 
-**Ziel:** Du unterscheidest Programmierfehler von erwartbaren Ausnahmefaellen,
-behandelst sie an der richtigen Stelle und gibst Ressourcen zuverlaessig frei.
+**Ziel:** Du unterscheidest Programmierfehler von erwartbaren Ausnahmefällen,
+behandelst sie an der richtigen Stelle und gibst Ressourcen zuverlässig frei.
 
 ---
 
@@ -30,9 +30,9 @@ Throwable
         └── deine eigenen
 ```
 
-Die Einrueckung ist wichtig: `catch (IllegalArgumentException e)` faengt auch
+Die Einrückung ist wichtig: `catch (IllegalArgumentException e)` fängt auch
 jede `NumberFormatException`, `catch (IOException e)` auch jede
-`FileNotFoundException`. Ein `catch` faengt immer den Typ **und alle Untertypen**.
+`FileNotFoundException`. Ein `catch` fängt immer den Typ **und alle Untertypen**.
 
 ## 7.2 Checked gegen unchecked — die zentrale Unterscheidung
 
@@ -49,7 +49,7 @@ Vergisst du das `throws`, bekommst du:
 `unreported exception IOException; must be caught or declared to be thrown`
 
 **Unchecked** (`RuntimeException` und Unterklassen): Der Compiler sagt nichts.
-Sie duerfen ueberall auftreten.
+Sie dürfen überall auftreten.
 
 ### Wann was?
 
@@ -64,7 +64,7 @@ Ist es ein Bug — unchecked.**
 
 Java ist die einzige Mainstream-Sprache mit checked Exceptions, und das ist
 umstritten. In der Praxis: Sparsam einsetzen. Zu viele erzeugen genau die
-leeren `catch`-Bloecke, die das Konzept verhindern wollte.
+leeren `catch`-Blöcke, die das Konzept verhindern wollte.
 
 ## 7.3 `try` / `catch` / `finally`
 
@@ -81,10 +81,10 @@ try {
 }
 ```
 
-Reihenfolge der `catch`-Bloecke: **spezifisch vor allgemein**. Steht
+Reihenfolge der `catch`-Blöcke: **spezifisch vor allgemein**. Steht
 `catch (Exception e)` zuerst, ist alles danach unerreichbar — Compilerfehler.
 
-`finally` laeuft **immer**: nach normalem Ende, nach gefangener Exception, sogar
+`finally` läuft **immer**: nach normalem Ende, nach gefangener Exception, sogar
 nach einem `return` im `try`-Block. (Die einzige praktische Ausnahme:
 `System.exit(...)` beendet die JVM sofort.)
 
@@ -96,9 +96,9 @@ catch (NumberFormatException | ArithmeticException e) {
 }
 ```
 
-Nur sinnvoll, wenn die Behandlung wirklich identisch ist. Die Typen duerfen
+Nur sinnvoll, wenn die Behandlung wirklich identisch ist. Die Typen dürfen
 nicht voneinander erben: `NumberFormatException | IllegalArgumentException`
-ist ein Compilerfehler, weil der zweite Typ den ersten schon enthaelt.
+ist ein Compilerfehler, weil der zweite Typ den ersten schon enthält.
 
 ### Niemals `return` im `finally`
 
@@ -111,7 +111,7 @@ try {
 ```
 
 Das liefert immer `2` und verschluckt Fehler still. Der Compiler warnt
-standardmaessig nicht (erst mit `javac -Xlint:finally`).
+standardmäßig nicht (erst mit `javac -Xlint:finally`).
 
 ## 7.4 `throw` und `throws`
 
@@ -127,7 +127,7 @@ public void abheben(long betrag) throws UnzureichendeDeckungException {
 ```
 
 `throw` = wirf jetzt. `throws` = kann passieren, Aufrufer sei gewarnt.
-Ein Buchstabe Unterschied, zwei voellig verschiedene Dinge.
+Ein Buchstabe Unterschied, zwei völlig verschiedene Dinge.
 
 ## 7.5 Eigene Exceptions
 
@@ -151,7 +151,7 @@ Aufrufer auswerten; einen String muss er parsen.
 
 ## 7.6 Ursachen verketten (Exception Chaining)
 
-Wenn du eine Exception in eine andere uebersetzt, **gib die Ursache mit**:
+Wenn du eine Exception in eine andere übersetzt, **gib die Ursache mit**:
 
 ```java
 try {
@@ -162,7 +162,7 @@ try {
 }
 ```
 
-Ohne das `e` verlierst du den urspruenglichen Stacktrace — und damit die
+Ohne das `e` verlierst du den ursprünglichen Stacktrace — und damit die
 Information, wo es wirklich schiefging. Im Log erscheint dann:
 
 ```
@@ -172,7 +172,7 @@ Caused by: java.lang.NumberFormatException: For input string: "abc"
     at java.base/java.lang.Integer.parseInt(Integer.java:652)
 ```
 
-`Caused by` ist oft die einzige Zeile, die dich zum echten Problem fuehrt.
+`Caused by` ist oft die einzige Zeile, die dich zum echten Problem führt.
 
 ## 7.7 try-with-resources
 
@@ -196,10 +196,10 @@ Alles, was `AutoCloseable` implementiert, funktioniert hier. Mehrere Ressourcen
 werden mit `;` getrennt und in **umgekehrter** Reihenfolge geschlossen.
 
 Wirft sowohl der Block als auch `close()`, gewinnt die Exception aus dem Block;
-die aus `close()` wird als *suppressed* angehaengt (`e.getSuppressed()`) — statt
+die aus `close()` wird als *suppressed* angehängt (`e.getSuppressed()`) — statt
 sie, wie beim alten Muster, zu verlieren.
 
-**Nimm try-with-resources fuer alles, was geschlossen werden muss.**
+**Nimm try-with-resources für alles, was geschlossen werden muss.**
 
 ## 7.8 Anti-Muster
 
@@ -235,33 +235,33 @@ Caused by: ...
 ```
 
 Lies **von oben**: Die erste Zeile ist der Ort des Fehlers, darunter der Weg
-dorthin. Suche die oberste Zeile, die zu **deinem** Code gehoert — dort
-faengst du an.
+dorthin. Suche die oberste Zeile, die zu **deinem** Code gehört — dort
+fängst du an.
 
 ---
 
 ## Aufgaben
 
-> Haengst du fest? Gestufte Hinweise zu jeder Aufgabe stehen in
+> Hängst du fest? Gestufte Hinweise zu jeder Aufgabe stehen in
 > [`TIPPS.md`](TIPPS.md) — erst Tipp 1, dann wieder selbst probieren.
 
-Drei Dateien in [`src/`](src/) — pruefen mit `./lerne.sh 07`.
+Drei Dateien in [`src/`](src/) — prüfen mit `./lerne.sh 07`.
 
 ### `Aufgaben.java`
 
 1. **`sicherTeilen(int a, int b)`** — `a / b`, aber `0` statt einer
-   `ArithmeticException`. Loese es mit `try`/`catch`, nicht mit `if`
-   (auch wenn `if` hier die bessere Praxis waere — der Punkt ist die Uebung).
+   `ArithmeticException`. Löse es mit `try`/`catch`, nicht mit `if`
+   (auch wenn `if` hier die bessere Praxis wäre — der Punkt ist die Übung).
 2. **`parseOderStandard(String text, int standard)`** — `Integer.parseInt`,
    bei `null` oder Unsinn den Standardwert.
 3. **`auswerten(String[] werte, int index)`** — Element als Zahl liefern,
-   `-1` bei ungueltigem Index **oder** unparsbarem Text. **Multi-Catch.**
+   `-1` bei ungültigem Index **oder** unparsbarem Text. **Multi-Catch.**
 4. **`konfigWert(String text)`** — parst; bei Fehler eine
    `IllegalStateException("Ungueltiger Konfigurationswert: abc")`
-   **mit der urspruenglichen Exception als `cause`**.
+   **mit der ursprünglichen Exception als `cause`**.
 5. **`ablauf(boolean fehlerWerfen)`** — gibt `"start|ok|ende"` bzw.
-   `"start|fehler|ende"` zurueck. Zeigt, dass `finally` immer laeuft.
-6. **`abheben(long guthaben, long betrag)`** — gibt das neue Guthaben zurueck,
+   `"start|fehler|ende"` zurück. Zeigt, dass `finally` immer läuft.
+6. **`abheben(long guthaben, long betrag)`** — gibt das neue Guthaben zurück,
    wirft bei zu wenig Deckung eine `UnzureichendeDeckungException` mit dem
    Fehlbetrag, bei `betrag <= 0` eine `IllegalArgumentException`.
 7. **`protokoll(boolean fehlerWerfen)`** — nutzt `Tresor` in einem
@@ -271,20 +271,20 @@ Drei Dateien in [`src/`](src/) — pruefen mit `./lerne.sh 07`.
 ### `UnzureichendeDeckungException.java`
 
 Checked Exception mit `long fehlbetrag`, Getter `getFehlbetrag()` und der
-Nachricht `"Es fehlen 250 Cent"` (fuer einen Fehlbetrag von 250).
+Nachricht `"Es fehlen 250 Cent"` (für einen Fehlbetrag von 250).
 
 ### `Tresor.java`
 
 `implements AutoCloseable`. Der Konstruktor bekommt einen `StringBuilder` als
-Protokoll und haengt `"geoeffnet|"` an, `benutzen()` haengt `"benutzt|"` an
-und wirft bei geschlossenem Tresor `IllegalStateException`, `close()` haengt
+Protokoll und hängt `"geoeffnet|"` an, `benutzen()` hängt `"benutzt|"` an
+und wirft bei geschlossenem Tresor `IllegalStateException`, `close()` hängt
 `"geschlossen"` an. Ein zweiter `close()`-Aufruf tut nichts mehr (idempotent).
 
 ## Was gibt das aus?
 
-Erst ueberlegen, am besten mit Stift und Papier, dann aufklappen. Danach
-kannst du es in `jshell` nachpruefen. Code lesen und vorhersagen trainiert
-genau das Verstaendnis, das du zum Schreiben brauchst.
+Erst überlegen, am besten mit Stift und Papier, dann aufklappen. Danach
+kannst du es in `jshell` nachprüfen. Code lesen und vorhersagen trainiert
+genau das Verständnis, das du zum Schreiben brauchst.
 
 **1.**
 
@@ -300,9 +300,9 @@ static String f() {
 System.out.println(f());
 ```
 
-<details><summary>Aufloesung</summary>
+<details><summary>Auflösung</summary>
 
-`finally try` — Der Rueckgabewert `"try"` steht schon fest, trotzdem laeuft `finally` noch, **bevor** die Methode wirklich zurueckkehrt. Erst danach druckt `println` das Ergebnis.
+`finally try` — Der Rückgabewert `"try"` steht schon fest, trotzdem läuft `finally` noch, **bevor** die Methode wirklich zurückkehrt. Erst danach druckt `println` das Ergebnis.
 
 </details>
 
@@ -322,9 +322,9 @@ try {
 }
 ```
 
-<details><summary>Aufloesung</summary>
+<details><summary>Auflösung</summary>
 
-`CD` — `a[2]` wirft eine `ArrayIndexOutOfBoundsException`. Die ist keine `ArithmeticException`, aber (ueber `IndexOutOfBoundsException`) eine `RuntimeException`. Es greift der erste passende `catch`, danach `finally`. `A` wird nie erreicht.
+`CD` — `a[2]` wirft eine `ArrayIndexOutOfBoundsException`. Die ist keine `ArithmeticException`, aber (über `IndexOutOfBoundsException`) eine `RuntimeException`. Es greift der erste passende `catch`, danach `finally`. `A` wird nie erreicht.
 
 </details>
 
@@ -342,9 +342,9 @@ try (R a = new R("1"); R b = new R("2")) {
 }
 ```
 
-<details><summary>Aufloesung</summary>
+<details><summary>Auflösung</summary>
 
-`auf1 auf2 rumpf zu2 zu1` — Geoeffnet wird in der angegebenen Reihenfolge, geschlossen in der **umgekehrten**. Das ist wichtig, wenn `b` von `a` abhaengt (etwa ein Reader auf einer Datei).
+`auf1 auf2 rumpf zu2 zu1` — Geöffnet wird in der angegebenen Reihenfolge, geschlossen in der **umgekehrten**. Das ist wichtig, wenn `b` von `a` abhängt (etwa ein Reader auf einer Datei).
 
 </details>
 
@@ -355,8 +355,8 @@ Erst selbst antworten, dann vergleichen: Die Antworten stehen am Ende von
 
 - Wann checked, wann unchecked?
 - Was ist der Unterschied zwischen `throw` und `throws`?
-- Warum ist ein leerer `catch`-Block gefaehrlicher als gar kein `catch`?
-- Warum gehoert `e` in `new RuntimeException("...", e)`?
+- Warum ist ein leerer `catch`-Block gefährlicher als gar kein `catch`?
+- Warum gehört `e` in `new RuntimeException("...", e)`?
 - In welcher Reihenfolge werden mehrere try-with-resources geschlossen?
 
 ---

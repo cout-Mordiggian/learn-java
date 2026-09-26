@@ -1,15 +1,15 @@
 # Kapitel 03 — Strings und Arrays
 
-**Ziel:** Du verstehst, warum `String` unveraenderlich ist, wann `==` bei Strings
-zufaellig funktioniert (und warum du dich nie darauf verlassen darfst), und du
+**Ziel:** Du verstehst, warum `String` unveränderlich ist, wann `==` bei Strings
+zufällig funktioniert (und warum du dich nie darauf verlassen darfst), und du
 kannst mit ein- und zweidimensionalen Arrays arbeiten.
 
 ---
 
-## 3.1 String ist unveraenderlich
+## 3.1 String ist unveränderlich
 
-Ein `String`-Objekt kann nach seiner Erzeugung **nie mehr geaendert** werden.
-Jede Methode, die "aendert", gibt in Wahrheit ein **neues** Objekt zurueck.
+Ein `String`-Objekt kann nach seiner Erzeugung **nie mehr geändert** werden.
+Jede Methode, die "ändert", gibt in Wahrheit ein **neues** Objekt zurück.
 
 ```java
 String s = "hallo";
@@ -20,12 +20,12 @@ s = s.toUpperCase();          // so ist es richtig
 System.out.println(s);        // "HALLO"
 ```
 
-Das ist der haeufigste Anfaengerfehler mit Strings. Merke: **Strings aendern
+Das ist der häufigste Anfängerfehler mit Strings. Merke: **Strings ändern
 sich nicht, du zeigst nur auf einen neuen.**
 
-Warum dieses Design? Unveraenderliche Objekte sind automatisch thread-sicher
-(Kapitel 12), koennen ihren `hashCode` zwischenspeichern und sicher als
-`Map`-Schluessel dienen (Kapitel 8).
+Warum dieses Design? Unveränderliche Objekte sind automatisch thread-sicher
+(Kapitel 12), können ihren `hashCode` zwischenspeichern und sicher als
+`Map`-Schlüssel dienen (Kapitel 8).
 
 ## 3.2 `==` gegen `equals` — der wichtigste Absatz dieses Kapitels
 
@@ -42,12 +42,12 @@ a.equals(c)   // true  <- DAS willst du
 `==` fragt bei Objekten: *"Sind das dieselben zwei Objekte im Speicher?"*
 `equals` fragt: *"Haben sie denselben Inhalt?"*
 
-Warum ist `a == b` dann `true`? Java haelt einen **String-Pool**: Literale, die
+Warum ist `a == b` dann `true`? Java hält einen **String-Pool**: Literale, die
 im Quelltext stehen, werden nur einmal angelegt und wiederverwendet. `a` und `b`
-zeigen also tatsaechlich auf dasselbe Objekt. Sobald der String zur Laufzeit
+zeigen also tatsächlich auf dasselbe Objekt. Sobald der String zur Laufzeit
 entsteht — aus Nutzereingabe, aus einer Datei, per `new`, durch Verkettung mit
 einer Variablen — gilt das nicht mehr. Ein Test mit zwei Literalen ist also
-gruen, das echte Programm trotzdem falsch: die gemeinste Art von Fehler.
+grün, das echte Programm trotzdem falsch: die gemeinste Art von Fehler.
 
 ```java
 String eingabe = liesVonTastatur();   // Nutzer tippt "hallo"
@@ -64,7 +64,7 @@ if ("ja".equals(antwort)) { ... }   // funktioniert auch wenn antwort null ist
 if (antwort.equals("ja")) { ... }   // knallt bei antwort == null
 ```
 
-Fuer Vergleiche ohne Gross-/Kleinschreibung: `equalsIgnoreCase`.
+Für Vergleiche ohne Gross-/Kleinschreibung: `equalsIgnoreCase`.
 
 ## 3.3 Wichtige String-Methoden
 
@@ -91,10 +91,10 @@ String.join("-", "a", "b")  // "a-b"
 ```
 
 `substring(von, bis)`: `von` ist **inklusiv**, `bis` ist **exklusiv**. Diese
-Halboffenheit zieht sich durch die ganze Java-Bibliothek — sie sorgt dafuer,
-dass `bis - von` immer die Laenge ergibt.
+Halboffenheit zieht sich durch die ganze Java-Bibliothek — sie sorgt dafür,
+dass `bis - von` immer die Länge ergibt.
 
-**`split` nimmt einen regulaeren Ausdruck**, keinen einfachen Text. Zeichen
+**`split` nimmt einen regulären Ausdruck**, keinen einfachen Text. Zeichen
 wie `.` `|` `+` `*` `?` `(` `$` haben dort eine Sonderbedeutung:
 
 ```java
@@ -130,10 +130,10 @@ c + 1                  // 98   (int!)  - Rechnen macht aus char einen int
 Character.isDigit('7')  Character.isLetter('x')  Character.toUpperCase('x')
 ```
 
-Beachte die Anfuehrungszeichen: `'a'` (einfach) ist ein `char`, `"a"` (doppelt)
+Beachte die Anführungszeichen: `'a'` (einfach) ist ein `char`, `"a"` (doppelt)
 ein `String`. `'ab'` ist ein Compilerfehler.
 
-## 3.4 `StringBuilder` — wenn du oft aenderst
+## 3.4 `StringBuilder` — wenn du oft änderst
 
 ```java
 // Schlecht bei vielen Durchlaeufen:
@@ -150,12 +150,12 @@ for (int i = 0; i < 10000; i++) {
 String s = sb.toString();
 ```
 
-Nuetzlich: `append`, `insert`, `reverse`, `setLength(0)` (leeren), `length`.
+Nützlich: `append`, `insert`, `reverse`, `setLength(0)` (leeren), `length`.
 
-Fuer **einzelne** Verkettungen ausserhalb von Schleifen ist `+` voellig in
+Für **einzelne** Verkettungen ausserhalb von Schleifen ist `+` völlig in
 Ordnung — der Compiler optimiert sie selbst. Nur in Schleifen hilft er dir nicht.
 
-## 3.5 Textbloecke (seit Java 15)
+## 3.5 Textblöcke (seit Java 15)
 
 ```java
 String json = """
@@ -166,13 +166,13 @@ String json = """
         """;
 ```
 
-Kein Escapen von Anfuehrungszeichen, keine `\n`-Kette. Die gemeinsame
-Einrueckung aller Zeilen wird automatisch entfernt — die Position der
+Kein Escapen von Anführungszeichen, keine `\n`-Kette. Die gemeinsame
+Einrückung aller Zeilen wird automatisch entfernt — die Position der
 schliessenden `"""` bestimmt, wie viel.
 
 ## 3.6 Arrays
 
-Ein Array ist eine Folge fester Laenge mit **einem** Elementtyp.
+Ein Array ist eine Folge fester Länge mit **einem** Elementtyp.
 
 ```java
 int[] zahlen = new int[5];              // 5 Elemente, alle 0
@@ -184,11 +184,11 @@ int erstes = zahlen[0];
 int anzahl = zahlen.length;             // Feld, keine Methode - kein ()!
 ```
 
-Die Laenge steht bei der Erzeugung fest und aendert sich **nie**. Brauchst du
+Die Länge steht bei der Erzeugung fest und ändert sich **nie**. Brauchst du
 eine wachsende Liste, nimm `ArrayList` (Kapitel 8).
 
-Die **Standardwerte** sind nicht zufaellig: `0` fuer Zahlen, `false` fuer
-`boolean`, `null` fuer Objekte, das Nullzeichen `'\u0000'` fuer `char`.
+Die **Standardwerte** sind nicht zufällig: `0` für Zahlen, `false` für
+`boolean`, `null` für Objekte, das Nullzeichen `'\u0000'` für `char`.
 
 Index von `0` bis `length - 1`. Alles andere:
 
@@ -196,7 +196,7 @@ Index von `0` bis `length - 1`. Alles andere:
 ArrayIndexOutOfBoundsException: Index 5 out of bounds for length 5
 ```
 
-### Nuetzliche Helfer in `java.util.Arrays`
+### Nützliche Helfer in `java.util.Arrays`
 
 ```java
 import java.util.Arrays;
@@ -211,7 +211,7 @@ Arrays.stream(zahlen).sum()    // Kapitel 9
 ```
 
 `System.out.println(zahlen)` gibt etwas wie `[I@6d06d69c` aus — das ist die
-Standard-`toString` von `Object` (Typkennung + Hashcode). Fuer Arrays immer
+Standard-`toString` von `Object` (Typkennung + Hashcode). Für Arrays immer
 `Arrays.toString(...)` verwenden.
 
 ### Arrays sind Referenztypen
@@ -237,12 +237,12 @@ So sieht das im Speicher aus:
    c  [ o-]------------------->  int[] {  1, 2, 3 }   (eigene Kopie von vorher)
 ```
 
-`a` und `b` enthalten denselben **Pfeil**, nicht zwei Arrays. Wer ueber einen
-Pfeil etwas aendert, aendert es fuer alle, die auf dasselbe Objekt zeigen.
+`a` und `b` enthalten denselben **Pfeil**, nicht zwei Arrays. Wer über einen
+Pfeil etwas ändert, ändert es für alle, die auf dasselbe Objekt zeigen.
 
-Das gilt fuer alle Objekte in Java. Eine Zuweisung kopiert nie das Objekt,
+Das gilt für alle Objekte in Java. Eine Zuweisung kopiert nie das Objekt,
 nur den Verweis darauf. Male dir bei Unklarheit genau so ein Bild — das ist
-kein Anfaengertrick, das machen erfahrene Entwickler auch.
+kein Anfängertrick, das machen erfahrene Entwickler auch.
 
 ### Zweidimensionale Arrays
 
@@ -258,7 +258,7 @@ int zeilen = fest.length;              // 2
 int spalten = fest[0].length;          // 3
 ```
 
-Genau genommen ist `int[][]` ein "Array von Arrays" — die Zeilen duerfen
+Genau genommen ist `int[][]` ein "Array von Arrays" — die Zeilen dürfen
 unterschiedlich lang sein (*jagged array*). Deshalb `fest[0].length` und nicht
 `fest.length[1]`.
 
@@ -266,35 +266,35 @@ unterschiedlich lang sein (*jagged array*). Deshalb `fest[0].length` und nicht
 
 ## Aufgaben
 
-> Haengst du fest? Gestufte Hinweise zu jeder Aufgabe stehen in
+> Hängst du fest? Gestufte Hinweise zu jeder Aufgabe stehen in
 > [`TIPPS.md`](TIPPS.md) — erst Tipp 1, dann wieder selbst probieren.
 
-Datei: [`src/Aufgaben.java`](src/Aufgaben.java) — pruefen mit `./lerne.sh 03`.
+Datei: [`src/Aufgaben.java`](src/Aufgaben.java) — prüfen mit `./lerne.sh 03`.
 
-1. **`umdrehen(String)`** — `"abc"` -> `"cba"`. `StringBuilder` kennt eine Methode dafuer.
+1. **`umdrehen(String)`** — `"abc"` -> `"cba"`. `StringBuilder` kennt eine Methode dafür.
 2. **`istPalindrom(String)`** — Gross-/Kleinschreibung und alles ausser
    Buchstaben und Ziffern ignorieren. `"Ein Esel lese nie"` -> `true`.
    Tipp: `Character.isLetterOrDigit(c)`.
-3. **`wortAnzahl(String)`** — Woerter zaehlen. Mehrfache Leerzeichen und
-   Rand-Whitespace duerfen nicht mitzaehlen; ein leerer Text hat 0 Woerter.
+3. **`wortAnzahl(String)`** — Wörter zählen. Mehrfache Leerzeichen und
+   Rand-Whitespace dürfen nicht mitzählen; ein leerer Text hat 0 Wörter.
    Tipp: `strip()` und `split("\\s+")`.
-4. **`maximum(int[])`** — Groesstes Element. Das Array ist garantiert nicht leer.
+4. **`maximum(int[])`** — Größtes Element. Das Array ist garantiert nicht leer.
    *Denkfalle:* Womit initialisierst du deinen Startwert?
 5. **`mittelwert(int[])`** — Arithmetisches Mittel als `double`, leeres Array -> `0.0`.
    *Denkfalle:* Ganzzahldivision (Kapitel 1) lauert hier schon wieder.
    *Zweite Denkfalle:* Die Summe zweier grosser `int`-Werte passt nicht mehr in einen `int`.
 6. **`sortierteKopie(int[])`** — Aufsteigend sortiertes **neues** Array.
-   Das Original muss unveraendert bleiben — genau das prueft der Test.
+   Das Original muss unverändert bleiben — genau das prüft der Test.
 7. **`transponiere(int[][])`** — Zeilen und Spalten tauschen.
-   `{{1,2,3},{4,5,6}}` -> `{{1,4},{2,5},{3,6}}`. Achte auf die Groesse des Ergebnisses.
+   `{{1,2,3},{4,5,6}}` -> `{{1,4},{2,5},{3,6}}`. Achte auf die Größe des Ergebnisses.
 8. **`zusammenfuegen(String[], String)`** — Wie `String.join`, aber selbst gebaut:
    `({"a","b","c"}, "-")` -> `"a-b-c"`. Kein Trenner am Ende!
 
 ## Was gibt das aus?
 
-Erst ueberlegen, am besten mit Stift und Papier, dann aufklappen. Danach
-kannst du es in `jshell` nachpruefen. Code lesen und vorhersagen trainiert
-genau das Verstaendnis, das du zum Schreiben brauchst.
+Erst überlegen, am besten mit Stift und Papier, dann aufklappen. Danach
+kannst du es in `jshell` nachprüfen. Code lesen und vorhersagen trainiert
+genau das Verständnis, das du zum Schreiben brauchst.
 
 **1.**
 
@@ -304,9 +304,9 @@ s.concat("21");
 System.out.println(s);
 ```
 
-<details><summary>Aufloesung</summary>
+<details><summary>Auflösung</summary>
 
-`Java` — `concat` liefert einen **neuen** String und laesst `s` unveraendert. Das Ergebnis wird weggeworfen. Richtig: `s = s.concat("21");`
+`Java` — `concat` liefert einen **neuen** String und lässt `s` unverändert. Das Ergebnis wird weggeworfen. Richtig: `s = s.concat("21");`
 
 </details>
 
@@ -319,9 +319,9 @@ System.out.println(b == "hallo");
 System.out.println(b.equals("hallo"));
 ```
 
-<details><summary>Aufloesung</summary>
+<details><summary>Auflösung</summary>
 
-`false`, dann `true` — `b` entsteht zur Laufzeit aus einer Variablen und ist ein neues Objekt, nicht das Literal aus dem Pool. (Waere `a` als `final String a = "hal"` deklariert, rechnete der Compiler `a + "lo"` schon vorher aus, und `==` waere `true`. Noch ein Grund, sich nie auf `==` zu verlassen.)
+`false`, dann `true` — `b` entsteht zur Laufzeit aus einer Variablen und ist ein neues Objekt, nicht das Literal aus dem Pool. (Wäre `a` als `final String a = "hal"` deklariert, rechnete der Compiler `a + "lo"` schon vorher aus, und `==` wäre `true`. Noch ein Grund, sich nie auf `==` zu verlassen.)
 
 </details>
 
@@ -335,9 +335,9 @@ a = new int[]{4, 5, 6};
 System.out.println(b[0] + " " + a[0]);
 ```
 
-<details><summary>Aufloesung</summary>
+<details><summary>Auflösung</summary>
 
-`9 4` — `b[0] = 9` aendert das gemeinsame Array. Danach zeigt `a` auf ein neues Array, `b` aber weiter auf das alte. Male die Pfeile aus Abschnitt 3.6 dazu.
+`9 4` — `b[0] = 9` ändert das gemeinsame Array. Danach zeigt `a` auf ein neues Array, `b` aber weiter auf das alte. Male die Pfeile aus Abschnitt 3.6 dazu.
 
 </details>
 
@@ -346,7 +346,7 @@ System.out.println(b[0] + " " + a[0]);
 Erst selbst antworten, dann vergleichen: Die Antworten stehen am Ende von
 [`TIPPS.md`](TIPPS.md).
 
-- Warum aendert `s.toUpperCase();` (ohne Zuweisung) nichts?
+- Warum ändert `s.toUpperCase();` (ohne Zuweisung) nichts?
 - Warum ist `a == b` bei zwei Literalen `true`, bei Nutzereingabe aber `false`?
 - Warum gibt `System.out.println(intArray)` Kauderwelsch aus?
 - Was ist der Unterschied zwischen `int[] b = a;` und `int[] b = a.clone();`?

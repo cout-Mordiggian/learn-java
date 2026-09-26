@@ -1,7 +1,7 @@
 # Kapitel 11 — Dateien und IO
 
 **Ziel:** Du liest und schreibst Dateien mit der modernen `java.nio.file`-API,
-gehst korrekt mit Zeichensaetzen um und verarbeitest Zeilen als Stream.
+gehst korrekt mit Zeichensätzen um und verarbeitest Zeilen als Stream.
 
 ---
 
@@ -19,15 +19,15 @@ String name = p.getFileName().toString();
 ```
 
 Die alte Klasse `java.io.File` gibt es seit 1996 und sie ist voller Fallen:
-`delete()` gibt `false` zurueck, ohne zu sagen warum; `mkdirs()` ebenso.
-`java.nio.file` (seit Java 7) wirft stattdessen aussagekraeftige Exceptions.
+`delete()` gibt `false` zurück, ohne zu sagen warum; `mkdirs()` ebenso.
+`java.nio.file` (seit Java 7) wirft stattdessen aussagekräftige Exceptions.
 
 **Nimm `Path` und `Files`. `File` nur, wenn eine alte Bibliothek es verlangt.**
 
-`Path.of("daten/x.csv")` funktioniert plattformuebergreifend — Java setzt den
+`Path.of("daten/x.csv")` funktioniert plattformübergreifend — Java setzt den
 richtigen Trenner ein. Schreibe nie `"ordner\\datei"` von Hand.
 
-## 11.2 Die einfachen Faelle
+## 11.2 Die einfachen Fälle
 
 ```java
 // Ganze Datei lesen (nur bei kleinen Dateien!)
@@ -52,7 +52,7 @@ Files.copy(quelle, ziel, StandardCopyOption.REPLACE_EXISTING);
 Alle diese Methoden werfen `IOException` — eine **checked** Exception
 (Kapitel 7). Deine Methode braucht also `throws IOException` oder ein `catch`.
 
-## 11.3 Zeichensaetze — die stille Fehlerquelle
+## 11.3 Zeichensätze — die stille Fehlerquelle
 
 ```java
 Files.readString(pfad);                           // UTF-8 - bei Files.* schon immer
@@ -61,22 +61,22 @@ new String(bytes);                                // Plattform-Standard - bis Ja
 new FileReader(datei);                            // ebenso
 ```
 
-Ein Zeichensatz uebersetzt zwischen Bytes auf der Platte und `char`s im
+Ein Zeichensatz übersetzt zwischen Bytes auf der Platte und `char`s im
 Speicher. Die `Files`-Methoden ohne Zeichensatz-Argument nehmen seit jeher
-UTF-8. Die *aelteren* APIs (`FileReader`, `new String(bytes)`, `Scanner` auf
+UTF-8. Die *älteren* APIs (`FileReader`, `new String(bytes)`, `Scanner` auf
 einer Datei …) nahmen dagegen bis Java 17 den Plattform-Standard — dieselbe
 Datei las sich unter Linux korrekt und unter Windows als `Ã¤` statt `ä`.
 
-Seit Java 18 ist UTF-8 auch dort ueberall Standard. Trotzdem: **Schreib den
-Zeichensatz hin.** Es kostet nichts, dokumentiert die Absicht und schuetzt
-dich, falls der Code doch einmal auf einer aelteren JVM laeuft.
+Seit Java 18 ist UTF-8 auch dort überall Standard. Trotzdem: **Schreib den
+Zeichensatz hin.** Es kostet nichts, dokumentiert die Absicht und schützt
+dich, falls der Code doch einmal auf einer älteren JVM läuft.
 
 Wirft eine Datei `MalformedInputException`, ist sie nicht UTF-8 kodiert —
-haeufig `ISO-8859-1` (Latin-1) aus alten Windows-Systemen.
+häufig `ISO-8859-1` (Latin-1) aus alten Windows-Systemen.
 
 ## 11.4 Grosse Dateien: `Files.lines`
 
-`readAllLines` laedt alles in den Speicher. Bei einer 2-GB-Logdatei ist das
+`readAllLines` lädt alles in den Speicher. Bei einer 2-GB-Logdatei ist das
 ein `OutOfMemoryError`. Die faule Variante:
 
 ```java
@@ -85,12 +85,12 @@ try (Stream<String> zeilen = Files.lines(pfad, StandardCharsets.UTF_8)) {
 }
 ```
 
-> **Wichtig:** `Files.lines` haelt die Datei offen. Dieser Stream **muss** in
+> **Wichtig:** `Files.lines` hält die Datei offen. Dieser Stream **muss** in
 > try-with-resources stehen — anders als sonstige Streams, die man einfach
-> stehen laesst. Vergisst du es, laeuft dir irgendwann das
+> stehen lässt. Vergisst du es, läuft dir irgendwann das
 > Dateideskriptor-Limit voll ("too many open files").
 
-Dasselbe gilt fuer `Files.list(verzeichnis)` und `Files.walk(verzeichnis)`.
+Dasselbe gilt für `Files.list(verzeichnis)` und `Files.walk(verzeichnis)`.
 
 ## 11.5 Der klassische Weg mit Readern
 
@@ -109,11 +109,11 @@ try (BufferedWriter w = Files.newBufferedWriter(pfad, StandardCharsets.UTF_8)) {
 ```
 
 Warum "Buffered"? Ohne Puffer geht jeder einzelne `read()` ans Betriebssystem.
-Der Puffer holt einen ganzen Block auf einmal — das ist Groessenordnungen
+Der Puffer holt einen ganzen Block auf einmal — das ist Größenordnungen
 schneller.
 
-Diese Form brauchst du, wenn du Zustand ueber Zeilen hinweg mitfuehrst
-(z. B. mehrzeilige Datensaetze) — dafuer sind Streams unhandlich.
+Diese Form brauchst du, wenn du Zustand über Zeilen hinweg mitführst
+(z. B. mehrzeilige Datensätze) — dafür sind Streams unhandlich.
 
 ## 11.6 CSV von Hand
 
@@ -129,7 +129,7 @@ Das `-1` als zweites Argument von `split` ist wichtig: Ohne es wirft Java
 leere Felder am Ende weg. `"a;b;;"` ergibt normal `["a","b"]`, mit `-1`
 korrekt `["a","b","",""]`.
 
-Fuer echtes CSV (Anfuehrungszeichen, eingebettete Trenner, Zeilenumbrueche in
+Für echtes CSV (Anführungszeichen, eingebettete Trenner, Zeilenumbrüche in
 Feldern) nimm eine Bibliothek — Apache Commons CSV oder OpenCSV. Selbstgebaute
 CSV-Parser sind ein klassischer Fehler.
 
@@ -143,12 +143,12 @@ System.out.print("Alter: ");
 int alter = scanner.nextInt();
 ```
 
-> **Klassische Falle:** `nextInt()` liest die Zahl, laesst aber den
-> Zeilenumbruch stehen. Das naechste `nextLine()` liefert dann sofort einen
-> leeren String. Loesung: nach `nextInt()` ein zusaetzliches `nextLine()` —
+> **Klassische Falle:** `nextInt()` liest die Zahl, lässt aber den
+> Zeilenumbruch stehen. Das nächste `nextLine()` liefert dann sofort einen
+> leeren String. Lösung: nach `nextInt()` ein zusätzliches `nextLine()` —
 > oder konsequent nur `nextLine()` verwenden und selbst parsen.
 
-`System.in` soll man **nicht** schliessen — danach ist die Eingabe fuer das
+`System.in` soll man **nicht** schliessen — danach ist die Eingabe für das
 ganze Programm zu.
 
 ## 11.8 Wo liegt eigentlich "daten.csv"?
@@ -160,7 +160,7 @@ nicht auf den Ort der `.class`-Datei:
 System.out.println(Path.of("").toAbsolutePath());   // wo bin ich?
 ```
 
-Fuer Tests und temporaere Daten:
+Für Tests und temporäre Daten:
 
 ```java
 Path tempOrdner = Files.createTempDirectory("test");
@@ -171,42 +171,42 @@ Path tempDatei = Files.createTempFile("daten", ".csv");
 
 ## Aufgaben
 
-> Haengst du fest? Gestufte Hinweise zu jeder Aufgabe stehen in
+> Hängst du fest? Gestufte Hinweise zu jeder Aufgabe stehen in
 > [`TIPPS.md`](TIPPS.md) — erst Tipp 1, dann wieder selbst probieren.
 
-Zwei Dateien in [`src/`](src/) — pruefen mit `./lerne.sh 11`.
+Zwei Dateien in [`src/`](src/) — prüfen mit `./lerne.sh 11`.
 `Messwert.java` ist fertig vorgegeben (ein `record` aus Kapitel 10).
 
-Die Tests legen sich ihre Dateien selbst in einem temporaeren Ordner an — es
+Die Tests legen sich ihre Dateien selbst in einem temporären Ordner an — es
 wird nichts in deinem Projekt angefasst.
 
 1. **`zeilenZaehlen(Path)`** -> `long`. Nutze `Files.lines` **in
    try-with-resources**.
 2. **`schreibeZeilen(Path, List<String>)`** — jede Zeile mit `\n`, UTF-8.
-   Bestehende Dateien werden ueberschrieben.
+   Bestehende Dateien werden überschrieben.
 3. **`nichtLeereZeilen(Path)`** -> `List<String>`, ohne leere und
    Whitespace-Zeilen, jede Zeile `strip()`-behandelt.
 4. **`sicherLesen(Path)`** -> `Optional<String>`. Bei `IOException`
    (z. B. Datei fehlt) `Optional.empty()` statt einer Exception.
-   Das ist die Bruecke von Kapitel 7 zu Kapitel 9.
+   Das ist die Brücke von Kapitel 7 zu Kapitel 9.
 5. **`csvLesen(Path)`** -> `List<Messwert>`. Format `sensor;wert`,
-   Trennzeichen `;`. Erste Zeile ist eine Kopfzeile und wird uebersprungen,
+   Trennzeichen `;`. Erste Zeile ist eine Kopfzeile und wird übersprungen,
    leere Zeilen ebenfalls; eine leere Datei ergibt eine leere Liste. Bei
    kaputten Zeilen (falsche Feldzahl — auch `temp;21.5;` hat drei Felder —
    oder unparsbare Zahl) eine `IllegalArgumentException` mit der
    **Zeilennummer** in der Nachricht: `"Ungueltige Zeile 3: kaputt"`.
    Gemeint ist die Zeilennummer in der Datei (1-basiert, Kopf- und Leerzeilen
-   zaehlen mit).
+   zählen mit).
 6. **`durchschnittProSensor(List<Messwert>)`** -> `Map<String, Double>`.
-   Kapitel 9 laesst gruessen: `groupingBy` mit `averagingDouble`.
+   Kapitel 9 lässt grüßen: `groupingBy` mit `averagingDouble`.
 7. **`schreibeBericht(Path, Map<String,Double>)`** — je Zeile
    `sensor=12.50`, alphabetisch nach Sensorname, `Locale.ROOT`.
 
 ## Was gibt das aus?
 
-Erst ueberlegen, am besten mit Stift und Papier, dann aufklappen. Danach
-kannst du es in `jshell` nachpruefen. Code lesen und vorhersagen trainiert
-genau das Verstaendnis, das du zum Schreiben brauchst.
+Erst überlegen, am besten mit Stift und Papier, dann aufklappen. Danach
+kannst du es in `jshell` nachprüfen. Code lesen und vorhersagen trainiert
+genau das Verständnis, das du zum Schreiben brauchst.
 
 **1.**
 
@@ -215,7 +215,7 @@ System.out.println("a;b;;".split(";").length);
 System.out.println("a;b;;".split(";", -1).length);
 ```
 
-<details><summary>Aufloesung</summary>
+<details><summary>Auflösung</summary>
 
 `2`, dann `4` — Ohne das Limit wirft `split` leere Felder **am Ende** weg. Mit `-1` bleiben sie erhalten: `["a", "b", "", ""]`.
 
@@ -228,7 +228,7 @@ System.out.println(Path.of("daten", "x.csv").getFileName());
 System.out.println(Path.of("/home/anna/daten/x.csv").getParent());
 ```
 
-<details><summary>Aufloesung</summary>
+<details><summary>Auflösung</summary>
 
 `x.csv`, dann `/home/anna/daten` — `Path` zerlegt den Pfad in seine Teile, ohne dass die Datei existieren muss. Es ist reine Textarbeit, bis du `Files.*` aufrufst.
 
@@ -244,9 +244,9 @@ try {
 }
 ```
 
-<details><summary>Aufloesung</summary>
+<details><summary>Auflösung</summary>
 
-`NoSuchFileException` — Nicht `FileNotFoundException`! Die `java.nio.file`-API hat eigene, genauere Untertypen von `IOException`. Deshalb faengt man meist `IOException` und nicht einen bestimmten Untertyp.
+`NoSuchFileException` — Nicht `FileNotFoundException`! Die `java.nio.file`-API hat eigene, genauere Untertypen von `IOException`. Deshalb fängt man meist `IOException` und nicht einen bestimmten Untertyp.
 
 </details>
 
@@ -257,6 +257,6 @@ Erst selbst antworten, dann vergleichen: Die Antworten stehen am Ende von
 
 - Warum `Path`/`Files` statt `File`?
 - Warum **muss** `Files.lines` in try-with-resources stehen?
-- Was passiert ohne expliziten Zeichensatz — und warum ist das heute weniger schlimm als frueher?
+- Was passiert ohne expliziten Zeichensatz — und warum ist das heute weniger schlimm als früher?
 - Wozu das `-1` bei `split(";", -1)`?
 - Worauf bezieht sich ein relativer Pfad?

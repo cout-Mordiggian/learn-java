@@ -34,12 +34,12 @@ rex.bellen();             // "Rex sagt Wuff"
                        +-------------------+
 ```
 
-Beachte: Auch das Feld `name` enthaelt nur einen Pfeil auf ein `String`-Objekt.
+Beachte: Auch das Feld `name` enthält nur einen Pfeil auf ein `String`-Objekt.
 `int`-Felder dagegen enthalten den Wert direkt.
 
 `new` tut drei Dinge: Speicher auf dem **Heap** reservieren, Felder mit
-Standardwerten fuellen (`0`, `false`, `null`), den Konstruktor ausfuehren.
-Die (lokale) Variable `rex` liegt dagegen auf dem **Stack** und enthaelt nur
+Standardwerten füllen (`0`, `false`, `null`), den Konstruktor ausführen.
+Die (lokale) Variable `rex` liegt dagegen auf dem **Stack** und enthält nur
 die Referenz — sozusagen die Adresse des Objekts, nicht das Objekt selbst.
 
 ## 5.2 Konstruktoren
@@ -60,11 +60,11 @@ public class Hund {
 }
 ```
 
-> *Seit Java 25* duerfen vor `this(...)` bzw. `super(...)` einfache Anweisungen
-> stehen, die das Objekt noch nicht benutzen — etwa eine Pruefung der
+> *Seit Java 25* dürfen vor `this(...)` bzw. `super(...)` einfache Anweisungen
+> stehen, die das Objekt noch nicht benutzen — etwa eine Prüfung der
 > Parameter. In Java 21 ist `this(...)` zwingend die erste Anweisung.
 
-Merkmale: heisst wie die Klasse, hat **keinen** Rueckgabetyp (auch nicht `void`).
+Merkmale: heisst wie die Klasse, hat **keinen** Rückgabetyp (auch nicht `void`).
 
 `this` ist die Referenz auf das aktuelle Objekt. Man braucht es, wenn Parameter
 und Feld gleich heissen (was guter Stil ist — der Name ist ja derselbe Begriff).
@@ -73,7 +73,7 @@ und Feld gleich heissen (was guter Stil ist — der Name ist ja derselbe Begriff
 Compiler einen parameterlosen. Sobald du **einen** eigenen schreibst,
 verschwindet er. `new Hund()` ist dann ein Compilerfehler.
 
-### Konstruktoren sollen gueltige Objekte garantieren
+### Konstruktoren sollen gültige Objekte garantieren
 
 ```java
 public Konto(String inhaber, long startguthaben) {
@@ -88,10 +88,10 @@ public Konto(String inhaber, long startguthaben) {
 }
 ```
 
-Wenn der Konstruktor durchlaeuft, ist das Objekt gueltig — diese Zusage nennt
+Wenn der Konstruktor durchläuft, ist das Objekt gültig — diese Zusage nennt
 man **Invariante**. Sie ist der eigentliche Zweck von Kapselung.
 
-(Die `throw`-Syntax lernst du in Kapitel 7 richtig. Fuer jetzt reicht: Diese
+(Die `throw`-Syntax lernst du in Kapitel 7 richtig. Für jetzt reicht: Diese
 Zeile bricht die Methode mit einem Fehler ab.)
 
 ## 5.3 Kapselung
@@ -112,23 +112,23 @@ public class Konto {
 ```
 
 Warum nicht einfach `public long guthaben`? Weil dann jeder `konto.guthaben = -5000`
-schreiben koennte und deine Invariante wertlos waere. Der eigentliche Gewinn ist
-nicht "Getter/Setter", sondern **Kontrolle darueber, wie sich der Zustand aendert**.
+schreiben könnte und deine Invariante wertlos wäre. Der eigentliche Gewinn ist
+nicht "Getter/Setter", sondern **Kontrolle darüber, wie sich der Zustand ändert**.
 
 Beachte: `einzahlen` ist ein besserer Name als `setGuthaben`. Modelliere die
-**Fachlichkeit**, nicht die Felder. Ein blinder Setter fuer jedes Feld ist
+**Fachlichkeit**, nicht die Felder. Ein blinder Setter für jedes Feld ist
 Kapselung nur dem Namen nach.
 
-### Sichtbarkeiten (Vollstaendig in Kapitel 6)
+### Sichtbarkeiten (Vollständig in Kapitel 6)
 
 | Modifier | Sichtbar in |
 |----------|-------------|
 | `private` | nur in derselben Klasse |
 | (nichts) | im selben Paket ("package-private") |
 | `protected` | Paket + Unterklassen |
-| `public` | ueberall |
+| `public` | überall |
 
-**Faustregel:** Felder `private`, Methoden so eng wie moeglich.
+**Faustregel:** Felder `private`, Methoden so eng wie möglich.
 
 ## 5.4 `static` — geteilt von allen Instanzen
 
@@ -151,7 +151,7 @@ Konto.getAnzahlKonten();   // an der Klasse, nicht am Objekt
 ```
 
 Eine `static`-Methode hat **kein** `this` und kann deshalb nicht auf
-Instanzfelder zugreifen — ein haeufiger Compilerfehler:
+Instanzfelder zugreifen — ein häufiger Compilerfehler:
 `non-static variable x cannot be referenced from a static context`.
 
 **Konstanten:**
@@ -166,7 +166,7 @@ public static final double MWST = 0.19;   // static final, GROSS_MIT_UNTERSTRICH
 private final String name;   // muss im Konstruktor gesetzt werden, danach nie wieder
 ```
 
-`final` heisst: Die **Referenz** ist unveraenderlich, nicht das Objekt dahinter.
+`final` heisst: Die **Referenz** ist unveränderlich, nicht das Objekt dahinter.
 
 ```java
 private final List<String> namen = new ArrayList<>();
@@ -174,8 +174,8 @@ namen.add("Anna");           // erlaubt! die Liste selbst ist veraenderlich
 namen = new ArrayList<>();   // Compilerfehler
 ```
 
-Mach Felder standardmaessig `final` und lockere nur, wo noetig. Der Compiler
-erinnert dich dann daran, welcher Zustand sich wirklich aendert.
+Mach Felder standardmäßig `final` und lockere nur, wo nötig. Der Compiler
+erinnert dich dann daran, welcher Zustand sich wirklich ändert.
 
 ## 5.6 Die drei Methoden von `Object`
 
@@ -190,12 +190,12 @@ public String toString() {
 }
 ```
 
-Ohne Ueberschreibung bekommst du `Konto@1b6d3586`. `System.out.println(objekt)`
+Ohne Überschreibung bekommst du `Konto@1b6d3586`. `System.out.println(objekt)`
 und String-Verkettung rufen `toString()` automatisch auf.
 
 `@Override` ist eine Annotation. Sie ist optional, aber **schreib sie immer**:
-Der Compiler prueft dann, ob du wirklich etwas ueberschreibst. Ein Tippfehler
-(`toStrng`) faellt so sofort auf statt erst im Betrieb.
+Der Compiler prüft dann, ob du wirklich etwas überschreibst. Ein Tippfehler
+(`toStrng`) fällt so sofort auf statt erst im Betrieb.
 
 ### `equals(Object)` — inhaltliche Gleichheit
 
@@ -210,18 +210,18 @@ public boolean equals(Object o) {
 ```
 
 Warum `Double.compare` statt `==`? Bei `double` hat `==` zwei Ecken:
-`Double.NaN == Double.NaN` ist `false` (zwei Punkte mit `NaN` waeren nie gleich),
-und `0.0 == -0.0` ist `true`, obwohl `Objects.hash` fuer beide verschiedene
-Hashwerte liefert — damit waere der `hashCode`-Vertrag (unten) gebrochen.
-Fuer `int`, `long`, `char`, `boolean` ist `==` voellig in Ordnung; fuer
+`Double.NaN == Double.NaN` ist `false` (zwei Punkte mit `NaN` wären nie gleich),
+und `0.0 == -0.0` ist `true`, obwohl `Objects.hash` für beide verschiedene
+Hashwerte liefert — damit wäre der `hashCode`-Vertrag (unten) gebrochen.
+Für `int`, `long`, `char`, `boolean` ist `==` völlig in Ordnung; für
 Objekt-Felder nimmst du `Objects.equals(a, b)` (null-sicher).
 
 Der Parametertyp ist `Object` — nicht `Punkt`. Schreibst du
-`public boolean equals(Punkt p)`, hast du **ueberladen** statt ueberschrieben,
-und Collections nutzen weiter die falsche Methode. Genau davor schuetzt `@Override`.
+`public boolean equals(Punkt p)`, hast du **überladen** statt überschrieben,
+und Collections nutzen weiter die falsche Methode. Genau davor schützt `@Override`.
 
 Das `instanceof Punkt p` mit Variablenname ist *Pattern Matching* (Java 16+):
-pruefen und casten in einem Schritt.
+prüfen und casten in einem Schritt.
 
 ### `hashCode()` — und der Vertrag
 
@@ -232,10 +232,10 @@ public int hashCode() {
 }
 ```
 
-**Der Vertrag:** Sind zwei Objekte `equals`, **muessen** sie denselben
+**Der Vertrag:** Sind zwei Objekte `equals`, **müssen** sie denselben
 `hashCode` haben. (Umgekehrt nicht — Kollisionen sind erlaubt.)
 
-Wer `equals` ueberschreibt und `hashCode` vergisst, baut einen Fehler, der
+Wer `equals` überschreibt und `hashCode` vergisst, baut einen Fehler, der
 erst in Kapitel 8 sichtbar wird: Das Objekt verschwindet in einer `HashMap`
 oder taucht doppelt in einem `HashSet` auf. Deshalb: **immer beide zusammen.**
 
@@ -251,15 +251,15 @@ Exception in thread "main" java.lang.NullPointerException:
 Seit Java 14 sagen die Meldungen sehr genau, *welche* Referenz `null` war —
 lies sie, sie ersparen dir das Raten. (Steht dort `"<local1>"` statt eines
 Namens, wurde ohne Debug-Infos kompiliert; `javac -g` behebt das. `lerne.sh`
-macht das bereits fuer dich.)
+macht das bereits für dich.)
 
 Strategien:
 
-- Felder im Konstruktor pruefen: `Objects.requireNonNull(name, "name")`
-- Nie `null` zurueckgeben, wo eine leere Liste oder ein leerer String reicht
-- `Optional` fuer "vielleicht kein Wert" (Kapitel 9)
+- Felder im Konstruktor prüfen: `Objects.requireNonNull(name, "name")`
+- Nie `null` zurückgeben, wo eine leere Liste oder ein leerer String reicht
+- `Optional` für "vielleicht kein Wert" (Kapitel 9)
 
-## 5.8 Unveraenderliche Objekte
+## 5.8 Unveränderliche Objekte
 
 ```java
 public final class Punkt {
@@ -274,7 +274,7 @@ public final class Punkt {
 }
 ```
 
-Vorteile: kein ungueltiger Zwischenzustand, sicher als `Map`-Schluessel,
+Vorteile: kein ungültiger Zwischenzustand, sicher als `Map`-Schlüssel,
 automatisch thread-sicher. Java geht diesen Weg selbst bei `String`, `Integer`
 und der ganzen `java.time`-API.
 
@@ -284,61 +284,61 @@ In Kapitel 10 siehst du, dass `record` genau diese Klasse in einer Zeile schreib
 
 Objekte werden mit `new` erzeugt und vom **Garbage Collector** wieder
 eingesammelt, sobald keine Referenz mehr auf sie zeigt. Du gibst nichts
-manuell frei. `finalize()` ist veraltet — nicht benutzen. Fuer Ressourcen
+manuell frei. `finalize()` ist veraltet — nicht benutzen. Für Ressourcen
 (Dateien, Verbindungen) gibt es try-with-resources (Kapitel 7).
 
 ---
 
 ## Aufgaben
 
-> Haengst du fest? Gestufte Hinweise zu jeder Aufgabe stehen in
+> Hängst du fest? Gestufte Hinweise zu jeder Aufgabe stehen in
 > [`TIPPS.md`](TIPPS.md) — erst Tipp 1, dann wieder selbst probieren.
 
-Zwei Klassen, beide in [`src/`](src/) — pruefen mit `./lerne.sh 05`.
+Zwei Klassen, beide in [`src/`](src/) — prüfen mit `./lerne.sh 05`.
 
 ### `Konto.java` — Kapselung und Invarianten
 
-Ein Bankkonto. **Betraege werden in Cent als `long` gefuehrt** — nie in `double`
-(Kapitel 1: Kommazahlen sind ungenau, und Geld vertraegt keine Rundungsfehler).
+Ein Bankkonto. **Beträge werden in Cent als `long` geführt** — nie in `double`
+(Kapitel 1: Kommazahlen sind ungenau, und Geld verträgt keine Rundungsfehler).
 
 Zu bauen:
 
 - Felder: `nummer` (`final int`), `inhaber` (`final String`), `guthaben` (`long`)
-- Ein statischer Zaehler, der jedem Konto eine fortlaufende Nummer ab 1 gibt
+- Ein statischer Zähler, der jedem Konto eine fortlaufende Nummer ab 1 gibt
 - Konstruktor `Konto(String inhaber, long startguthaben)`, der fehlende (`null`),
   leere oder nur aus Leerzeichen bestehende Inhaber (`isBlank()`) und negatives
   Startguthaben mit `IllegalArgumentException` ablehnt. Ein abgelehnter Aufruf
   verbraucht **keine** Kontonummer.
-- Getter fuer alle drei Felder — aber **keinen** Setter fuer `guthaben`
-- `einzahlen(long betrag)` — nur positive Betraege, sonst `IllegalArgumentException`
-- `abheben(long betrag)` — gibt `boolean` zurueck: `false` bei zu wenig Deckung,
+- Getter für alle drei Felder — aber **keinen** Setter für `guthaben`
+- `einzahlen(long betrag)` — nur positive Beträge, sonst `IllegalArgumentException`
+- `abheben(long betrag)` — gibt `boolean` zurück: `false` bei zu wenig Deckung,
   `IllegalArgumentException` bei nicht-positivem Betrag. Das komplette Guthaben
   abzuheben ist erlaubt.
 - `ueberweiseAn(Konto ziel, long betrag)` — `boolean`; nur wenn das Abheben klappt
 - `toString()` -> `Konto[1, Anna, 5000 Cent]`
 - `static int getAnzahlKonten()`
 
-*Entwurfsfrage:* Warum gibt `abheben` einen `boolean` zurueck, waehrend ein
+*Entwurfsfrage:* Warum gibt `abheben` einen `boolean` zurück, während ein
 negativer Betrag eine Exception wirft? Weil "kein Geld da" ein normaler
-Geschaeftsfall ist, "minus 5 Euro abheben" aber ein Programmierfehler.
+Geschäftsfall ist, "minus 5 Euro abheben" aber ein Programmierfehler.
 Diese Unterscheidung vertiefst du in Kapitel 7.
 
-### `Punkt.java` — Unveraenderlichkeit und Objektidentitaet
+### `Punkt.java` — Unveränderlichkeit und Objektidentität
 
 - `final class Punkt` mit `private final double x, y`
 - Konstruktor, `getX()`, `getY()`
 - `abstand(Punkt anderer)` — euklidisch, `Math.hypot` oder `Math.sqrt`
 - `abstandZumUrsprung()`
-- `verschoben(double dx, double dy)` — gibt einen **neuen** Punkt zurueck
+- `verschoben(double dx, double dy)` — gibt einen **neuen** Punkt zurück
 - `toString()` -> `Punkt(1.0, 2.0)`
-- `equals` und `hashCode` — vollstaendig und vertragstreu. Die Tests pruefen
+- `equals` und `hashCode` — vollständig und vertragstreu. Die Tests prüfen
   auch die Ecken `0.0`/`-0.0` und `NaN` (siehe 5.6: `Double.compare` statt `==`).
 
 ## Was gibt das aus?
 
-Erst ueberlegen, am besten mit Stift und Papier, dann aufklappen. Danach
-kannst du es in `jshell` nachpruefen. Code lesen und vorhersagen trainiert
-genau das Verstaendnis, das du zum Schreiben brauchst.
+Erst überlegen, am besten mit Stift und Papier, dann aufklappen. Danach
+kannst du es in `jshell` nachprüfen. Code lesen und vorhersagen trainiert
+genau das Verständnis, das du zum Schreiben brauchst.
 
 **1.**
 
@@ -354,9 +354,9 @@ Z b = new Z();
 System.out.println(Z.s + " " + a.i);
 ```
 
-<details><summary>Aufloesung</summary>
+<details><summary>Auflösung</summary>
 
-`2 1` — `s` gibt es nur **einmal** fuer die Klasse, beide Konstruktoraufrufe erhoehen dasselbe Feld. `i` hat jedes Objekt fuer sich.
+`2 1` — `s` gibt es nur **einmal** für die Klasse, beide Konstruktoraufrufe erhöhen dasselbe Feld. `i` hat jedes Objekt für sich.
 
 </details>
 
@@ -371,9 +371,9 @@ class P {
 System.out.println(new P(1).equals(new P(1)));
 ```
 
-<details><summary>Aufloesung</summary>
+<details><summary>Auflösung</summary>
 
-`false` — Ohne ueberschriebenes `equals` gilt das geerbte aus `Object`, und das vergleicht nur die Referenz, also dasselbe wie `==`. Zwei `new` sind zwei Objekte.
+`false` — Ohne überschriebenes `equals` gilt das geerbte aus `Object`, und das vergleicht nur die Referenz, also dasselbe wie `==`. Zwei `new` sind zwei Objekte.
 
 </details>
 
@@ -386,9 +386,9 @@ l.add("b");
 System.out.println(l.size());
 ```
 
-<details><summary>Aufloesung</summary>
+<details><summary>Auflösung</summary>
 
-`2` — `final` verbietet nur, `l` auf eine andere Liste zeigen zu lassen. Die Liste selbst bleibt veraenderbar (Abschnitt 5.5).
+`2` — `final` verbietet nur, `l` auf eine andere Liste zeigen zu lassen. Die Liste selbst bleibt veränderbar (Abschnitt 5.5).
 
 </details>
 
@@ -400,5 +400,5 @@ Erst selbst antworten, dann vergleichen: Die Antworten stehen am Ende von
 - Was passiert mit dem Standardkonstruktor, sobald du selbst einen schreibst?
 - Warum ist `einzahlen(long)` besser als `setGuthaben(long)`?
 - Warum darf eine `static`-Methode nicht auf Instanzfelder zugreifen?
-- Was geht kaputt, wenn du `equals` ohne `hashCode` ueberschreibst?
-- Warum ist `private final List<X> liste` trotzdem veraenderbar?
+- Was geht kaputt, wenn du `equals` ohne `hashCode` überschreibst?
+- Warum ist `private final List<X> liste` trotzdem veränderbar?

@@ -7,7 +7,7 @@ wann sie das Programm klarer machen — und wann nicht.
 
 ## 9.1 Lambdas: Verhalten als Wert
 
-Vor Java 8 brauchte man fuer "ein Stueck Verhalten uebergeben" eine ganze Klasse:
+Vor Java 8 brauchte man für "ein Stück Verhalten übergeben" eine ganze Klasse:
 
 ```java
 Collections.sort(namen, new Comparator<String>() {
@@ -37,7 +37,7 @@ x -> {                          // Block: return ist dann Pflicht
 }
 ```
 
-Ein Lambda ist **kein** Objekt-Ersatz fuer beliebige Interfaces — es
+Ein Lambda ist **kein** Objekt-Ersatz für beliebige Interfaces — es
 funktioniert nur bei **funktionalen Interfaces**: Interfaces mit **genau einer**
 abstrakten Methode.
 
@@ -58,14 +58,14 @@ Aus `java.util.function`:
 | Interface | Methode | Bedeutung |
 |-----------|---------|-----------|
 | `Function<T,R>` | `R apply(T)` | wandelt um |
-| `Predicate<T>` | `boolean test(T)` | prueft |
+| `Predicate<T>` | `boolean test(T)` | prüft |
 | `Consumer<T>` | `void accept(T)` | verbraucht |
 | `Supplier<T>` | `T get()` | liefert |
 | `UnaryOperator<T>` | `T apply(T)` | `Function<T,T>` |
 | `BiFunction<T,U,R>` | `R apply(T,U)` | zwei Parameter |
 | `BinaryOperator<T>` | `T apply(T,T)` | zwei gleiche Typen |
 
-Fuer primitive Typen gibt es Sonderformen (`IntPredicate`, `ToIntFunction`, …),
+Für primitive Typen gibt es Sonderformen (`IntPredicate`, `ToIntFunction`, …),
 die das Boxing vermeiden.
 
 ## 9.3 Methodenreferenzen
@@ -81,7 +81,7 @@ p -> p.getName()             ->   Person::getName
 ```
 
 Vier Formen: statische Methode, Methode eines bestimmten Objekts, Methode des
-Parameters, Konstruktor. Lesbarer — aber nur, wenn der Name fuer sich spricht.
+Parameters, Konstruktor. Lesbarer — aber nur, wenn der Name für sich spricht.
 
 ## 9.4 Effektiv final
 
@@ -93,19 +93,19 @@ faktor = 4;                                        // macht faktor "nicht effekt
 
 Der Compiler meldet den Fehler **im Lambda** (`local variables referenced from a
 lambda expression must be final or effectively final`), auch wenn die
-eigentliche Ursache die spaetere Zuweisung ist. Nimm die Zeile `faktor = 4;`
+eigentliche Ursache die spätere Zuweisung ist. Nimm die Zeile `faktor = 4;`
 weg, und alles kompiliert.
 
 Ein Lambda darf lokale Variablen nur lesen, wenn sie **effektiv final** sind —
-also nach der Initialisierung nicht mehr veraendert werden. Grund: Das Lambda
-kann das Ende der Methode ueberleben; Java kopiert den Wert, statt eine
+also nach der Initialisierung nicht mehr verändert werden. Grund: Das Lambda
+kann das Ende der Methode überleben; Java kopiert den Wert, statt eine
 Referenz auf den Stack-Slot zu halten.
 
-Instanzfelder duerfen sich dagegen aendern — die sind ueber `this` erreichbar.
+Instanzfelder dürfen sich dagegen ändern — die sind über `this` erreichbar.
 
 ## 9.5 Streams
 
-Ein Stream ist **keine** Datenstruktur, sondern eine **Pipeline** ueber Daten.
+Ein Stream ist **keine** Datenstruktur, sondern eine **Pipeline** über Daten.
 
 ```java
 List<String> ergebnis = namen.stream()          // Quelle
@@ -115,13 +115,13 @@ List<String> ergebnis = namen.stream()          // Quelle
         .toList();                              // Terminaloperation
 ```
 
-Drei Eigenschaften, die alles erklaeren:
+Drei Eigenschaften, die alles erklären:
 
 1. **Faul**: Zwischenoperationen tun nichts, bis eine Terminaloperation kommt.
    Ohne `toList()` am Ende passiert gar nichts.
-2. **Einmalig**: Ein Stream laesst sich nur einmal durchlaufen.
+2. **Einmalig**: Ein Stream lässt sich nur einmal durchlaufen.
    Zweimal -> `IllegalStateException: stream has already been operated upon`.
-3. **Nicht-veraendernd**: Die Quelle bleibt unberuehrt.
+3. **Nicht-verändernd**: Die Quelle bleibt unberührt.
 
 ### Quellen
 
@@ -180,11 +180,11 @@ import static java.util.stream.Collectors.*;
 ```
 
 `groupingBy` mit einem zweiten Collector ("Downstream") ist das
-maechtigste Werkzeug der ganzen API — damit baust du Auswertungen, die
+mächtigste Werkzeug der ganzen API — damit baust du Auswertungen, die
 sonst zwanzig Zeilen kosten. `mapping(f, toList())` wandelt dabei jedes Element
 einer Gruppe um, bevor es gesammelt wird.
 
-> **Falle bei `toMap`:** Kommt ein Schluessel doppelt vor (zwei Personen namens
+> **Falle bei `toMap`:** Kommt ein Schlüssel doppelt vor (zwei Personen namens
 > "Anna"), wirft `toMap` eine `IllegalStateException: Duplicate key`. Wenn das
 > passieren kann, gib als drittes Argument an, was dann gelten soll:
 > `toMap(Person::getName, Person::getAlter, (alt, neu) -> alt)`.
@@ -192,7 +192,7 @@ einer Gruppe um, bevor es gesammelt wird.
 ## 9.6 `Optional`
 
 `Optional<T>` sagt im Typ: "hier ist vielleicht kein Wert". Es ersetzt `null`
-als **Rueckgabewert**.
+als **Rückgabewert**.
 
 ```java
 Optional<Person> gefunden = personen.stream()
@@ -212,17 +212,17 @@ gefunden.ifPresentOrElse(p -> ..., () -> ...);
 
 **Regeln:**
 
-- `Optional` als **Rueckgabetyp** — nicht als Feld, nicht als Parameter
-- Nie `optional.get()` ohne vorherige Pruefung; nimm `orElseThrow()`
+- `Optional` als **Rückgabetyp** — nicht als Feld, nicht als Parameter
+- Nie `optional.get()` ohne vorherige Prüfung; nimm `orElseThrow()`
 - Nie `Optional<List<T>>` — eine leere Liste sagt dasselbe einfacher
-- Nie `null` in ein `Optional` — dafuer gibt es `Optional.ofNullable(x)`
+- Nie `null` in ein `Optional` — dafür gibt es `Optional.ofNullable(x)`
 
 Die Kette `map(...).filter(...).orElse(...)` ist der eigentliche Gewinn: Sie
-ersetzt verschachtelte `null`-Pruefungen durch einen linearen Ausdruck.
+ersetzt verschachtelte `null`-Prüfungen durch einen linearen Ausdruck.
 
 ## 9.7 Wann Streams — und wann nicht
 
-**Gut:** Filtern, Umwandeln, Gruppieren, Aggregieren; Datenfluesse, die sich
+**Gut:** Filtern, Umwandeln, Gruppieren, Aggregieren; Datenflüsse, die sich
 als Kette lesen lassen.
 
 **Schlecht:**
@@ -239,25 +239,25 @@ namen.stream().filter(...).forEach(ergebnis::add);    // -> .filter(...).toList(
 ```
 
 Und `.parallelStream()`: fast nie. Es lohnt erst bei sehr grossen Datenmengen
-und teuren, unabhaengigen Operationen — und bringt alle Probleme der
-Nebenlaeufigkeit mit (Kapitel 12). Miss nach, statt zu raten.
+und teuren, unabhängigen Operationen — und bringt alle Probleme der
+Nebenläufigkeit mit (Kapitel 12). Miss nach, statt zu raten.
 
 ---
 
 ## Aufgaben
 
-> Haengst du fest? Gestufte Hinweise zu jeder Aufgabe stehen in
+> Hängst du fest? Gestufte Hinweise zu jeder Aufgabe stehen in
 > [`TIPPS.md`](TIPPS.md) — erst Tipp 1, dann wieder selbst probieren.
 
-Zwei Dateien in [`src/`](src/) — pruefen mit `./lerne.sh 09`.
+Zwei Dateien in [`src/`](src/) — prüfen mit `./lerne.sh 09`.
 `Person.java` ist bereits fertig, du arbeitest in `Aufgaben.java` und
 `Transformation.java`.
 
 1. **`geradeQuadrate(List<Integer>)`** — gerade Zahlen filtern, quadrieren.
 2. **`laengstesWort(List<String>)`** -> `Optional<String>`.
    Bei Gleichstand das **erste**. *Denkfalle:* Was macht `max` bei Gleichstand
-   ueberhaupt? Die Javadoc sagt es nicht deutlich — schreib dir zwei Zeilen
-   und probier es aus, bevor du dich auf eine Annahme verlaesst.
+   überhaupt? Die Javadoc sagt es nicht deutlich — schreib dir zwei Zeilen
+   und probier es aus, bevor du dich auf eine Annahme verlässt.
 3. **`grossgeschriebenSortiert(List<Person>)`** -> `List<String>`,
    Namen in Grossbuchstaben (`toUpperCase(Locale.ROOT)`), alphabetisch.
    Die Eingabe ist nicht sortiert.
@@ -267,10 +267,10 @@ Zwei Dateien in [`src/`](src/) — pruefen mit `./lerne.sh 09`.
 6. **`nachStadt(List<Person>)`** -> `Map<String, List<String>>`:
    Stadt -> Namen der dortigen Personen. `groupingBy` mit Downstream-Collector.
 7. **`volljaehrigkeit(List<Person>)`** -> `Map<Boolean, List<Person>>`
-   mit `partitioningBy`. Volljaehrig heisst `alter >= 18`.
+   mit `partitioningBy`. Volljährig heisst `alter >= 18`.
 8. **`namenLaengen(List<Person>)`** -> `Map<String, Integer>` mit `toMap`.
    Du darfst annehmen, dass die Namen eindeutig sind — eine Merge-Funktion
-   fuer doppelte Schluessel ist nicht noetig.
+   für doppelte Schlüssel ist nicht nötig.
 9. **`Transformation.dann(...)`** — eine `default`-Methode, die zwei
    Transformationen hintereinanderschaltet (Komposition).
    `gross.dann(umgedreht).anwenden("abc")` -> `"CBA"`.
@@ -279,9 +279,9 @@ Zwei Dateien in [`src/`](src/) — pruefen mit `./lerne.sh 09`.
 
 ## Was gibt das aus?
 
-Erst ueberlegen, am besten mit Stift und Papier, dann aufklappen. Danach
-kannst du es in `jshell` nachpruefen. Code lesen und vorhersagen trainiert
-genau das Verstaendnis, das du zum Schreiben brauchst.
+Erst überlegen, am besten mit Stift und Papier, dann aufklappen. Danach
+kannst du es in `jshell` nachprüfen. Code lesen und vorhersagen trainiert
+genau das Verständnis, das du zum Schreiben brauchst.
 
 **1.**
 
@@ -291,7 +291,7 @@ Stream<String> s = Stream.of("a", "b", "c")
 System.out.println("fertig");
 ```
 
-<details><summary>Aufloesung</summary>
+<details><summary>Auflösung</summary>
 
 `fertig` — Ohne Terminaloperation passiert gar nichts, auch das `peek` nicht. Der Stream ist nur ein Bauplan.
 
@@ -307,9 +307,9 @@ Stream.of("a", "b", "c")
       .forEach(System.out::print);
 ```
 
-<details><summary>Aufloesung</summary>
+<details><summary>Auflösung</summary>
 
-`aAbcC` — Streams arbeiten **Element fuer Element** die ganze Kette ab, nicht Stufe fuer Stufe. `a` laeuft komplett durch (`a`, dann `A`), `b` bleibt im Filter haengen, dann folgt `c`.
+`aAbcC` — Streams arbeiten **Element für Element** die ganze Kette ab, nicht Stufe für Stufe. `a` läuft komplett durch (`a`, dann `A`), `b` bleibt im Filter hängen, dann folgt `c`.
 
 </details>
 
@@ -321,9 +321,9 @@ System.out.println(Stream.of(1, 2, 3, 4)
         .findFirst());
 ```
 
-<details><summary>Aufloesung</summary>
+<details><summary>Auflösung</summary>
 
-`Optional.empty` — `findFirst` gibt kein `null` und keine Exception zurueck, sondern ein leeres `Optional`. Deshalb der Rueckgabetyp.
+`Optional.empty` — `findFirst` gibt kein `null` und keine Exception zurück, sondern ein leeres `Optional`. Deshalb der Rückgabetyp.
 
 </details>
 
@@ -333,7 +333,7 @@ Erst selbst antworten, dann vergleichen: Die Antworten stehen am Ende von
 [`TIPPS.md`](TIPPS.md).
 
 - Was macht ein Interface "funktional"?
-- Warum muessen von Lambdas benutzte lokale Variablen effektiv final sein?
+- Warum müssen von Lambdas benutzte lokale Variablen effektiv final sein?
 - Warum passiert ohne Terminaloperation gar nichts?
 - Wann `orElse`, wann `orElseGet`?
-- Nenne zwei Faelle, in denen eine Schleife besser ist als ein Stream.
+- Nenne zwei Fälle, in denen eine Schleife besser ist als ein Stream.

@@ -1,6 +1,6 @@
 # Kapitel 06 — Tipps und Antworten
 
-> Erst selbst probieren. Klappe immer nur die **naechste** Stufe auf — jede verraet mehr.
+> Erst selbst probieren. Klappe immer nur die **nächste** Stufe auf — jede verrät mehr.
 > Die Tests in `tests/Tests.java` zeigen dir ausserdem genau, welche Eingabe welches Ergebnis erwartet.
 
 ## 1. Figur.java: Name, Konstruktor und `getName`
@@ -8,7 +8,7 @@
 <details><summary>Tipp 1 — Richtung</summary>
 
 Abschnitt 6.4 (Abstrakte Klassen) zeigt diese Klasse fast wortgleich. Frag
-dich: Warum darf eine abstrakte Klasse ueberhaupt einen Konstruktor haben, wenn
+dich: Warum darf eine abstrakte Klasse überhaupt einen Konstruktor haben, wenn
 man sie nie mit `new` erzeugen kann?
 
 </details>
@@ -16,10 +16,10 @@ man sie nie mit `new` erzeugen kann?
 <details><summary>Tipp 2 — Ansatz</summary>
 
 Ein Feld `private final String name`, im `protected`-Konstruktor gesetzt,
-`getName()` gibt es zurueck. Den Konstruktor ruft niemand direkt auf, sondern
-jede Unterklasse ueber `super(...)` — deshalb landet dort der Name "Kreis",
+`getName()` gibt es zurück. Den Konstruktor ruft niemand direkt auf, sondern
+jede Unterklasse über `super(...)` — deshalb landet dort der Name "Kreis",
 "Rechteck" oder "Quadrat". `private` statt `protected` beim Feld reicht, weil
-Unterklassen ueber `getName()` an den Namen kommen.
+Unterklassen über `getName()` an den Namen kommen.
 
 </details>
 
@@ -29,7 +29,7 @@ Unterklassen ueber `getName()` an den Namen kommen.
 
 Das ist die *Template Method* aus Abschnitt 6.4: Eine fertige Methode in der
 Basisklasse ruft abstrakte Methoden auf, die erst die Unterklasse liefert. Frag
-dich: Woher bekommt `Figur` Flaeche und Umfang, obwohl sie selbst gar nicht
+dich: Woher bekommt `Figur` Fläche und Umfang, obwohl sie selbst gar nicht
 weiss, wie man sie berechnet?
 
 </details>
@@ -39,7 +39,7 @@ weiss, wie man sie berechnet?
 Du rufst `flaeche()` und `umfang()` **als Methoden** auf — zur Laufzeit wird
 dann automatisch die Version des echten Objekts genommen (dynamische Bindung,
 Abschnitt 6.3). Das Format kommt aus `String.format` mit drei Platzhaltern:
-`%s` fuer den Namen, zweimal `%.2f` fuer zwei Nachkommastellen (gerundet).
+`%s` für den Namen, zweimal `%.2f` für zwei Nachkommastellen (gerundet).
 
 **Die Falle der Tests:** Der Test stellt absichtlich `Locale.GERMANY` ein. Ohne
 `Locale.ROOT` als **erstes** Argument von `String.format` kommt `3,14` statt
@@ -47,7 +47,7 @@ Abschnitt 6.3). Das Format kommt aus `String.format` mit drei Platzhaltern:
 
 </details>
 
-<details><summary>Tipp 3 — Geruest</summary>
+<details><summary>Tipp 3 — Gerüst</summary>
 
 ```java
 public String beschreibung() {
@@ -74,7 +74,7 @@ Die Methode `skaliert` ist abstrakt, aber zur Laufzeit gibt es immer ein
 konkretes Objekt (`Kreis`, `Rechteck`, ...), das sie implementiert. Deine
 `default`-Methode ruft also einfach `skaliert` mit dem richtigen Faktor auf —
 der Platzhalter in `src/` benutzt noch den falschen. Kein `Kreis` und kein
-`Rechteck` muss dafuer eine Zeile schreiben; genau das ist der Sinn.
+`Rechteck` muss dafür eine Zeile schreiben; genau das ist der Sinn.
 
 </details>
 
@@ -83,7 +83,7 @@ der Platzhalter in `src/` benutzt noch den falschen. Kein `Kreis` und kein
 <details><summary>Tipp 1 — Richtung</summary>
 
 Abschnitt 6.1 (Vererbung, `super(...)`) und 6.5 (`implements`). Das
-`super("Kreis")` ist schon vorgegeben. Frag dich: Wo genau darf die Pruefung
+`super("Kreis")` ist schon vorgegeben. Frag dich: Wo genau darf die Prüfung
 auf einen negativen Radius stehen — und warum in Java 21 nicht davor?
 
 </details>
@@ -91,18 +91,18 @@ auf einen negativen Radius stehen — und warum in Java 21 nicht davor?
 <details><summary>Tipp 2 — Ansatz</summary>
 
 - Feld `private final double radius`; im Konstruktor **nach** `super(...)`
-  pruefen (`< 0` -> `IllegalArgumentException`), dann zuweisen.
-- Flaeche ist `pi * r * r`, Umfang `2 * pi * r`, mit `Math.PI`.
+  prüfen (`< 0` -> `IllegalArgumentException`), dann zuweisen.
+- Fläche ist `pi * r * r`, Umfang `2 * pi * r`, mit `Math.PI`.
 - `skaliert` erzeugt einen **neuen** Kreis mit skaliertem Radius — das Original
-  bleibt unveraendert (Test "Original unveraendert").
+  bleibt unverändert (Test "Original unverändert").
 
-**Die Falle der Tests:** Bei Radius 2 sind Flaeche und Umfang zufaellig beide
-`4 * pi`. Vertauschst du die Formeln, faellt das erst beim zusaetzlichen Test
+**Die Falle der Tests:** Bei Radius 2 sind Fläche und Umfang zufällig beide
+`4 * pi`. Vertauschst du die Formeln, fällt das erst beim zusätzlichen Test
 mit Radius 1 auf.
 
 </details>
 
-<details><summary>Tipp 3 — Geruest</summary>
+<details><summary>Tipp 3 — Gerüst</summary>
 
 ```java
 private final double radius;
@@ -127,9 +127,9 @@ public Figur skaliert(double faktor) {
 
 <details><summary>Tipp 1 — Richtung</summary>
 
-Es gibt zwei Konstruktoren, und der oeffentliche delegiert schon per `this(...)`
-an den `protected`. Frag dich: In welchem der beiden gehoert die Pruefung hin,
-damit sie nur **einmal** dasteht und trotzdem auch fuer `Quadrat` gilt?
+Es gibt zwei Konstruktoren, und der öffentliche delegiert schon per `this(...)`
+an den `protected`. Frag dich: In welchem der beiden gehört die Prüfung hin,
+damit sie nur **einmal** dasteht und trotzdem auch für `Quadrat` gilt?
 (Abschnitt 5.2 zu `this(...)`, Abschnitt 6.1 zu `super(...)`.)
 
 </details>
@@ -137,21 +137,21 @@ damit sie nur **einmal** dasteht und trotzdem auch fuer `Quadrat` gilt?
 <details><summary>Tipp 2 — Ansatz</summary>
 
 Alle Arbeit steckt im `protected Rechteck(String name, double breite, double hoehe)`:
-nach dem vorgegebenen `super(name)` pruefen, dann beide `final`-Felder setzen.
-Der oeffentliche Konstruktor bleibt, wie er ist — und `Quadrat` landet ueber
+nach dem vorgegebenen `super(name)` prüfen, dann beide `final`-Felder setzen.
+Der öffentliche Konstruktor bleibt, wie er ist — und `Quadrat` landet über
 `super("Quadrat", seite, seite)` ebenfalls hier.
 
-Die Tests pruefen negative Breite **und** negative Hoehe getrennt. Eine
+Die Tests prüfen negative Breite **und** negative Höhe getrennt. Eine
 Bedingung, die nur eine der beiden Seiten ansieht, besteht nur einen der zwei
 Tests.
 
-Flaeche ist Breite mal Hoehe, Umfang zweimal die Summe der Seiten. `skaliert`
+Fläche ist Breite mal Höhe, Umfang zweimal die Summe der Seiten. `skaliert`
 liefert ein neues Rechteck, in dem **beide** Seiten skaliert sind (3x4 mal 2
-ergibt 6x8, also Flaeche 48).
+ergibt 6x8, also Fläche 48).
 
 </details>
 
-<details><summary>Tipp 3 — Geruest</summary>
+<details><summary>Tipp 3 — Gerüst</summary>
 
 ```java
 private final double breite;
@@ -178,29 +178,29 @@ public double umfang() {
 
 <details><summary>Tipp 1 — Richtung</summary>
 
-Abschnitt 6.2, der kovariante Rueckgabetyp. Frag dich zweierlei: Wo steckt die
-Seitenlaenge schon, ohne dass `Quadrat` ein eigenes Feld braucht? Und warum darf
-`skaliert` hier `Quadrat` statt `Figur` zurueckgeben?
+Abschnitt 6.2, der kovariante Rückgabetyp. Frag dich zweierlei: Wo steckt die
+Seitenlänge schon, ohne dass `Quadrat` ein eigenes Feld braucht? Und warum darf
+`skaliert` hier `Quadrat` statt `Figur` zurückgeben?
 
 </details>
 
 <details><summary>Tipp 2 — Ansatz</summary>
 
 `getSeite()` braucht kein neues Feld: Das Quadrat hat seine Seite als Breite
-(und Hoehe) an `Rechteck` weitergegeben, also liest du sie ueber den geerbten
+(und Höhe) an `Rechteck` weitergegeben, also liest du sie über den geerbten
 Getter. Die Felder von `Rechteck` sind `private` — direkt siehst du sie nicht.
 
-`flaeche()` und `umfang()` musst du **nicht** ueberschreiben, die
+`flaeche()` und `umfang()` musst du **nicht** überschreiben, die
 Rechteck-Formeln stimmen schon.
 
 **Die Falle:** `super.skaliert(faktor)` hilft hier nicht — das liefert ein
-`Rechteck` namens "Rechteck", und der Rueckgabetyp waere `Figur`, kein `Quadrat`.
+`Rechteck` namens "Rechteck", und der Rückgabetyp wäre `Figur`, kein `Quadrat`.
 Der Test verlangt aber `q2.getName()` gleich `"Quadrat"`. Du brauchst also ein
 **neues Quadrat**.
 
 </details>
 
-<details><summary>Tipp 3 — Geruest</summary>
+<details><summary>Tipp 3 — Gerüst</summary>
 
 ```java
 public double getSeite() {
@@ -228,18 +228,18 @@ Die Regel der Aufgabe: kein `instanceof`, kein Cast.
 <details><summary>Tipp 2 — Ansatz</summary>
 
 `gesamtFlaeche`: eine for-each-Schleife, die `flaeche()` jeder Figur aufsummiert.
-Bei einem leeren Array laeuft die Schleife nie, und die Summe bleibt `0.0` —
+Bei einem leeren Array läuft die Schleife nie, und die Summe bleibt `0.0` —
 das ist automatisch richtig.
 
 `groesste`: ein klassisches Maximum-Suchen. Bei leerem Array sofort `null`.
 Sonst merkst du dir die erste Figur als bisher beste und ersetzt sie, sobald
-eine Figur eine **groessere** Flaeche hat. Vergleiche Flaechen, nicht Namen und
-nicht Figuren. Die Tests pruefen, dass das auch dann klappt, wenn die groesste
+eine Figur eine **größere** Fläche hat. Vergleiche Flächen, nicht Namen und
+nicht Figuren. Die Tests prüfen, dass das auch dann klappt, wenn die größte
 Figur vorne **oder** hinten steht.
 
 </details>
 
-<details><summary>Tipp 3 — Geruest</summary>
+<details><summary>Tipp 3 — Gerüst</summary>
 
 ```java
 public static Figur groesste(Figur[] figuren) {
@@ -265,30 +265,30 @@ public static Figur groesste(Figur[] figuren) {
 Ein `Kreis` besteht aus einem `Figur`-Anteil und einem `Kreis`-Anteil, und der
 `Kreis`-Teil baut auf dem `Figur`-Teil auf. Bevor der Oberklassen-Konstruktor
 gelaufen ist, sind deren Felder nicht gesetzt und ihre Invarianten nicht
-hergestellt — `getName()` wuerde z. B. `null` liefern. Deshalb wird von oben nach
+hergestellt — `getName()` würde z. B. `null` liefern. Deshalb wird von oben nach
 unten initialisiert. In Java 21 muss `super(...)` darum die erste Anweisung
-sein; seit Java 25 duerfen davor Anweisungen stehen, die `this` noch nicht
-benutzen (etwa eine Parameterpruefung).
+sein; seit Java 25 dürfen davor Anweisungen stehen, die `this` noch nicht
+benutzen (etwa eine Parameterprüfung).
 
 </details>
 
 <details><summary>Was ist der Unterschied zwischen statischem und dynamischem Typ?</summary>
 
 Der **statische** Typ ist der Typ der Variablen, so wie er im Quelltext steht;
-nach ihm entscheidet der Compiler, welche Methoden du ueberhaupt aufrufen darfst.
+nach ihm entscheidet der Compiler, welche Methoden du überhaupt aufrufen darfst.
 Der **dynamische** Typ ist die Klasse des Objekts, das zur Laufzeit wirklich
 dahinter steckt. Bei `Figur f = new Kreis(1);` ist der statische Typ `Figur`,
 der dynamische `Kreis`. Ruft man `f.flaeche()` auf, entscheidet der dynamische
-Typ, welche Implementierung laeuft (dynamic dispatch).
+Typ, welche Implementierung läuft (dynamic dispatch).
 
 </details>
 
 <details><summary>Warum sind Felder nicht polymorph?</summary>
 
-Nur Methoden werden ueberschrieben und zur Laufzeit nach dem dynamischen Typ
-ausgewaehlt. Ein gleichnamiges Feld in einer Unterklasse **verdeckt** das Feld
-der Oberklasse nur, es ueberschreibt es nicht — der Zugriff wird schon zur
-Compile-Zeit nach dem statischen Typ aufgeloest.
+Nur Methoden werden überschrieben und zur Laufzeit nach dem dynamischen Typ
+ausgewählt. Ein gleichnamiges Feld in einer Unterklasse **verdeckt** das Feld
+der Oberklasse nur, es überschreibt es nicht — der Zugriff wird schon zur
+Compile-Zeit nach dem statischen Typ aufgelöst.
 
 ```java
 class A { String s = "A"; }
@@ -297,7 +297,7 @@ A a = new B();
 a.s;   // "A" - obwohl das Objekt ein B ist
 ```
 
-Deshalb Felder `private` halten und nur ueber Methoden zugreifen.
+Deshalb Felder `private` halten und nur über Methoden zugreifen.
 
 </details>
 
@@ -305,20 +305,20 @@ Deshalb Felder `private` halten und nur ueber Methoden zugreifen.
 
 Eine abstrakte Klasse passt, wenn verwandte Klassen gemeinsamen **Zustand**
 (Felder) und gemeinsamen Code teilen und fachlich ein "ist ein" besteht — wie
-`Figur` mit ihrem Namen. Ein Interface beschreibt eine **Faehigkeit** ("kann
+`Figur` mit ihrem Namen. Ein Interface beschreibt eine **Fähigkeit** ("kann
 skaliert werden"), hat keinen Instanzzustand, und eine Klasse kann beliebig
 viele davon implementieren, aber nur von einer Klasse erben. Im Zweifel: Interface —
-es bindet weniger fest, und eine abstrakte Basisklasse kann man spaeter
-zusaetzlich einziehen.
+es bindet weniger fest, und eine abstrakte Basisklasse kann man später
+zusätzlich einziehen.
 
 </details>
 
 <details><summary>Warum bricht <code>equals</code> zwischen <code>Rechteck</code> und <code>Quadrat</code> die Symmetrie?</summary>
 
 Der `equals`-Vertrag verlangt: `a.equals(b)` genau dann, wenn `b.equals(a)`.
-Prueft `Rechteck.equals` mit `instanceof Rechteck`, besteht auch ein `Quadrat`
-diese Pruefung, also sagt `new Rechteck(3, 3).equals(new Quadrat(3))` "ja".
-Prueft `Quadrat.equals` aber mit `instanceof Quadrat`, faellt das Rechteck durch,
+Prüft `Rechteck.equals` mit `instanceof Rechteck`, besteht auch ein `Quadrat`
+diese Prüfung, also sagt `new Rechteck(3, 3).equals(new Quadrat(3))` "ja".
+Prüft `Quadrat.equals` aber mit `instanceof Quadrat`, fällt das Rechteck durch,
 und `new Quadrat(3).equals(new Rechteck(3, 3))` sagt "nein". Auswege sind
 `getClass() != o.getClass()` statt `instanceof` oder, besser, solche Werttypen
 gar nicht voneinander erben zu lassen.

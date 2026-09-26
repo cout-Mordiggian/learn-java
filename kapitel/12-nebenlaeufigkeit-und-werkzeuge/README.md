@@ -1,12 +1,12 @@
-# Kapitel 12 — Nebenlaeufigkeit und Werkzeuge
+# Kapitel 12 — Nebenläufigkeit und Werkzeuge
 
-**Ziel:** Du weisst, warum `zaehler++` aus zwei Threads falsch zaehlt, nutzt
+**Ziel:** Du weisst, warum `zaehler++` aus zwei Threads falsch zählt, nutzt
 `ExecutorService` statt roher Threads — und findest dich in einem echten
 Java-Projekt mit Maven, Gradle und JUnit zurecht.
 
 ---
 
-# Teil A: Nebenlaeufigkeit
+# Teil A: Nebenläufigkeit
 
 ## 12.1 Thread, Runnable, und warum du beides selten brauchst
 
@@ -17,16 +17,16 @@ t.join();       // warten, bis er fertig ist
 ```
 
 Rohe Threads sind teuer (jeder reserviert rund 1 MB Stack) und unbequem:
-Ergebnisse zurueckzubekommen ist muehsam, und eine Exception im Thread landet
-nur als Stacktrace auf der Konsole — der startende Thread erfaehrt nichts davon.
+Ergebnisse zurückzubekommen ist mühsam, und eine Exception im Thread landet
+nur als Stacktrace auf der Konsole — der startende Thread erfährt nichts davon.
 In echtem Code nimmt man den `ExecutorService`.
 
-`join()` (und spaeter `Future.get()`) koennen eine checked
+`join()` (und später `Future.get()`) können eine checked
 `InterruptedException` werfen: Jemand hat den wartenden Thread gebeten
-aufzuhoeren. Wenn du sie fangen musst, verschluck sie nicht, sondern setze das
+aufzuhören. Wenn du sie fangen musst, verschluck sie nicht, sondern setze das
 Signal wieder: `Thread.currentThread().interrupt();`.
 
-## 12.2 Das Kernproblem: gemeinsamer veraenderlicher Zustand
+## 12.2 Das Kernproblem: gemeinsamer veränderlicher Zustand
 
 ```java
 private int zaehler = 0;
@@ -46,7 +46,7 @@ public void erhoehen() {
 
 Das nennt man **Race Condition**. Sie tritt nicht immer auf, sondern
 gelegentlich — und darum ist sie so schwer zu finden. Zwei Threads, die je
-100.000-mal erhoehen, kommen statt auf 200.000 auf irgendetwas dazwischen.
+100.000-mal erhöhen, kommen statt auf 200.000 auf irgendetwas dazwischen.
 
 Sieh es dir selbst an:
 
@@ -54,9 +54,9 @@ Sieh es dir selbst an:
 ./lerne.sh 12 -r Demo
 ```
 
-Zusaetzlich gibt es das **Sichtbarkeitsproblem**: Ohne Synchronisierung darf
+Zusätzlich gibt es das **Sichtbarkeitsproblem**: Ohne Synchronisierung darf
 die JVM Werte in Registern oder CPU-Caches halten und Lesezugriffe aus
-Schleifen herausziehen. Thread B sieht dann womoeglich **nie**, was Thread A
+Schleifen herausziehen. Thread B sieht dann womöglich **nie**, was Thread A
 geschrieben hat — auch nach Minuten nicht.
 
 ```java
@@ -64,11 +64,11 @@ private boolean stopp = false;            // ohne volatile: Schleife endet evtl.
 private volatile boolean stopp = false;   // mit volatile: Aenderung wird sofort sichtbar
 ```
 
-`volatile` garantiert nur **Sichtbarkeit**, keine Atomaritaet: Fuer ein
-Flag, das ein Thread setzt und ein anderer liest, genuegt es. `zaehler++`
+`volatile` garantiert nur **Sichtbarkeit**, keine Atomarität: Für ein
+Flag, das ein Thread setzt und ein anderer liest, genügt es. `zaehler++`
 auf einem `volatile int` bleibt trotzdem kaputt.
 
-## 12.3 Drei Loesungen
+## 12.3 Drei Lösungen
 
 ### `synchronized`
 
@@ -77,7 +77,7 @@ public synchronized void erhoehen() { zaehler++; }
 public synchronized int wert()      { return zaehler; }
 ```
 
-Nur ein Thread haelt zur Zeit den Monitor des Objekts. Wichtig: Auch das
+Nur ein Thread hält zur Zeit den Monitor des Objekts. Wichtig: Auch das
 **Lesen** muss synchronisiert sein — sonst ist zwar das Schreiben korrekt, aber
 die Sichtbarkeit nicht garantiert.
 
@@ -99,15 +99,15 @@ zaehler.get();
 ```
 
 Nutzt CPU-Befehle (Compare-and-Swap) statt Sperren — schneller und ohne
-Deadlock-Gefahr. **Fuer einzelne Zaehler und Flags immer die erste Wahl.**
+Deadlock-Gefahr. **Für einzelne Zähler und Flags immer die erste Wahl.**
 
 ### Gar keinen gemeinsamen Zustand
 
-Die mit Abstand beste Loesung. Unveraenderliche Objekte (Kapitel 5), lokale
-Variablen und Ergebnisse, die am Ende zusammengefuehrt werden, brauchen keine
-Synchronisierung — es gibt nichts zu schuetzen.
+Die mit Abstand beste Lösung. Unveränderliche Objekte (Kapitel 5), lokale
+Variablen und Ergebnisse, die am Ende zusammengeführt werden, brauchen keine
+Synchronisierung — es gibt nichts zu schützen.
 
-Deshalb ist alles, was du in Kapitel 5, 9 und 10 ueber Unveraenderlichkeit
+Deshalb ist alles, was du in Kapitel 5, 9 und 10 über Unveränderlichkeit
 gelernt hast, hier die eigentliche Pointe.
 
 ## 12.4 `ExecutorService`
@@ -133,7 +133,7 @@ Exception geworfen hat — das Original steckt in `getCause()`.
 Fabriken: `newFixedThreadPool(n)`, `newCachedThreadPool()`,
 `newSingleThreadExecutor()`, `newVirtualThreadPerTaskExecutor()` (Java 21).
 
-**Faustregel fuer die Poolgroesse:** CPU-lastige Arbeit ->
+**Faustregel für die Poolgröße:** CPU-lastige Arbeit ->
 `Runtime.getRuntime().availableProcessors()`. Wartende Arbeit (Netzwerk,
 Datenbank) -> deutlich mehr, oder virtuelle Threads.
 
@@ -149,12 +149,12 @@ try (var pool = Executors.newVirtualThreadPerTaskExecutor()) {
 
 Virtuelle Threads werden von der JVM verwaltet, nicht vom Betriebssystem. Sie
 kosten wenige hundert Byte statt einem Megabyte. Damit wird der einfache
-Stil — ein Thread pro Anfrage, blockierender Code — wieder tragfaehig, ohne
+Stil — ein Thread pro Anfrage, blockierender Code — wieder tragfähig, ohne
 auf asynchrone Callback-Ketten auszuweichen.
 
-**Aber:** Sie loesen keine Race Conditions. Alles aus 12.2 gilt unveraendert.
+**Aber:** Sie lösen keine Race Conditions. Alles aus 12.2 gilt unverändert.
 
-## 12.6 Nebenlaeufige Collections
+## 12.6 Nebenläufige Collections
 
 ```java
 Map<String, Integer> m = new ConcurrentHashMap<>();   // statt HashMap
@@ -163,11 +163,11 @@ BlockingQueue<Auftrag> q = new LinkedBlockingQueue<>();  // Erzeuger/Verbraucher
 ```
 
 Eine normale `HashMap` aus mehreren Threads zu beschreiben kann sie in einen
-kaputten Zustand versetzen — in aelteren Java-Versionen sogar in eine
+kaputten Zustand versetzen — in älteren Java-Versionen sogar in eine
 Endlosschleife.
 
 `Collections.synchronizedMap(...)` synchronisiert jede Methode einzeln — das
-schuetzt **nicht** vor zusammengesetzten Operationen:
+schützt **nicht** vor zusammengesetzten Operationen:
 
 ```java
 if (!map.containsKey(k)) map.put(k, v);    // zwei Aufrufe = zwei Luecken
@@ -182,23 +182,23 @@ map.putIfAbsent(k, v);                     // atomar - so ist es richtig
 ```
 
 Beide warten ewig aufeinander. Gegenmittel: Sperren **immer in derselben
-Reihenfolge** nehmen, moeglichst wenige gleichzeitig halten, und wo moeglich
+Reihenfolge** nehmen, möglichst wenige gleichzeitig halten, und wo möglich
 `tryLock` mit Zeitlimit verwenden (das kann `ReentrantLock` aus
 `java.util.concurrent.locks`, `synchronized` nicht).
 
 ## 12.8 Regeln, die dich vor den meisten Fehlern bewahren
 
-1. Teile so wenig veraenderlichen Zustand wie moeglich.
-2. Bevorzuge unveraenderliche Objekte.
+1. Teile so wenig veränderlichen Zustand wie möglich.
+2. Bevorzuge unveränderliche Objekte.
 3. Nimm `ExecutorService`, nicht `new Thread`.
-4. Fuer Zaehler: `Atomic*`. Fuer einfache Flags: `volatile` oder `AtomicBoolean`.
-5. Fuer Maps: `ConcurrentHashMap` mit atomaren Operationen.
+4. Für Zähler: `Atomic*`. Für einfache Flags: `volatile` oder `AtomicBoolean`.
+5. Für Maps: `ConcurrentHashMap` mit atomaren Operationen.
 6. Synchronisiere **Lesen und Schreiben**, nicht nur Schreiben.
-7. Miss nach. Nebenlaeufigkeit ist oft langsamer als eine gute Schleife.
+7. Miss nach. Nebenläufigkeit ist oft langsamer als eine gute Schleife.
 
 ---
 
-# Teil B: Werkzeuge fuer echte Projekte
+# Teil B: Werkzeuge für echte Projekte
 
 ## 12.9 Projektstruktur
 
@@ -238,7 +238,7 @@ mvn package           # JAR bauen -> target/
 mvn clean install     # aufraeumen, bauen, ins lokale Repository legen
 ```
 
-Maven ist deklarativ: Du beschreibst *was*, nicht *wie*. Abhaengigkeiten
+Maven ist deklarativ: Du beschreibst *was*, nicht *wie*. Abhängigkeiten
 kommen aus Maven Central und landen in `~/.m2/repository`.
 
 ## 12.11 Gradle
@@ -252,7 +252,7 @@ kommen aus Maven Central und landen in `~/.m2/repository`.
 ```
 
 Gradle ist skriptbar (Kotlin oder Groovy), flexibler und bei grossen Projekten
-schneller (inkrementelle Builds, Build-Cache). Dafuer schwerer zu durchschauen.
+schneller (inkrementelle Builds, Build-Cache). Dafür schwerer zu durchschauen.
 
 **Womit anfangen?** Maven. Es ist langweiliger, und das ist bei Build-Werkzeugen
 eine Tugend.
@@ -294,7 +294,7 @@ class KontoTest {
 Das `Pruef`-Framework dieses Kurses ist eine Miniaturausgabe davon —
 `Pruef.gleich` ist `assertEquals`, `Pruef.wirft` ist `assertThrows`.
 
-Testnamen als **ganze Saetze**: Ein Testname soll beschreiben, was gelten
+Testnamen als **ganze Sätze**: Ein Testname soll beschreiben, was gelten
 soll, nicht welche Methode aufgerufen wird.
 
 Weitere Bausteine: `@BeforeEach`, `@AfterEach`, `@DisplayName`, `@Disabled`,
@@ -309,75 +309,75 @@ javap -c -p Klasse                   # Bytecode ansehen (lehrreich!)
 jshell                               # interaktive Java-Konsole zum Ausprobieren
 ```
 
-**jshell** lohnt sich sofort: Java-Ausdruecke direkt eintippen, ohne Klasse
-und ohne `main`. Ideal, um eine API-Frage in 20 Sekunden zu klaeren statt in
+**jshell** lohnt sich sofort: Java-Ausdrücke direkt eintippen, ohne Klasse
+und ohne `main`. Ideal, um eine API-Frage in 20 Sekunden zu klären statt in
 einer Wegwerf-Datei.
 
 **Debugger statt `System.out.println`:** Breakpoint setzen, Programm anhalten,
-Variablen ansehen, Schritt fuer Schritt weitergehen. Jede IDE kann das; es ist
-die groesste einzelne Produktivitaetssteigerung beim Fehlersuchen.
+Variablen ansehen, Schritt für Schritt weitergehen. Jede IDE kann das; es ist
+die größte einzelne Produktivitätssteigerung beim Fehlersuchen.
 
 ## 12.14 Wie es weitergeht
 
-Wenn dieses Kapitel sitzt, hast du die Sprache. Danach kommt das Oekosystem:
+Wenn dieses Kapitel sitzt, hast du die Sprache. Danach kommt das Ökosystem:
 
 | Thema | Warum |
 |-------|-------|
 | **JUnit + Mockito** vertiefen | Tests sind die Grundlage von allem Weiteren |
-| **Spring Boot** | der De-facto-Standard fuer Java-Backends |
+| **Spring Boot** | der De-facto-Standard für Java-Backends |
 | **JDBC / JPA / Hibernate** | Datenbanken |
 | **`java.time`** | Datum und Zeit richtig (nie `Date` oder `Calendar`) |
 | **Logging** (SLF4J + Logback) | statt `System.out.println` |
 | **Jackson** | JSON |
-| **Effective Java** (Joshua Bloch) | das Buch, das aus Java-Kennern Java-Koennern macht |
+| **Effective Java** (Joshua Bloch) | das Buch, das aus Java-Kennern Java-Könnern macht |
 
 ---
 
 ## Aufgaben
 
-> Haengst du fest? Gestufte Hinweise zu jeder Aufgabe stehen in
+> Hängst du fest? Gestufte Hinweise zu jeder Aufgabe stehen in
 > [`TIPPS.md`](TIPPS.md) — erst Tipp 1, dann wieder selbst probieren.
 
-Zwei Dateien in [`src/`](src/) — pruefen mit `./lerne.sh 12`.
+Zwei Dateien in [`src/`](src/) — prüfen mit `./lerne.sh 12`.
 `Demo.java` ist fertig und zeigt die Race Condition live:
 `./lerne.sh 12 -r Demo`.
 
 ### `Zaehler.java`
 
-Ein thread-sicherer Zaehler mit `synchronized`. `erhoehen()`, `wert()`,
+Ein thread-sicherer Zähler mit `synchronized`. `erhoehen()`, `wert()`,
 `erhoeheUm(int)`. Denk daran: **auch das Lesen** muss synchronisiert sein.
 
-Ehrlicher Hinweis: Die Tests pruefen `erhoehen()` und `erhoeheUm()` mit vielen
-gleichzeitigen Threads — fehlt dort `synchronized`, gehen Erhoehungen verloren
+Ehrlicher Hinweis: Die Tests prüfen `erhoehen()` und `erhoeheUm()` mit vielen
+gleichzeitigen Threads — fehlt dort `synchronized`, gehen Erhöhungen verloren
 und der Test wird rot. Ob `wert()` synchronisiert ist, kann dagegen **kein
-Test zuverlaessig feststellen**: Die Tests lesen erst nach `join()`, und
-`join()` sorgt schon selbst fuer Sichtbarkeit. Ein Sichtbarkeitsfehler tritt
+Test zuverlässig feststellen**: Die Tests lesen erst nach `join()`, und
+`join()` sorgt schon selbst für Sichtbarkeit. Ein Sichtbarkeitsfehler tritt
 nur unter bestimmten Bedingungen auf, und dann meist erst in Produktion.
-Hier musst du dich auf das Verstaendnis verlassen, nicht auf gruene Haken.
-Dasselbe gilt dafuer, ob deine Threads wirklich *parallel* laufen und ob du
+Hier musst du dich auf das Verständnis verlassen, nicht auf grüne Haken.
+Dasselbe gilt dafür, ob deine Threads wirklich *parallel* laufen und ob du
 den `ExecutorService` schliesst — beides sieht man dem Ergebnis nicht an.
 
 ### `Aufgaben.java`
 
 1. **`zaehleMitZaehler(int threads, int proThread)`** -> `int`.
-   Starte die Threads, lass jeden `proThread`-mal erhoehen, warte auf alle,
-   gib den Endstand zurueck. Muss **exakt** `threads * proThread` sein.
+   Starte die Threads, lass jeden `proThread`-mal erhöhen, warte auf alle,
+   gib den Endstand zurück. Muss **exakt** `threads * proThread` sein.
 2. **`zaehleMitAtomic(int threads, int proThread)`** — dasselbe mit
    `AtomicInteger` statt `synchronized`.
 3. **`summeParallel(long bis, int threads)`** -> `long`.
-   Summe von 1 bis `bis` (einschliesslich), aufgeteilt auf hoechstens
-   `threads` Teilaufgaben ueber einen `ExecutorService`. Ergebnis muss
-   `bis * (bis + 1) / 2` sein. Tipp: Abschnittslaenge aufrunden,
-   `(bis + threads - 1) / threads`, sonst bleibt ein Rest-Abschnitt uebrig.
+   Summe von 1 bis `bis` (einschliesslich), aufgeteilt auf höchstens
+   `threads` Teilaufgaben über einen `ExecutorService`. Ergebnis muss
+   `bis * (bis + 1) / 2` sein. Tipp: Abschnittslänge aufrunden,
+   `(bis + threads - 1) / threads`, sonst bleibt ein Rest-Abschnitt übrig.
 4. **`laengenParallel(List<String>)`** -> `List<Integer>`.
-   Jede Laenge in einer eigenen Aufgabe berechnen, **Reihenfolge erhalten**.
+   Jede Länge in einer eigenen Aufgabe berechnen, **Reihenfolge erhalten**.
    Tipp: `invokeAll` garantiert genau das.
 
 ## Was gibt das aus?
 
-Erst ueberlegen, am besten mit Stift und Papier, dann aufklappen. Danach
-kannst du es in `jshell` nachpruefen. Code lesen und vorhersagen trainiert
-genau das Verstaendnis, das du zum Schreiben brauchst.
+Erst überlegen, am besten mit Stift und Papier, dann aufklappen. Danach
+kannst du es in `jshell` nachprüfen. Code lesen und vorhersagen trainiert
+genau das Verständnis, das du zum Schreiben brauchst.
 
 **1.**
 
@@ -389,7 +389,7 @@ t.start();
 t.join();
 ```
 
-<details><summary>Aufloesung</summary>
+<details><summary>Auflösung</summary>
 
 `main neu` — `run()` ist ein ganz normaler Methodenaufruf im **aktuellen** Thread. Erst `start()` erzeugt wirklich einen neuen. Der klassische Fehler aus 12.1.
 
@@ -402,9 +402,9 @@ AtomicInteger z = new AtomicInteger(5);
 System.out.println(z.incrementAndGet() + " " + z.getAndIncrement() + " " + z.get());
 ```
 
-<details><summary>Aufloesung</summary>
+<details><summary>Auflösung</summary>
 
-`6 6 7` — `incrementAndGet` erhoeht und liefert den neuen Wert (wie `++z`), `getAndIncrement` liefert den alten und erhoeht danach (wie `z++`).
+`6 6 7` — `incrementAndGet` erhöht und liefert den neuen Wert (wie `++z`), `getAndIncrement` liefert den alten und erhöht danach (wie `z++`).
 
 </details>
 
@@ -421,9 +421,9 @@ try (ExecutorService pool = Executors.newFixedThreadPool(2)) {
 }
 ```
 
-<details><summary>Aufloesung</summary>
+<details><summary>Auflösung</summary>
 
-`ArithmeticException` — Die Exception entsteht im Pool-Thread und wird dort aufbewahrt. `get()` wirft sie verpackt als `ExecutionException` wieder, das Original steckt in `getCause()`. Ohne `get()` haettest du von dem Fehler nie etwas erfahren.
+`ArithmeticException` — Die Exception entsteht im Pool-Thread und wird dort aufbewahrt. `get()` wirft sie verpackt als `ExecutionException` wieder, das Original steckt in `getCause()`. Ohne `get()` hättest du von dem Fehler nie etwas erfahren.
 
 </details>
 
@@ -435,5 +435,5 @@ Erst selbst antworten, dann vergleichen: Die Antworten stehen am Ende von
 - Warum ist `zaehler++` nicht atomar?
 - Warum muss auch `wert()` synchronisiert sein?
 - Wann `AtomicInteger`, wann `synchronized`?
-- Was garantiert `invokeAll` bezueglich der Reihenfolge?
-- Warum ist Unveraenderlichkeit die beste Nebenlaeufigkeitsstrategie?
+- Was garantiert `invokeAll` bezüglich der Reihenfolge?
+- Warum ist Unveränderlichkeit die beste Nebenläufigkeitsstrategie?

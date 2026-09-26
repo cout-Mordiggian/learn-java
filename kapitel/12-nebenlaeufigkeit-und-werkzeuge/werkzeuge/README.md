@@ -24,7 +24,7 @@ mvn test
 Die Versionsnummern in `pom.xml` veralten: Die jeweils aktuelle findest du auf
 <https://central.sonatype.com> (Suche nach `junit-jupiter`).
 
-Oder mit dem Generator (laedt beim ersten Mal einiges nach):
+Oder mit dem Generator (lädt beim ersten Mal einiges nach):
 
 ```bash
 mvn archetype:generate -DgroupId=de.beispiel -DartifactId=mein-projekt \

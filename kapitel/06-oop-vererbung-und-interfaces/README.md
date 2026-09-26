@@ -31,23 +31,23 @@ public class Hund extends Tier {
 Java kennt nur **Einfachvererbung** — genau eine Oberklasse. (Mehrfachvererbung
 gibt es nur bei Interfaces, siehe 6.5.)
 
-`super(...)` ruft den Konstruktor der Oberklasse. Schreibst du ihn nicht, fuegt
-der Compiler ein implizites `super()` ein — was fehlschlaegt, wenn die
-Oberklasse keinen parameterlosen Konstruktor hat. Das ist eine der haeufigsten
+`super(...)` ruft den Konstruktor der Oberklasse. Schreibst du ihn nicht, fügt
+der Compiler ein implizites `super()` ein — was fehlschlägt, wenn die
+Oberklasse keinen parameterlosen Konstruktor hat. Das ist eine der häufigsten
 Fehlermeldungen beim Einstieg in Vererbung.
 
 Reihenfolge bei `new Hund("Rex")`: erst der `Tier`-Konstruktor, dann der
 `Hund`-Konstruktor. Von oben nach unten — der `Tier`-Anteil des Objekts muss
 fertig sein, bevor der `Hund`-Teil darauf aufbaut.
 
-> *Seit Java 25* duerfen vor `super(...)` Anweisungen stehen, die `this` noch
-> nicht benutzen (z. B. Parameter pruefen oder umrechnen). Das Prinzip bleibt:
+> *Seit Java 25* dürfen vor `super(...)` Anweisungen stehen, die `this` noch
+> nicht benutzen (z. B. Parameter prüfen oder umrechnen). Das Prinzip bleibt:
 > Kein Zugriff auf das Objekt, bevor die Oberklasse initialisiert ist.
 
-`super.laut()` ruft die ueberschriebene Version der Oberklasse auf — nuetzlich,
+`super.laut()` ruft die überschriebene Version der Oberklasse auf — nützlich,
 wenn du sie erweitern statt ersetzen willst.
 
-## 6.2 Ueberschreiben (Overriding) vs. Ueberladen (Overloading)
+## 6.2 Überschreiben (Overriding) vs. Überladen (Overloading)
 
 | | Overriding | Overloading |
 |---|---|---|
@@ -56,9 +56,9 @@ wenn du sie erweitern statt ersetzen willst.
 | Entschieden | zur **Laufzeit** (dynamisch) | zur **Compile-Zeit** (statisch) |
 | Annotation | `@Override` | keine |
 
-Beim Ueberschreiben darf die Sichtbarkeit nur **weiter** werden (`protected` ->
-`public`), nie enger. Der Rueckgabetyp darf **spezifischer** werden
-(*kovarianter Rueckgabetyp*):
+Beim Überschreiben darf die Sichtbarkeit nur **weiter** werden (`protected` ->
+`public`), nie enger. Der Rückgabetyp darf **spezifischer** werden
+(*kovarianter Rückgabetyp*):
 
 ```java
 class Rechteck { Rechteck skaliert(double f) { ... } }
@@ -79,17 +79,17 @@ for (Tier t : tiere) {
 
 Die Variable hat den Typ `Tier` (**statischer Typ**), das Objekt dahinter ist
 ein `Hund` (**dynamischer Typ**). Beim Aufruf entscheidet der **dynamische**
-Typ — das nennt man *dynamic dispatch* oder *spaete Bindung*.
+Typ — das nennt man *dynamic dispatch* oder *späte Bindung*.
 
 Der Nutzen: Die Schleife kennt `Hund` und `Katze` gar nicht. Du kannst morgen
-`Papagei` hinzufuegen, ohne diese Zeile anzufassen. Das ist das
-*Open-Closed-Prinzip*: offen fuer Erweiterung, geschlossen fuer Aenderung.
+`Papagei` hinzufügen, ohne diese Zeile anzufassen. Das ist das
+*Open-Closed-Prinzip*: offen für Erweiterung, geschlossen für Änderung.
 
 > **Wichtig:** Nur **Methoden** sind polymorph. **Felder** nicht — sie werden
-> nach dem statischen Typ aufgeloest. Ein weiterer Grund, Felder `private` zu
+> nach dem statischen Typ aufgelöst. Ein weiterer Grund, Felder `private` zu
 > halten.
 
-### Auf- und Abwaertscasting
+### Auf- und Abwärtscasting
 
 ```java
 Tier t = new Hund("Rex");        // Upcast: immer sicher, ohne Syntax
@@ -97,7 +97,7 @@ Hund h = (Hund) t;               // Downcast: du behauptest etwas
 Katze k = (Katze) t;             // kompiliert - wirft zur Laufzeit ClassCastException
 ```
 
-Sicher pruefen — mit Pattern Matching (Java 16+):
+Sicher prüfen — mit Pattern Matching (Java 16+):
 
 ```java
 if (t instanceof Hund h) {       // prueft UND deklariert h in einem Zug
@@ -105,8 +105,8 @@ if (t instanceof Hund h) {       // prueft UND deklariert h in einem Zug
 }
 ```
 
-Viele `instanceof`-Ketten sind allerdings ein Geruch: Meist gehoert das
-Verhalten als ueberschriebene Methode in die Klassen. (Die legitime Ausnahme
+Viele `instanceof`-Ketten sind allerdings ein Geruch: Meist gehört das
+Verhalten als überschriebene Methode in die Klassen. (Die legitime Ausnahme
 sind `sealed`-Hierarchien mit `switch` — Kapitel 10.)
 
 ## 6.4 Abstrakte Klassen
@@ -134,10 +134,10 @@ public abstract class Figur {
 
 `beschreibung()` ruft `flaeche()` auf, ohne zu wissen, wie sie rechnet. Diese
 Umkehrung ("die Basis ruft die Ableitung") heisst *Template Method* und ist der
-haeufigste sinnvolle Einsatz abstrakter Klassen.
+häufigste sinnvolle Einsatz abstrakter Klassen.
 
-Warum `protected` beim Konstruktor? Er ist fuer Unterklassen gedacht, die ihn
-fuer `super(...)` brauchen — `public` wuerde ihn unnoetig allen anbieten.
+Warum `protected` beim Konstruktor? Er ist für Unterklassen gedacht, die ihn
+für `super(...)` brauchen — `public` würde ihn unnötig allen anbieten.
 (Genau genommen sieht ihn auch jede Klasse im selben Paket; in diesem Kurs
 liegen alle Klassen im selben, unbenannten Paket. Und `new Figur(...)` bleibt
 ohnehin verboten, weil die Klasse abstrakt ist.)
@@ -160,9 +160,9 @@ public interface Skalierbar {
 public class Kreis extends Figur implements Skalierbar { ... }
 ```
 
-Ein Interface beschreibt **Faehigkeiten**, keine Herkunft. Eine Klasse kann
+Ein Interface beschreibt **Fähigkeiten**, keine Herkunft. Eine Klasse kann
 beliebig viele implementieren — hier kommt die Mehrfachvererbung von *Verhalten*
-zurueck, ohne die Probleme der Mehrfachvererbung von *Zustand*.
+zurück, ohne die Probleme der Mehrfachvererbung von *Zustand*.
 
 Regeln:
 
@@ -173,7 +173,7 @@ Regeln:
 ### `default`-Methoden
 
 Sie erlauben, ein bestehendes Interface zu erweitern, ohne alle Implementierer
-zu brechen. So kam `forEach` nachtraeglich in `Iterable`, ohne dass jede
+zu brechen. So kam `forEach` nachträglich in `Iterable`, ohne dass jede
 Collection der Welt neu geschrieben werden musste.
 
 ### Abstrakte Klasse oder Interface?
@@ -181,16 +181,16 @@ Collection der Welt neu geschrieben werden musste.
 | Frage | Antwort |
 |-------|---------|
 | Gemeinsamer **Zustand** (Felder)? | abstrakte Klasse |
-| Mehrere unabhaengige **Faehigkeiten**? | Interfaces |
+| Mehrere unabhängige **Fähigkeiten**? | Interfaces |
 | "**ist ein**" (Quadrat ist ein Rechteck)? | Vererbung |
 | "**kann**" (Kreis kann skaliert werden)? | Interface |
 
-**Im Zweifel: Interface.** Es bindet weniger fest, und du kannst spaeter eine
-abstrakte Basisklasse *zusaetzlich* einziehen.
+**Im Zweifel: Interface.** Es bindet weniger fest, und du kannst später eine
+abstrakte Basisklasse *zusätzlich* einziehen.
 
-## 6.6 Komposition schlaegt Vererbung
+## 6.6 Komposition schlägt Vererbung
 
-Vererbung ist die engste Kopplung, die Java kennt: Die Unterklasse haengt an
+Vererbung ist die engste Kopplung, die Java kennt: Die Unterklasse hängt an
 den *internen* Entscheidungen der Oberklasse.
 
 ```java
@@ -210,7 +210,7 @@ class ZaehlendeListe {
 ```
 
 Faustregel: Vererbung nur, wenn "ist ein" fachlich wirklich stimmt **und** die
-Oberklasse dafuer entworfen (und dokumentiert) wurde. Sonst: Komposition.
+Oberklasse dafür entworfen (und dokumentiert) wurde. Sonst: Komposition.
 
 ## 6.7 `final` und Sichtbarkeiten
 
@@ -219,15 +219,15 @@ public final class Punkt { ... }         // keine Unterklassen moeglich
 public final void kritisch() { ... }     // nicht ueberschreibbar
 ```
 
-| Modifier | eigene Klasse | Paket | Unterklasse | ueberall |
+| Modifier | eigene Klasse | Paket | Unterklasse | überall |
 |----------|:---:|:---:|:---:|:---:|
 | `private` | X | | | |
 | (nichts) | X | X | | |
 | `protected` | X | X | X | |
 | `public` | X | X | X | X |
 
-`protected` ist keine Abkuerzung fuer "fast public" — es ist Teil der
-oeffentlichen Zusage an alle, die von dir erben.
+`protected` ist keine Abkürzung für "fast public" — es ist Teil der
+öffentlichen Zusage an alle, die von dir erben.
 
 ## 6.8 `Object` — die Wurzel
 
@@ -237,31 +237,31 @@ Objekt `toString()`, `equals()`, `hashCode()`, `getClass()`.
 Bei Vererbung wird `equals` heikel: Ist ein `Quadrat(3)` gleich einem
 `Rechteck(3,3)`? Wenn `Rechteck.equals` mit `instanceof` arbeitet, sagt das
 Rechteck "ja" und das Quadrat "nein" — die Symmetrie des Vertrags ist
-gebrochen. Der uebliche Ausweg: `getClass() != o.getClass()` statt `instanceof`,
+gebrochen. Der übliche Ausweg: `getClass() != o.getClass()` statt `instanceof`,
 oder — besser — solche Typen gar nicht erst voneinander erben lassen.
 
 ---
 
 ## Aufgaben
 
-> Haengst du fest? Gestufte Hinweise zu jeder Aufgabe stehen in
+> Hängst du fest? Gestufte Hinweise zu jeder Aufgabe stehen in
 > [`TIPPS.md`](TIPPS.md) — erst Tipp 1, dann wieder selbst probieren.
 
-Sechs Dateien in [`src/`](src/) — pruefen mit `./lerne.sh 06`.
+Sechs Dateien in [`src/`](src/) — prüfen mit `./lerne.sh 06`.
 
 ### 1. `Figur.java` — abstrakte Basisklasse
 
 - `private final String name`, `protected Figur(String name)`, `getName()`
 - `public abstract double flaeche()` und `public abstract double umfang()`
-- `public String beschreibung()` -> fuer einen Kreis mit Radius 1:
+- `public String beschreibung()` -> für einen Kreis mit Radius 1:
   `"Kreis: Flaeche=3.14, Umfang=6.28"`.
   Nutze `String.format(Locale.ROOT, "%s: Flaeche=%.2f, Umfang=%.2f", ...)`.
-  **`Locale.ROOT` ist Pflicht** — sonst haengt die Ausgabe von den
+  **`Locale.ROOT` ist Pflicht** — sonst hängt die Ausgabe von den
   Systemeinstellungen ab und wird auf einem deutschen System zu `3,14`.
   Der Test stellt deshalb absichtlich ein deutsches Locale ein.
 - Die beiden abstrakten Methoden sind in `src/` schon vorgegeben, weil
-  `Kreis` und `Rechteck` sie mit `@Override` ueberschreiben — ohne sie
-  wuerde nichts kompilieren.
+  `Kreis` und `Rechteck` sie mit `@Override` überschreiben — ohne sie
+  würde nichts kompilieren.
 
 ### 2. `Skalierbar.java` — Interface
 
@@ -276,18 +276,18 @@ ablehnen. `skaliert` liefert einen **neuen** Kreis.
 ### 4. `Rechteck.java` — `extends Figur implements Skalierbar`
 
 - Felder `breite`, `hoehe` mit `getBreite()`/`getHoehe()`; negative Breite
-  **oder** Hoehe mit `IllegalArgumentException` ablehnen
+  **oder** Höhe mit `IllegalArgumentException` ablehnen
 - `public Rechteck(double breite, double hoehe)` — Name "Rechteck"
 - `protected Rechteck(String name, double breite, double hoehe)` —
   damit `Quadrat` seinen eigenen Namen durchreichen kann. (Achtung: `protected`
   heisst "Unterklassen **und** dasselbe Paket". Da alle Kursdateien im selben
-  Paket liegen, koennte hier jede Klasse den Konstruktor aufrufen.)
+  Paket liegen, könnte hier jede Klasse den Konstruktor aufrufen.)
 
 ### 5. `Quadrat.java` — `extends Rechteck`
 
 - `public Quadrat(double seite)` ruft `super("Quadrat", seite, seite)`
 - `getSeite()`
-- `skaliert` **kovariant** ueberschreiben: Rueckgabetyp `Quadrat`, nicht `Figur`.
+- `skaliert` **kovariant** überschreiben: Rückgabetyp `Quadrat`, nicht `Figur`.
   Die Signatur ist in `src/` vorgegeben (sonst kompiliert der Test nicht) —
   deine Aufgabe ist der Rumpf und das Verstehen, *warum* das erlaubt ist.
 
@@ -296,16 +296,16 @@ ablehnen. `skaliert` liefert einen **neuen** Kreis.
 Zwei statische Methoden, die **nur** den Typ `Figur` kennen:
 
 - `static double gesamtFlaeche(Figur[] figuren)`
-- `static Figur groesste(Figur[] figuren)` — groesste Flaeche, `null` bei leerem Array
+- `static Figur groesste(Figur[] figuren)` — größte Fläche, `null` bei leerem Array
 
 Der Punkt der Aufgabe: In diesen beiden Methoden darf kein `instanceof` und
 kein Cast vorkommen. Genau das ist Polymorphie.
 
 ## Was gibt das aus?
 
-Erst ueberlegen, am besten mit Stift und Papier, dann aufklappen. Danach
-kannst du es in `jshell` nachpruefen. Code lesen und vorhersagen trainiert
-genau das Verstaendnis, das du zum Schreiben brauchst.
+Erst überlegen, am besten mit Stift und Papier, dann aufklappen. Danach
+kannst du es in `jshell` nachprüfen. Code lesen und vorhersagen trainiert
+genau das Verständnis, das du zum Schreiben brauchst.
 
 **1.**
 
@@ -322,7 +322,7 @@ Tier t = new Hund();
 System.out.println(t.vorstellen());
 ```
 
-<details><summary>Aufloesung</summary>
+<details><summary>Auflösung</summary>
 
 `Ich sage Wuff` — `vorstellen` ist in `Tier` geschrieben, aber der Aufruf `laut()` darin richtet sich nach dem **dynamischen** Typ, und das ist `Hund`. Das ist das Template-Method-Prinzip aus 6.4.
 
@@ -338,9 +338,9 @@ A x = new B();
 System.out.println(x.name + x.n());
 ```
 
-<details><summary>Aufloesung</summary>
+<details><summary>Auflösung</summary>
 
-`AB` — Der Feldzugriff `x.name` folgt dem **statischen** Typ `A`. Die Methode `n()` wird dagegen dynamisch aufgeloest und gehoert zu `B`. Felder sind nicht polymorph, deshalb gehoeren sie auf `private`.
+`AB` — Der Feldzugriff `x.name` folgt dem **statischen** Typ `A`. Die Methode `n()` wird dagegen dynamisch aufgelöst und gehört zu `B`. Felder sind nicht polymorph, deshalb gehören sie auf `private`.
 
 </details>
 
@@ -354,7 +354,7 @@ class C extends B { C() { System.out.print("C"); } }
 new C();
 ```
 
-<details><summary>Aufloesung</summary>
+<details><summary>Auflösung</summary>
 
 `ABC` — Jeder Konstruktor ruft zuerst (implizit) `super()` auf. Die Oberklasse wird also immer zuerst fertig gebaut, von oben nach unten.
 

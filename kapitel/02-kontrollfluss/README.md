@@ -16,18 +16,18 @@ int rest     = 7 % 3;   // 1   Modulo: der Rest der Division
 int quotient = 7 / 3;   // 2   Ganzzahldivision (siehe Kapitel 1)
 ```
 
-`%` ist erstaunlich vielseitig: `n % 2 == 0` prueft auf gerade, `n % 10` liefert
-die letzte Ziffer, `index % laenge` laesst einen Zaehler zyklisch umlaufen.
+`%` ist erstaunlich vielseitig: `n % 2 == 0` prüft auf gerade, `n % 10` liefert
+die letzte Ziffer, `index % laenge` lässt einen Zähler zyklisch umlaufen.
 
 Vorsicht bei negativen Zahlen: Das Vorzeichen des Rests folgt dem **linken**
-Operanden. `-7 % 3` ist `-1`, nicht `2`. Deshalb prueft man "ungerade" mit
-`n % 2 != 0` und nicht mit `n % 2 == 1` — Letzteres ist fuer `-3` falsch.
+Operanden. `-7 % 3` ist `-1`, nicht `2`. Deshalb prüft man "ungerade" mit
+`n % 2 != 0` und nicht mit `n % 2 == 1` — Letzteres ist für `-3` falsch.
 (`Math.floorMod(-7, 3)` liefert `2`, falls du den mathematischen Rest brauchst.)
 
 ### Rangfolge und die `+`-Falle bei Strings
 
 Es gilt Punkt vor Strich, ansonsten wird **von links nach rechts** gerechnet.
-Das wird bei Strings tueckisch, weil `+` dort verkettet:
+Das wird bei Strings tückisch, weil `+` dort verkettet:
 
 ```java
 System.out.println("Summe: " + 1 + 2);     // "Summe: 12"  <- erst "Summe: 1", dann + "2"
@@ -50,7 +50,7 @@ int b = a++;   // b = 5, a = 6   (erst zuweisen, dann erhoehen)
 int c = ++a;   // c = 7, a = 7   (erst erhoehen, dann zuweisen)
 ```
 
-In einer eigenstaendigen Zeile ist `x++` und `++x` dasselbe. Verschachtelt
+In einer eigenständigen Zeile ist `x++` und `++x` dasselbe. Verschachtelt
 (`arr[i++] = i`) wird es schnell unlesbar — dann lieber zwei Zeilen schreiben.
 
 Die Kurzformen `+=`, `-=`, `*=` … enthalten einen **versteckten Cast**:
@@ -66,8 +66,8 @@ x += 1.7;       // kompiliert! x ist jetzt 6 - die Nachkommastellen sind still w
 `==` `!=` `<` `>` `<=` `>=` — Ergebnis ist immer `boolean`.
 
 > **Achtung:** Bei Objekten (also auch bei `String`) vergleicht `==` die
-> *Referenz*, nicht den Inhalt. Dazu ausfuehrlich Kapitel 3. Merke fuers Erste:
-> **`equals` fuer Inhalt, `==` nur fuer primitive Typen.**
+> *Referenz*, nicht den Inhalt. Dazu ausführlich Kapitel 3. Merke fürs Erste:
+> **`equals` für Inhalt, `==` nur für primitive Typen.**
 
 ### Logisch — und warum Kurzschluss wichtig ist
 
@@ -77,28 +77,28 @@ boolean b2 = a || b;   // ODER - wertet b nur aus, wenn a false ist
 boolean b3 = !a;       // NICHT
 ```
 
-`&&` und `||` sind **kurzschluessig** (short-circuit): Sie werten den rechten
+`&&` und `||` sind **kurzschlüssig** (short-circuit): Sie werten den rechten
 Operanden nur aus, wenn das Ergebnis noch offen ist. Das ist nicht nur schneller,
-sondern oft die Voraussetzung fuer Korrektheit:
+sondern oft die Voraussetzung für Korrektheit:
 
 ```java
 if (text != null && text.length() > 3) { ... }
 //  ^^^^^^^^^^^^ schuetzt den rechten Teil
 ```
 
-Ohne Kurzschluss wuerde `text.length()` bei `null` eine `NullPointerException`
+Ohne Kurzschluss würde `text.length()` bei `null` eine `NullPointerException`
 werfen. Die Reihenfolge der Bedingungen ist hier also nicht beliebig.
 
-Es gibt auch `&` und `|` fuer booleans — die werten *immer beide* Seiten aus.
-Die braucht man fast nie; in 99 % der Faelle willst du `&&` und `||`.
+Es gibt auch `&` und `|` für booleans — die werten *immer beide* Seiten aus.
+Die braucht man fast nie; in 99 % der Fälle willst du `&&` und `||`.
 
-### Ternaerer Operator
+### Ternärer Operator
 
 ```java
 String status = alter >= 18 ? "volljaehrig" : "minderjaehrig";
 ```
 
-Ein `if`/`else` als Ausdruck. Gut fuer kurze Entscheidungen, schlecht wenn
+Ein `if`/`else` als Ausdruck. Gut für kurze Entscheidungen, schlecht wenn
 verschachtelt — drei ineinander geschachtelte `?:` liest niemand gern.
 
 ## 2.2 `if` / `else if` / `else`
@@ -114,12 +114,12 @@ if (punkte >= 90) {
 ```
 
 Die geschweiften Klammern sind bei einer einzelnen Anweisung optional — **setze
-sie trotzdem immer**. Der beruehmte "goto fail"-Bug in Apples TLS-Code entstand
+sie trotzdem immer**. Der berühmte "goto fail"-Bug in Apples TLS-Code entstand
 genau daran.
 
 Die Bedingung muss ein `boolean` sein. `if (x = 5)` ist in Java ein
-Compilerfehler (in C waere es ein stiller Bug) — eine der guten Entscheidungen
-der Sprache. Einzige Luecke: Bei `boolean`-Variablen kompiliert
+Compilerfehler (in C wäre es ein stiller Bug) — eine der guten Entscheidungen
+der Sprache. Einzige Lücke: Bei `boolean`-Variablen kompiliert
 `if (fertig = true)` leider doch (Zuweisung statt Vergleich, immer `true`).
 Schreib deshalb nie `== true`, sondern einfach `if (fertig)` bzw. `if (!fertig)`.
 
@@ -145,8 +145,8 @@ switch (tag) {
 }
 ```
 
-Das "Durchfallen" (fall-through) ohne `break` ist eine der haeufigsten
-Fehlerquellen in aelterem Java-Code.
+Das "Durchfallen" (fall-through) ohne `break` ist eine der häufigsten
+Fehlerquellen in älterem Java-Code.
 
 ### Modern (Ausdruck, mit Pfeil) — seit Java 14
 
@@ -159,7 +159,7 @@ String typ = switch (tag) {
 ```
 
 Kein `break`, kein Durchfallen, und der `switch` **liefert einen Wert**.
-Ausserdem prueft der Compiler bei `enum`-Typen, ob du alle Faelle abgedeckt hast.
+Ausserdem prüft der Compiler bei `enum`-Typen, ob du alle Fälle abgedeckt hast.
 
 Brauchst du mehrere Anweisungen in einem Zweig, nutze einen Block mit `yield`:
 
@@ -188,7 +188,7 @@ while (rest > 0) {
 }
 ```
 
-Nimm `while`, wenn du **nicht vorher weisst**, wie oft es laeuft.
+Nimm `while`, wenn du **nicht vorher weisst**, wie oft es läuft.
 
 ### `do`/`while` — mindestens einmal
 
@@ -198,10 +198,10 @@ do {
 } while (!istGueltig(eingabe));
 ```
 
-Der Koerper laeuft garantiert einmal. Selten gebraucht, aber genau richtig bei
+Der Körper läuft garantiert einmal. Selten gebraucht, aber genau richtig bei
 Eingabeschleifen.
 
-### `for` — Zaehlschleife
+### `for` — Zählschleife
 
 ```java
 for (int i = 0; i < 10; i++) {
@@ -213,7 +213,7 @@ for (int i = 0; i < 10; i++) {
 
 `i` existiert nur innerhalb der Schleife. Nimm `for`, wenn die Anzahl feststeht.
 
-### `for-each` — ueber alles iterieren
+### `for-each` — über alles iterieren
 
 ```java
 for (String name : namen) {
@@ -221,7 +221,7 @@ for (String name : namen) {
 }
 ```
 
-Lies das als "fuer jeden String `name` in `namen`". Funktioniert mit Arrays und
+Lies das als "für jeden String `name` in `namen`". Funktioniert mit Arrays und
 allem, was `Iterable` ist (Kapitel 8). Kein Index, keine Off-by-one-Fehler —
 **die Standardwahl**, solange du den Index nicht wirklich brauchst.
 
@@ -235,8 +235,8 @@ for (int i = 0; i < 100; i++) {
 }
 ```
 
-Bei verschachtelten Schleifen bricht `break` nur die **innere** ab. Fuer die
-aeussere gibt es Labels:
+Bei verschachtelten Schleifen bricht `break` nur die **innere** ab. Für die
+äußere gibt es Labels:
 
 ```java
 aussen:
@@ -250,7 +250,7 @@ for (int i = 0; i < n; i++) {
 Labels sind legitim, aber ein Warnsignal: Oft ist es klarer, den inneren Teil
 in eine eigene Methode mit `return` auszulagern (Kapitel 4).
 
-## 2.5 Gueltigkeitsbereich (Scope)
+## 2.5 Gültigkeitsbereich (Scope)
 
 Eine Variable lebt von ihrer Deklaration bis zur schliessenden Klammer des
 Blocks, in dem sie steht.
@@ -262,7 +262,7 @@ if (bedingung) {
 System.out.println(temp);   // Compilerfehler: cannot find symbol
 ```
 
-Deklariere Variablen so **spaet und so eng wie moeglich**. Das reduziert
+Deklariere Variablen so **spät und so eng wie möglich**. Das reduziert
 Namenskollisionen und macht sichtbar, wo ein Wert wirklich gebraucht wird.
 
 ## 2.6 Vorgriff: Eingaben von der Tastatur lesen
@@ -279,7 +279,7 @@ int alter = eingabe.nextInt();          // wartet, bis eine Zahl + Enter kommt
 System.out.println(alter >= 18 ? "volljaehrig" : "minderjaehrig");
 ```
 
-Was `import` und `new` genau bedeuten, kommt in Kapitel 5 und 8 — fuer jetzt
+Was `import` und `new` genau bedeuten, kommt in Kapitel 5 und 8 — für jetzt
 reicht: So bekommst du eine Zahl von der Tastatur. Die Fallstricke (Buchstaben
 statt Zahl, `nextInt` gemischt mit `nextLine`) behandelt Kapitel 11.7.
 
@@ -287,26 +287,26 @@ statt Zahl, `nextInt` gemischt mit `nextLine`) behandelt Kapitel 11.7.
 
 ## Aufgaben
 
-> Haengst du fest? Gestufte Hinweise zu jeder Aufgabe stehen in
+> Hängst du fest? Gestufte Hinweise zu jeder Aufgabe stehen in
 > [`TIPPS.md`](TIPPS.md) — erst Tipp 1, dann wieder selbst probieren.
 
-Datei: [`src/Aufgaben.java`](src/Aufgaben.java) — pruefen mit `./lerne.sh 02`.
+Datei: [`src/Aufgaben.java`](src/Aufgaben.java) — prüfen mit `./lerne.sh 02`.
 
 1. **`fizzbuzz(int n)`** — Der Klassiker. Vielfaches von 3 -> `"Fizz"`,
    von 5 -> `"Buzz"`, von beiden -> `"FizzBuzz"`, sonst die Zahl als String.
    Auch `0` ist durch 3 und 5 teilbar (Rest 0) und ergibt `"FizzBuzz"`.
-   *Denkfalle:* Welche Bedingung musst du zuerst pruefen?
-2. **`notenText(int note)`** — 1 bis 6 in Text ("sehr gut" … "ungenuegend"),
+   *Denkfalle:* Welche Bedingung musst du zuerst prüfen?
+2. **`notenText(int note)`** — 1 bis 6 in Text ("sehr gut" … "ungenügend"),
    alles andere `"ungueltig"`. Nutze einen **switch-Ausdruck** mit Pfeilen.
 3. **`istPrimzahl(int n)`** — Zahlen < 2 (auch negative) sind keine Primzahlen.
-   *Optimierung:* Es genuegt, bis `Math.sqrt(n)` zu testen — warum?
+   *Optimierung:* Es genügt, bis `Math.sqrt(n)` zu testen — warum?
    Gleichwertig und ohne Kommazahlen: `i * i <= n` als Schleifenbedingung.
-4. **`fakultaet(int n)`** — `0! = 1`, `5! = 120`. Rueckgabetyp `long`.
+4. **`fakultaet(int n)`** — `0! = 1`, `5! = 120`. Rückgabetyp `long`.
    Rekursiv geht das auch, aber hier bitte **iterativ** mit einer Schleife.
 5. **`quersumme(int n)`** — `1234` -> `10`. `while` mit `%` und `/`.
 6. **`summeVielfache(int grenze)`** — Summe aller Zahlen von 1 bis `grenze`
    (einschliesslich), die durch 3 **oder** 5 teilbar sind. Nutze `continue`.
-7. **`sternDreieck(int hoehe)`** — Verschachtelte Schleifen. Fuer `hoehe = 3`:
+7. **`sternDreieck(int hoehe)`** — Verschachtelte Schleifen. Für `hoehe = 3`:
    ```
    *
    **
@@ -316,9 +316,9 @@ Datei: [`src/Aufgaben.java`](src/Aufgaben.java) — pruefen mit `./lerne.sh 02`.
 
 ### Bonus: `Zahlenraten.java` — dein erstes Spiel
 
-Keine Tests, kein `Pruef` — du pruefst, indem du spielst. Das Programm denkt
-sich eine Zahl von 1 bis 100, du raetst, es antwortet mit "zu gross" oder
-"zu klein". Das Geruest mit TODOs liegt in [`src/Zahlenraten.java`](src/Zahlenraten.java).
+Keine Tests, kein `Pruef` — du prüfst, indem du spielst. Das Programm denkt
+sich eine Zahl von 1 bis 100, du rätst, es antwortet mit "zu gross" oder
+"zu klein". Das Gerüst mit TODOs liegt in [`src/Zahlenraten.java`](src/Zahlenraten.java).
 
 ```bash
 bash lerne.sh 02 -r Zahlenraten        # dein Spiel
@@ -326,13 +326,13 @@ bash lerne.sh 02 -l -r Zahlenraten     # die Musterloesung zum Vergleich
 ```
 
 Hier kommt alles aus diesem Kapitel zusammen: eine Schleife mit Abbruchbedingung,
-`if`/`else if`, ein Zaehler. Welche Schleifenart passt am besten?
+`if`/`else if`, ein Zähler. Welche Schleifenart passt am besten?
 
 ## Was gibt das aus?
 
-Erst ueberlegen, am besten mit Stift und Papier, dann aufklappen. Danach
-kannst du es in `jshell` nachpruefen. Code lesen und vorhersagen trainiert
-genau das Verstaendnis, das du zum Schreiben brauchst.
+Erst überlegen, am besten mit Stift und Papier, dann aufklappen. Danach
+kannst du es in `jshell` nachprüfen. Code lesen und vorhersagen trainiert
+genau das Verständnis, das du zum Schreiben brauchst.
 
 **1.**
 
@@ -342,9 +342,9 @@ if (x > 3 || ++x > 0) { }
 System.out.println(x);
 ```
 
-<details><summary>Aufloesung</summary>
+<details><summary>Auflösung</summary>
 
-`5` — `x > 3` ist schon `true`, also wertet `||` die rechte Seite gar nicht aus: `++x` passiert nie. Kurzschluss ist nicht nur Optimierung, er aendert, *was* ausgefuehrt wird.
+`5` — `x > 3` ist schon `true`, also wertet `||` die rechte Seite gar nicht aus: `++x` passiert nie. Kurzschluss ist nicht nur Optimierung, er ändert, *was* ausgeführt wird.
 
 </details>
 
@@ -354,7 +354,7 @@ System.out.println(x);
 System.out.println(1 + 2 + "3" + 4 + 5);
 ```
 
-<details><summary>Aufloesung</summary>
+<details><summary>Auflösung</summary>
 
 `3345` — Von links: `1 + 2` ist noch Rechnen (`3`), ab dem String wird verkettet: `"33"`, `"334"`, `"3345"`.
 
@@ -374,9 +374,9 @@ switch (tag) {
 System.out.println(s);
 ```
 
-<details><summary>Aufloesung</summary>
+<details><summary>Auflösung</summary>
 
-`BC` — Der Sprung geht zu `case 2`, und weil dort kein `break` steht, faellt die Ausfuehrung in `case 3` durch, bis zum ersten `break`. Mit der Pfeilform `case 2 -> ...` gaebe es dieses Problem nicht.
+`BC` — Der Sprung geht zu `case 2`, und weil dort kein `break` steht, fällt die Ausführung in `case 3` durch, bis zum ersten `break`. Mit der Pfeilform `case 2 -> ...` gäbe es dieses Problem nicht.
 
 </details>
 

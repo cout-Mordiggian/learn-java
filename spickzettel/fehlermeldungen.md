@@ -1,4 +1,4 @@
-# Die haeufigsten Fehlermeldungen — und was sie wirklich bedeuten
+# Die häufigsten Fehlermeldungen — und was sie wirklich bedeuten
 
 ## Compilerfehler (das Programm startet gar nicht)
 
@@ -35,16 +35,16 @@ Du greifst aus einer `static`-Methode (oft `main`) auf ein Instanzfeld zu.
 Entweder ein Objekt erzeugen oder das Feld `static` machen.
 
 ### `constructor Konto in class Konto cannot be applied to given types`
-Die Argumente passen zu keinem Konstruktor. Haeufig nach dem Hinzufuegen
+Die Argumente passen zu keinem Konstruktor. Häufig nach dem Hinzufügen
 eines eigenen Konstruktors: Der parameterlose Standardkonstruktor ist damit
 verschwunden.
 
 ### `class X is public, should be declared in a file named X.java`
-Dateiname und Name der `public`-Klasse muessen uebereinstimmen.
+Dateiname und Name der `public`-Klasse müssen übereinstimmen.
 
 ### `method does not override or implement a method from a supertype`
-`@Override` steht ueber einer Methode, die nichts ueberschreibt. Fast immer
-ein Tippfehler oder eine falsche Parameterliste — genau dafuer ist die
+`@Override` steht über einer Methode, die nichts überschreibt. Fast immer
+ein Tippfehler oder eine falsche Parameterliste — genau dafür ist die
 Annotation da.
 
 ### `unreachable statement`
@@ -52,20 +52,20 @@ Code nach `return`, `break` oder einem allgemeineren `catch`. Bei `catch`:
 spezifische Typen zuerst.
 
 ### `local variables referenced from a lambda expression must be final or effectively final`
-Das Lambda benutzt eine lokale Variable, die sich spaeter noch aendert.
+Das Lambda benutzt eine lokale Variable, die sich später noch ändert.
 Kopiere sie vorher in eine neue Variable.
 
 ### `';' expected` / `class, interface, enum, or record expected`
-Ein Semikolon fehlt — der Compiler meldet das oft erst in der **naechsten**
+Ein Semikolon fehlt — der Compiler meldet das oft erst in der **nächsten**
 Zeile. Bei `class ... expected` ist meist eine `}` zu viel (oder zu wenig)
-und Code steht ausserhalb der Klasse. Die Einrueckung deines Editors verraet,
+und Code steht ausserhalb der Klasse. Die Einrückung deines Editors verrät,
 wo die Klammern nicht mehr stimmen.
 
 ### `the switch expression does not cover all possible input values`
-Ein `switch`-Ausdruck ueber ein Enum oder einen `sealed`-Typ vergisst einen
-Fall. Fall ergaenzen — genau diese Meldung ist der Sinn von `sealed`.
+Ein `switch`-Ausdruck über ein Enum oder einen `sealed`-Typ vergisst einen
+Fall. Fall ergänzen — genau diese Meldung ist der Sinn von `sealed`.
 
-## Laufzeitfehler (das Programm laeuft und bricht ab)
+## Laufzeitfehler (das Programm läuft und bricht ab)
 
 ### `NullPointerException: Cannot invoke "String.length()" because "name" is null`
 Methodenaufruf auf `null`. Seit Java 14 nennt die Meldung die genaue
@@ -78,7 +78,7 @@ Referenz — lies sie, sie sagt dir direkt, welche Variable leer war.
 muss mit vollem Namen (`java de.firma.Start`) gestartet werden.
 
 ### `ArrayIndexOutOfBoundsException: Index 5 out of bounds for length 5`
-Gueltige Indizes gehen von `0` bis `length - 1`. Klassisch: `<=` statt `<`
+Gültige Indizes gehen von `0` bis `length - 1`. Klassisch: `<=` statt `<`
 in der Schleifenbedingung.
 
 ### `StringIndexOutOfBoundsException`
@@ -86,7 +86,7 @@ Dasselbe bei `charAt` oder `substring`. Beachte: `substring(von, bis)` hat
 `bis` **exklusiv**.
 
 ### `NumberFormatException: For input string: "abc"`
-`Integer.parseInt` auf etwas, das keine Zahl ist. Auch Leerzeichen zaehlen —
+`Integer.parseInt` auf etwas, das keine Zahl ist. Auch Leerzeichen zählen —
 `strip()` hilft.
 
 ### `ArithmeticException: / by zero`
@@ -94,10 +94,10 @@ Nur bei **Ganzzahl**division. `1.0 / 0` ergibt `Infinity` ohne Exception.
 
 ### `ClassCastException: class A cannot be cast to class B`
 Ein Downcast auf einen Typ, den das Objekt nicht hat. Vorher mit
-`instanceof` pruefen.
+`instanceof` prüfen.
 
 ### `ConcurrentModificationException`
-Die Collection wurde waehrend einer `for-each`-Schleife veraendert.
+Die Collection wurde während einer `for-each`-Schleife verändert.
 Nimm `removeIf` oder einen expliziten `Iterator`.
 
 ### `StackOverflowError`
@@ -109,13 +109,13 @@ Zu viele Objekte gleichzeitig im Speicher. Bei Dateien: `Files.lines` statt
 `readAllLines`.
 
 ### `UnsupportedOperationException`
-Aenderung an einer unveraenderlichen Collection (`List.of(...)`,
+Änderung an einer unveränderlichen Collection (`List.of(...)`,
 `stream.toList()`, `Collections.unmodifiableList(...)`) — oder `add`/`remove`
-auf einer `Arrays.asList(...)`-Liste (die hat feste Groesse).
+auf einer `Arrays.asList(...)`-Liste (die hat feste Größe).
 Kopiere sie: `new ArrayList<>(liste)`.
 
 ### `IllegalStateException: Duplicate key Anna`
-`Collectors.toMap` hat einen Schluessel zweimal gesehen. Dritter Parameter
+`Collectors.toMap` hat einen Schlüssel zweimal gesehen. Dritter Parameter
 (Merge-Funktion) angeben: `toMap(k, v, (alt, neu) -> alt)`.
 
 ### `IllegalStateException: stream has already been operated upon or closed`

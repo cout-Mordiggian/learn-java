@@ -1,6 +1,6 @@
 # Kapitel 07 — Tipps und Antworten
 
-> Erst selbst probieren. Klappe immer nur die **naechste** Stufe auf — jede verraet mehr.
+> Erst selbst probieren. Klappe immer nur die **nächste** Stufe auf — jede verrät mehr.
 > Die Tests in `tests/Tests.java` zeigen dir ausserdem genau, welche Eingabe welches Ergebnis erwartet.
 
 > **Reihenfolge:** Aufgabe 6 braucht `UnzureichendeDeckungException`, Aufgabe 7
@@ -18,8 +18,8 @@ die Ganzzahl-Division `a / b`, wenn `b` null ist? Die Hierarchie in 7.1 hilft.
 
 <details><summary>Tipp 2 — Ansatz</summary>
 
-Die Division steht im `try`-Block und wird dort direkt zurueckgegeben. Im
-`catch` fuer genau diese eine Exception gibst du `0` zurueck. Fang nicht
+Die Division steht im `try`-Block und wird dort direkt zurückgegeben. Im
+`catch` für genau diese eine Exception gibst du `0` zurück. Fang nicht
 `Exception` — nur den Typ, den du wirklich erwartest (Abschnitt 7.8).
 
 Das Abschneiden Richtung null (`-10 / 3` ergibt `-3`) erledigt die
@@ -34,7 +34,7 @@ Das Abschneiden Richtung null (`-10 / 3` ergibt `-3`) erledigt die
 
 Abschnitt 7.3 und die Hierarchie in 7.1. Frag dich: Welche Exception wirft
 `Integer.parseInt` bei `"abc"` — und welche bei `null`? Probier es in `jshell`
-aus, bevor du raetst:
+aus, bevor du rätst:
 
 ```java
 Integer.parseInt(null)
@@ -46,13 +46,13 @@ Integer.parseInt(null)
 
 `Integer.parseInt(null)` wirft **keine** `NullPointerException`, sondern eine
 `NumberFormatException` mit der Meldung `Cannot parse null string`. Ein
-einziger `catch`-Block fuer `NumberFormatException` deckt also `null`, `""` und
-`"abc"` ab — alle drei stehen in den Tests. Eine zusaetzliche `if`-Pruefung
-auf `null` ist nicht noetig.
+einziger `catch`-Block für `NumberFormatException` deckt also `null`, `""` und
+`"abc"` ab — alle drei stehen in den Tests. Eine zusätzliche `if`-Prüfung
+auf `null` ist nicht nötig.
 
 </details>
 
-<details><summary>Tipp 3 — Geruest</summary>
+<details><summary>Tipp 3 — Gerüst</summary>
 
 ```java
 try {
@@ -69,29 +69,29 @@ try {
 <details><summary>Tipp 1 — Richtung</summary>
 
 Abschnitt 7.3, Unterabschnitt "Multi-Catch". Frag dich: Welche **zwei**
-verschiedenen Dinge koennen in `Integer.parseInt(werte[index])` schiefgehen, und
-welche Exception gehoert zu welchem?
+verschiedenen Dinge können in `Integer.parseInt(werte[index])` schiefgehen, und
+welche Exception gehört zu welchem?
 
 </details>
 
 <details><summary>Tipp 2 — Ansatz</summary>
 
 Ein falscher Index beim Arrayzugriff wirft eine
-`ArrayIndexOutOfBoundsException` — auch bei **negativem** Index, der Test prueft
-`-1` ausdruecklich. Unparsbarer Text wirft eine `NumberFormatException`. Beide
-faengst du in **einem** Block mit `Typ1 | Typ2 e`.
+`ArrayIndexOutOfBoundsException` — auch bei **negativem** Index, der Test prüft
+`-1` ausdrücklich. Unparsbarer Text wirft eine `NumberFormatException`. Beide
+fängst du in **einem** Block mit `Typ1 | Typ2 e`.
 
 Wichtig: Auch der Arrayzugriff muss **im** `try` stehen. Holst du
 `werte[index]` vorher in eine Variable, fliegt die Exception, bevor der
 `try`-Block beginnt.
 
-Die beiden Typen duerfen nicht voneinander erben —
-`NumberFormatException | IllegalArgumentException` waere ein Compilerfehler,
-weil der zweite den ersten schon enthaelt.
+Die beiden Typen dürfen nicht voneinander erben —
+`NumberFormatException | IllegalArgumentException` wäre ein Compilerfehler,
+weil der zweite den ersten schon enthält.
 
 </details>
 
-<details><summary>Tipp 3 — Geruest</summary>
+<details><summary>Tipp 3 — Gerüst</summary>
 
 ```java
 try {
@@ -118,14 +118,14 @@ Fang die `NumberFormatException` und wirf **in** ihrem `catch`-Block eine neue
 `IllegalStateException`. Sie hat einen Konstruktor `(String message, Throwable cause)` —
 das zweite Argument ist die gefangene Exception.
 
-Die Tests pruefen zwei Dinge: die Nachricht zeichengenau
+Die Tests prüfen zwei Dinge: die Nachricht zeichengenau
 (`"Ungueltiger Konfigurationswert: abc"`) und dass `getCause()` eine
 `NumberFormatException` ist. Vergisst du das zweite Argument, ist `getCause()`
 `null` und der zweite Test wird rot.
 
 </details>
 
-<details><summary>Tipp 3 — Geruest</summary>
+<details><summary>Tipp 3 — Gerüst</summary>
 
 ```java
 try {
@@ -141,17 +141,17 @@ try {
 
 <details><summary>Tipp 1 — Richtung</summary>
 
-Abschnitt 7.3, der Absatz zu `finally`. Frag dich: Welcher der drei Bloecke
-laeuft in **jedem** Fall — und welcher nur im Fehlerfall?
+Abschnitt 7.3, der Absatz zu `finally`. Frag dich: Welcher der drei Blöcke
+läuft in **jedem** Fall — und welcher nur im Fehlerfall?
 
 </details>
 
 <details><summary>Tipp 2 — Ansatz</summary>
 
-Das Geruest steht schon als Kommentar im TODO. Im `try` wirfst du bei
-`fehlerWerfen` eine `RuntimeException`; die Zeile, die `"ok|"` anhaengt, steht
-**danach** — sie wird im Fehlerfall uebersprungen. Das `catch` haengt
-`"fehler|"` an, das `finally` haengt `"ende"` an. Das `return sb.toString()`
+Das Gerüst steht schon als Kommentar im TODO. Im `try` wirfst du bei
+`fehlerWerfen` eine `RuntimeException`; die Zeile, die `"ok|"` anhängt, steht
+**danach** — sie wird im Fehlerfall übersprungen. Das `catch` hängt
+`"fehler|"` an, das `finally` hängt `"ende"` an. Das `return sb.toString()`
 bleibt hinter dem ganzen Konstrukt stehen. Achte auf die Trennzeichen: nach
 `"ende"` kommt kein `|` mehr.
 
@@ -162,30 +162,30 @@ bleibt hinter dem ganzen Konstrukt stehen. Achte auf die Trennzeichen: nach
 <details><summary>Tipp 1 — Richtung</summary>
 
 Abschnitt 7.4 (`throw` und `throws`) und 7.2 (checked gegen unchecked). Frag
-dich: Welcher der beiden Fehlerfaelle ist ein Programmierfehler des Aufrufers,
-und welcher ein erwartbarer Geschaeftsfall? Das bestimmt, welche Exception du
+dich: Welcher der beiden Fehlerfälle ist ein Programmierfehler des Aufrufers,
+und welcher ein erwartbarer Geschäftsfall? Das bestimmt, welche Exception du
 wirfst. (Voraussetzung: `UnzureichendeDeckungException` ist fertig.)
 
 </details>
 
 <details><summary>Tipp 2 — Ansatz</summary>
 
-- `betrag <= 0` -> `IllegalArgumentException` (unchecked). Diese Pruefung kommt
+- `betrag <= 0` -> `IllegalArgumentException` (unchecked). Diese Prüfung kommt
   **zuerst**.
-- Betrag groesser als Guthaben -> `new UnzureichendeDeckungException(fehlbetrag)`.
+- Betrag größer als Guthaben -> `new UnzureichendeDeckungException(fehlbetrag)`.
   Der Fehlbetrag ist das, was **fehlt**: Bei Guthaben 100 und Betrag 350 sind
   das 250, nicht 350 und nicht -250.
-- Sonst das neue Guthaben zurueckgeben.
+- Sonst das neue Guthaben zurückgeben.
 
 Der Test "exakt aufgebraucht" (500 von 500) muss `0` liefern, nicht werfen —
-die Deckung fehlt erst, wenn der Betrag **groesser** ist.
+die Deckung fehlt erst, wenn der Betrag **größer** ist.
 
 Das `throws UnzureichendeDeckungException` steht schon in der Signatur; ohne es
-wuerde der Compiler das `throw` der checked Exception ablehnen.
+würde der Compiler das `throw` der checked Exception ablehnen.
 
 </details>
 
-<details><summary>Tipp 3 — Geruest</summary>
+<details><summary>Tipp 3 — Gerüst</summary>
 
 ```java
 if (...) {
@@ -211,14 +211,14 @@ genau wird dann `close()` aufgerufen? (Voraussetzung: `Tresor` ist fertig.)
 
 <details><summary>Tipp 2 — Ansatz</summary>
 
-Das Geruest steht als Kommentar im TODO — du musst es nur einkommentieren. Der
+Das Gerüst steht als Kommentar im TODO — du musst es nur einkommentieren. Der
 Punkt der Aufgabe ist das Verstehen: Der Tresor wird **in** den runden Klammern
-erzeugt, und `close()` laeuft automatisch am Ende des Blocks, **bevor** das
-`catch` ausgefuehrt wird. Deshalb steht auch im Fehlerfall `geschlossen` im
+erzeugt, und `close()` läuft automatisch am Ende des Blocks, **bevor** das
+`catch` ausgeführt wird. Deshalb steht auch im Fehlerfall `geschlossen` im
 Protokoll, obwohl nirgends `close()` im Code steht.
 
 Die Variable `t` ist nur innerhalb des `try`-Blocks sichtbar; das Protokoll
-liest du am Ende ueber `log`. Wenn der Test hier rot ist, liegt es fast immer
+liest du am Ende über `log`. Wenn der Test hier rot ist, liegt es fast immer
 an `Tresor` (fehlendes `"geoeffnet|"`, `"benutzt|"` oder `"geschlossen"`).
 
 </details>
@@ -227,7 +227,7 @@ an `Tresor` (fehlendes `"geoeffnet|"`, `"benutzt|"` oder `"geschlossen"`).
 
 <details><summary>Tipp 1 — Richtung</summary>
 
-Abschnitt 7.5 (Eigene Exceptions) zeigt diese Klasse. Frag dich: Wer fuellt
+Abschnitt 7.5 (Eigene Exceptions) zeigt diese Klasse. Frag dich: Wer füllt
 eigentlich `getMessage()` — und wie kommt deine Nachricht dorthin?
 
 </details>
@@ -241,11 +241,11 @@ baust du die Nachricht direkt aus dem **Parameter** `fehlbetrag` zusammen, nicht
 aus dem Feld — das ist in dem Moment noch gar nicht gesetzt.
 
 Danach setzt du das Feld `private final long fehlbetrag`, und `getFehlbetrag()`
-gibt es zurueck. Die Nachricht muss zeichengenau `"Es fehlen 250 Cent"` lauten.
+gibt es zurück. Die Nachricht muss zeichengenau `"Es fehlen 250 Cent"` lauten.
 
 </details>
 
-<details><summary>Tipp 3 — Geruest</summary>
+<details><summary>Tipp 3 — Gerüst</summary>
 
 ```java
 private final long fehlbetrag;
@@ -264,30 +264,30 @@ public UnzureichendeDeckungException(long fehlbetrag) {
 
 Abschnitt 7.7 (`AutoCloseable`) und 7.2 ("Objekt im falschen Zustand"). Frag
 dich: Welchen Zustand muss sich der Tresor merken, damit `benutzen()` und ein
-zweites `close()` richtig reagieren koennen?
+zweites `close()` richtig reagieren können?
 
 </details>
 
 <details><summary>Tipp 2 — Ansatz</summary>
 
-Zwei Felder: der uebergebene `StringBuilder` (`final`) und ein `boolean offen`.
+Zwei Felder: der übergebene `StringBuilder` (`final`) und ein `boolean offen`.
 
-- Konstruktor: Feld setzen, `offen = true`, `"geoeffnet|"` anhaengen.
+- Konstruktor: Feld setzen, `offen = true`, `"geoeffnet|"` anhängen.
 - `benutzen()`: ist der Tresor zu, `IllegalStateException` — es liegt am
-  **Zustand** des Objekts, nicht an einem Argument. Sonst `"benutzt|"` anhaengen.
-- `close()`: ist der Tresor schon zu, sofort zurueckkehren. Sonst `offen = false`
-  und `"geschlossen"` (ohne `|`) anhaengen.
+  **Zustand** des Objekts, nicht an einem Argument. Sonst `"benutzt|"` anhängen.
+- `close()`: ist der Tresor schon zu, sofort zurückkehren. Sonst `offen = false`
+  und `"geschlossen"` (ohne `|`) anhängen.
 
 **Die Falle der Tests:** Der Test ruft `close()` zweimal auf und erwartet
-danach genau `"geoeffnet|geschlossen"`. Ohne die Pruefung am Anfang von
+danach genau `"geoeffnet|geschlossen"`. Ohne die Prüfung am Anfang von
 `close()` steht `geschlossen` doppelt im Protokoll.
 
-`close()` braucht kein `throws`: Eine Ueberschreibung darf weniger Exceptions
+`close()` braucht kein `throws`: Eine Überschreibung darf weniger Exceptions
 deklarieren als `AutoCloseable.close()` — das erspart jedem Aufrufer ein `catch`.
 
 </details>
 
-<details><summary>Tipp 3 — Geruest</summary>
+<details><summary>Tipp 3 — Gerüst</summary>
 
 ```java
 private final StringBuilder protokoll;
@@ -319,10 +319,10 @@ public void close() {
 <details><summary>Wann checked, wann unchecked?</summary>
 
 **Checked** (von `Exception`, aber nicht von `RuntimeException` abgeleitet) nimmst
-du fuer erwartbare Probleme der Aussenwelt, auf die der Aufrufer sinnvoll
+du für erwartbare Probleme der Aussenwelt, auf die der Aufrufer sinnvoll
 reagieren kann: Datei fehlt, Netzwerk weg, zu wenig Deckung. Der Compiler zwingt
 ihn dann zum Fangen oder Weiterreichen. **Unchecked** (`RuntimeException` und
-Unterklassen) steht fuer Programmierfehler: ungueltiges Argument
+Unterklassen) steht für Programmierfehler: ungültiges Argument
 (`IllegalArgumentException`), falscher Objektzustand (`IllegalStateException`),
 `null`, wo keins sein darf. Faustregel: Kann der Aufrufer es sinnvoll behandeln —
 checked. Ist es ein Bug — unchecked. Und checked Exceptions sparsam einsetzen.
@@ -334,30 +334,30 @@ checked. Ist es ein Bug — unchecked. Und checked Exceptions sparsam einsetzen.
 `throw` ist eine **Anweisung** im Methodenrumpf und wirft jetzt, in diesem
 Moment, ein konkretes Exception-Objekt: `throw new IllegalArgumentException("...");`.
 `throws` steht in der **Signatur** und ist eine Deklaration: "Diese Methode
-kann diese Exception werfen, Aufrufer sei gewarnt." Fuer checked Exceptions ist
-`throws` Pflicht, wenn du sie nicht selbst faengst; fuer unchecked ist es
-erlaubt, aber unueblich.
+kann diese Exception werfen, Aufrufer sei gewarnt." Für checked Exceptions ist
+`throws` Pflicht, wenn du sie nicht selbst fängst; für unchecked ist es
+erlaubt, aber unüblich.
 
 </details>
 
-<details><summary>Warum ist ein leerer <code>catch</code>-Block gefaehrlicher als gar kein <code>catch</code>?</summary>
+<details><summary>Warum ist ein leerer <code>catch</code>-Block gefährlicher als gar kein <code>catch</code>?</summary>
 
 Ohne `catch` fliegt die Exception weiter nach oben und bricht das Programm im
 schlimmsten Fall mit einem Stacktrace ab — laut, aber du siehst sofort, was und
 wo es passiert ist. Ein leerer `catch`-Block verschluckt den Fehler still: Das
-Programm laeuft mit einem womoeglich kaputten Zustand weiter, und der Folgefehler
+Programm läuft mit einem womöglich kaputten Zustand weiter, und der Folgefehler
 taucht irgendwann ganz woanders auf, ohne jeden Hinweis auf die Ursache. Kannst
 du eine Exception nicht sinnvoll behandeln, reich sie weiter.
 
 </details>
 
-<details><summary>Warum gehoert <code>e</code> in <code>new RuntimeException("...", e)</code>?</summary>
+<details><summary>Warum gehört <code>e</code> in <code>new RuntimeException("...", e)</code>?</summary>
 
-Das zweite Argument ist die **Ursache** (cause). Mit ihr haengt die neue
+Das zweite Argument ist die **Ursache** (cause). Mit ihr hängt die neue
 Exception die alte samt ihrem Stacktrace an, und im Log erscheint die Zeile
 `Caused by: ...` mit dem Ort, an dem es wirklich schiefging. Ohne `e` siehst du
-nur die neue, allgemeine Meldung und die Stelle, an der uebersetzt wurde — die
-eigentliche Fehlerquelle ist verloren. Abfragen kannst du sie spaeter mit
+nur die neue, allgemeine Meldung und die Stelle, an der übersetzt wurde — die
+eigentliche Fehlerquelle ist verloren. Abfragen kannst du sie später mit
 `getCause()`.
 
 </details>
@@ -365,9 +365,9 @@ eigentliche Fehlerquelle ist verloren. Abfragen kannst du sie spaeter mit
 <details><summary>In welcher Reihenfolge werden mehrere try-with-resources geschlossen?</summary>
 
 In **umgekehrter** Reihenfolge der Deklaration: Bei `try (A a = ...; B b = ...)`
-wird zuerst `b`, dann `a` geschlossen. Das ist sinnvoll, weil eine spaeter
-geoeffnete Ressource oft von einer frueheren abhaengt (etwa ein Reader, der auf
+wird zuerst `b`, dann `a` geschlossen. Das ist sinnvoll, weil eine später
+geöffnete Ressource oft von einer früheren abhängt (etwa ein Reader, der auf
 einem Stream aufsetzt). Wirft neben dem Block auch ein `close()`, gewinnt die
-Exception aus dem Block, und die aus `close()` haengt als *suppressed* daran.
+Exception aus dem Block, und die aus `close()` hängt als *suppressed* daran.
 
 </details>

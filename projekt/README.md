@@ -1,10 +1,10 @@
 # Abschlussprojekt — Aufgabenverwaltung
 
-Eine Konsolen-Anwendung, die alles aus dem Kurs zusammenfuehrt: eigene Typen,
+Eine Konsolen-Anwendung, die alles aus dem Kurs zusammenführt: eigene Typen,
 Kapselung, Collections, Streams, Exceptions und Dateizugriff.
 
 Anders als in den Kapiteln gibt es hier **keine Tests, die dir sagen, wann du
-fertig bist**. Genau das ist der Punkt: Du entscheidest ueber den Entwurf.
+fertig bist**. Genau das ist der Punkt: Du entscheidest über den Entwurf.
 
 ---
 
@@ -32,7 +32,7 @@ $ bash starte.sh
      3  NIEDRIG  -            [ ] Keller aufraeumen
 ```
 
-Beim Beenden werden die Aufgaben in `aufgaben.csv` gespeichert und beim naechsten
+Beim Beenden werden die Aufgaben in `aufgaben.csv` gespeichert und beim nächsten
 Start wieder geladen.
 
 ---
@@ -48,17 +48,17 @@ nicht alles auf einmal bauen.
 - `record Aufgabe(int id, String titel, Prioritaet prioritaet, boolean erledigt, LocalDate faellig)`
   - Kompakter Konstruktor: Titel darf nicht leer sein, `id` muss positiv sein
   - `faellig` darf `null` sein (= kein Termin)
-  - `Aufgabe abgehakt()` — gibt eine Kopie mit `erledigt = true` zurueck
+  - `Aufgabe abgehakt()` — gibt eine Kopie mit `erledigt = true` zurück
   - `boolean istUeberfaellig()` — Termin in der Vergangenheit und nicht erledigt
 
-  *Tipp fuer spaetere Tests (M6):* Mit `LocalDate.now()` im Inneren haengt das
-  Ergebnis vom Tag ab, an dem der Test laeuft. Testbarer ist
-  `boolean istUeberfaellig(LocalDate heute)` — der Aufrufer uebergibt das Datum,
+  *Tipp für spätere Tests (M6):* Mit `LocalDate.now()` im Inneren hängt das
+  Ergebnis vom Tag ab, an dem der Test läuft. Testbarer ist
+  `boolean istUeberfaellig(LocalDate heute)` — der Aufrufer übergibt das Datum,
   und `istUeberfaellig()` ruft einfach `istUeberfaellig(LocalDate.now())` auf.
 
-`LocalDate` erklaert Kapitel 10, Abschnitt 10.7 — das Wichtigste:
+`LocalDate` erklärt Kapitel 10, Abschnitt 10.7 — das Wichtigste:
 `LocalDate.now()`, `LocalDate.parse("2026-09-05")`, `d.isBefore(andere)`.
-Nutze **niemals** `java.util.Date` — die Klasse ist seit 2014 abgeloest.
+Nutze **niemals** `java.util.Date` — die Klasse ist seit 2014 abgelöst.
 
 ### M2 — Verwaltung *(Kapitel 7, 8)*
 
@@ -74,15 +74,15 @@ List<Aufgabe> alle()                                             // unveraenderl
 ```
 
 Eigene Exception `AufgabeNichtGefundenException`.
-*Entwurfsfrage:* checked oder unchecked? Begruende deine Wahl in einem Kommentar.
+*Entwurfsfrage:* checked oder unchecked? Begründe deine Wahl in einem Kommentar.
 
 Die Liste ist der einzige Ort, an dem IDs vergeben werden — und `alle()` gibt
-keine veraenderbare Referenz nach draussen (Kapitel 5).
+keine veränderbare Referenz nach draussen (Kapitel 5).
 
 Der Konstruktor bekommt die beim Start geladenen Aufgaben (leere Liste beim
-ersten Start). Die naechste freie ID ist dann *groesste vorhandene ID + 1*,
-nicht `size() + 1` — sonst vergibst du nach einem Loeschen eine ID doppelt.
-Kopiere die uebergebene Liste, statt sie direkt zu speichern (Kapitel 5).
+ersten Start). Die nächste freie ID ist dann *größte vorhandene ID + 1*,
+nicht `size() + 1` — sonst vergibst du nach einem Löschen eine ID doppelt.
+Kopiere die übergebene Liste, statt sie direkt zu speichern (Kapitel 5).
 
 ### M3 — Abfragen *(Kapitel 9)*
 
@@ -95,7 +95,7 @@ Map<Prioritaet, Long> anzahlProPrioritaet()
 ```
 
 Alles mit Streams. `Comparator.comparing(...).thenComparing(...)` und
-`Comparator.nullsLast(...)` fuer die Termine.
+`Comparator.nullsLast(...)` für die Termine.
 
 ### M4 — Persistenz *(Kapitel 11)*
 
@@ -114,39 +114,39 @@ id;titel;prioritaet;erledigt;faellig
 3;Keller aufraeumen;NIEDRIG;false;
 ```
 
-Fallen, die du loesen musst:
+Fallen, die du lösen musst:
 
 - Ein Titel mit `;` darin zerlegt deine Zeile. Wie gehst du damit um?
-  (Ablehnen beim Anlegen ist eine voellig legitime Antwort — dokumentiere sie.)
+  (Ablehnen beim Anlegen ist eine völlig legitime Antwort — dokumentiere sie.)
 - Leeres Datumsfeld -> `null`
 - `split(";", -1)`, sonst verschwindet das leere letzte Feld
-- Kaputte Zeile: Ueberspringen mit Warnung oder abbrechen? Entscheide und
-  begruende es.
+- Kaputte Zeile: Überspringen mit Warnung oder abbrechen? Entscheide und
+  begründe es.
 - `Prioritaet.valueOf(...)` wirft bei unbekanntem Text
 
-### M5 — Benutzeroberflaeche *(Kapitel 2, 3, 11)*
+### M5 — Benutzeroberfläche *(Kapitel 2, 3, 11)*
 
-Klasse `Konsole` mit der Menueschleife. Anforderungen:
+Klasse `Konsole` mit der Menüschleife. Anforderungen:
 
-- Ungueltige Eingaben duerfen das Programm **nie** abstuerzen lassen
+- Ungültige Eingaben dürfen das Programm **nie** abstürzen lassen
 - Zahlen mit `Integer.parseInt` in `try`/`catch`, nicht `scanner.nextInt()`
 - Die Tabelle sauber ausrichten, wie im Beispiel oben:
   `String.format("  %4s  %-8s %-12s %s", id, prio, termin, titel)` — `%4s`
-  richtet rechtsbuendig aus, `%-8s` linksbuendig auf 8 Zeichen
+  richtet rechtsbündig aus, `%-8s` linksbündig auf 8 Zeichen
 - Beim Beenden speichern
 - `laden` und `speichern` werfen `IOException` (checked). `main` muss sie also
-  fangen und eine verstaendliche Meldung ausgeben — oder `main` bekommt
+  fangen und eine verständliche Meldung ausgeben — oder `main` bekommt
   `throws IOException`. Entscheide dich; ein Stacktrace ist keine Meldung
-  fuer Benutzer.
+  für Benutzer.
 
 ### M6 — Ausbau (freiwillig)
 
 - `--datei pfad` als Kommandozeilenargument (`String[] args` in `main`)
 - Unteraufgaben — dann wird das Datenmodell rekursiv
 - Sortierrichtung umschaltbar
-- Farbige Ausgabe fuer ueberfaellige Aufgaben (ANSI-Codes wie in `lib/Pruef.java`)
+- Farbige Ausgabe für überfällige Aufgaben (ANSI-Codes wie in `lib/Pruef.java`)
 - Statt CSV: JSON von Hand schreiben und lesen
-- JUnit-Tests fuer `Aufgabenliste` und `CsvSpeicher`
+- JUnit-Tests für `Aufgabenliste` und `CsvSpeicher`
   (Kapitel 12, `werkzeuge/pom.xml` als Vorlage)
 
 ---
@@ -177,12 +177,12 @@ cd projekt && ./starte.sh
 
 In `src/` liegen bereits drei Startdateien:
 
-- `Main.java` — ein Geruest, das schon jetzt kompiliert und startet und nur
+- `Main.java` — ein Gerüst, das schon jetzt kompiliert und startet und nur
   einen Hinweis ausgibt. Es verweist bewusst noch auf keine Klasse aus M2–M5
-  (die stehen nur im Kommentar), damit `starte.sh` von Anfang an laeuft.
+  (die stehen nur im Kommentar), damit `starte.sh` von Anfang an läuft.
   Den Kommentar ersetzt du nach und nach durch echten Code.
 - `Prioritaet.java` — fertig.
-- `Aufgabe.java` — das Geruest fuer M1: die Komponenten stehen, der kompakte
+- `Aufgabe.java` — das Gerüst für M1: die Komponenten stehen, der kompakte
   Konstruktor und die beiden Methoden sind noch `TODO` (die Methoden werfen
   bis dahin `UnsupportedOperationException`).
 
@@ -191,21 +191,21 @@ In `src/` liegen bereits drei Startdateien:
 ## Woran du merkst, dass es gut ist
 
 - **Jede Klasse hat einen Job.** `Konsole` rechnet nicht, `Aufgabenliste` gibt
-  nichts aus, `CsvSpeicher` kennt kein Menue. Wenn du in `Aufgabenliste` ein
+  nichts aus, `CsvSpeicher` kennt kein Menü. Wenn du in `Aufgabenliste` ein
   `System.out.println` schreibst, ist etwas verrutscht.
-- **Keine `public`-Felder.** Zustand aendert sich nur ueber Methoden.
-- **Kein `null` als Rueckgabewert** — `Optional` oder eine leere Liste.
+- **Keine `public`-Felder.** Zustand ändert sich nur über Methoden.
+- **Kein `null` als Rückgabewert** — `Optional` oder eine leere Liste.
   Die eine bewusste Ausnahme ist `faellig()`: Die Record-Komponente darf `null`
-  sein (= kein Termin). Wer das vermeiden will, ergaenzt eine Methode
+  sein (= kein Termin). Wer das vermeiden will, ergänzt eine Methode
   `Optional<LocalDate> termin()` und benutzt nur noch die.
 - **Fehlermeldungen nennen den Kontext.** "Aufgabe 42 existiert nicht" statt
   "Fehler".
 - **Du kannst `Konsole` austauschen**, ohne den Rest anzufassen. Das ist der
-  eigentliche Test fuer die Trennung der Zustaendigkeiten.
+  eigentliche Test für die Trennung der Zuständigkeiten.
 
 ## Wenn du steckenbleibst
 
-Sieh nicht in eine Musterloesung (es gibt hier absichtlich keine), sondern
-zurueck ins passende Kapitel. Und bau kleiner: Ein Programm, das nur Aufgaben
+Sieh nicht in eine Musterlösung (es gibt hier absichtlich keine), sondern
+zurück ins passende Kapitel. Und bau kleiner: Ein Programm, das nur Aufgaben
 anlegen und anzeigen kann, aber sauber, ist mehr wert als sechs halbfertige
 Funktionen.

@@ -1,6 +1,6 @@
 # Kapitel 04 — Tipps und Antworten
 
-> Erst selbst probieren. Klappe immer nur die **naechste** Stufe auf — jede verraet mehr.
+> Erst selbst probieren. Klappe immer nur die **nächste** Stufe auf — jede verrät mehr.
 > Die Tests in `tests/Tests.java` zeigen dir ausserdem genau, welche Eingabe welches Ergebnis erwartet.
 
 ## Aufgabe 1: `ggT`
@@ -8,7 +8,7 @@
 <details><summary>Tipp 1 — Richtung</summary>
 
 Abschnitt 4.4, Rekursion: Du brauchst einen Basisfall und einen Schritt, der
-dem Basisfall naeherkommt. Die Formel steht schon in der Aufgabe. Frag dich:
+dem Basisfall näherkommt. Die Formel steht schon in der Aufgabe. Frag dich:
 Was ist der ggT von `a` und `0` — und warum wird das zweite Argument bei jedem
 Schritt kleiner?
 
@@ -26,12 +26,12 @@ beiden also von selbst. Auch `ggT(0, 5)` klappt ohne Sonderfall.
 
 </details>
 
-## Aufgabe 2: `max` (dreifach ueberladen)
+## Aufgabe 2: `max` (dreifach überladen)
 
 <details><summary>Tipp 1 — Richtung</summary>
 
-Abschnitt 4.3, Ueberladung: gleicher Name, verschiedene Parameterlisten. Fuer
-den eigentlichen Vergleich hilft der ternaere Operator aus Kapitel 2,
+Abschnitt 4.3, Überladung: gleicher Name, verschiedene Parameterlisten. Für
+den eigentlichen Vergleich hilft der ternäre Operator aus Kapitel 2,
 Abschnitt 2.1. Frag dich: Wenn du das Maximum von zwei Zahlen schon kannst —
 wie bekommst du damit das Maximum von drei?
 
@@ -40,18 +40,18 @@ wie bekommst du damit das Maximum von drei?
 <details><summary>Tipp 2 — Ansatz</summary>
 
 `max(int, int)` und `max(double, double)` haben denselben Rumpf, nur andere
-Typen: eine Bedingung "ist `a` groesser als `b`?" und je nach Ergebnis `a` oder
-`b` — kurz mit `? :`. `Math.max` gibt es natuerlich auch, hier sollst du den
-Vergleich aber selbst schreiben. Fuer drei Werte **keine** neue Vergleichslogik
+Typen: eine Bedingung "ist `a` größer als `b`?" und je nach Ergebnis `a` oder
+`b` — kurz mit `? :`. `Math.max` gibt es natürlich auch, hier sollst du den
+Vergleich aber selbst schreiben. Für drei Werte **keine** neue Vergleichslogik
 bauen: Die Zwei-Parameter-Version zweimal aufrufen, wobei das Ergebnis des einen
-Aufrufs Argument des anderen ist. Der Compiler waehlt anhand der
-Argumenttypen die passende Ueberladung. Die Tests setzen das Maximum an jede
+Aufrufs Argument des anderen ist. Der Compiler wählt anhand der
+Argumenttypen die passende Überladung. Die Tests setzen das Maximum an jede
 der drei Positionen — wer von Hand mit `if`-Ketten vergleicht, vergisst leicht
 einen Fall; die Wiederverwendung kann das nicht.
 
 </details>
 
-<details><summary>Tipp 3 — Geruest</summary>
+<details><summary>Tipp 3 — Gerüst</summary>
 
 ```text
 max(a, b)       -> wenn a > b, dann a, sonst b
@@ -67,29 +67,29 @@ max(a, b) double -> wie die int-Version, nur mit double-Parametern und -Rueckgab
 <details><summary>Tipp 1 — Richtung</summary>
 
 Abschnitt 4.4, Rekursion und "Wann Rekursion, wann Schleife?" — das
-`fib`-Beispiel dort ist die rekursive Variante. Fuer die iterative: die
+`fib`-Beispiel dort ist die rekursive Variante. Für die iterative: die
 `for`-Schleife aus Kapitel 2, Abschnitt 2.4. Frag dich: Welche zwei Werte musst
-du dir merken, um den naechsten Fibonacci-Wert auszurechnen?
+du dir merken, um den nächsten Fibonacci-Wert auszurechnen?
 
 </details>
 
 <details><summary>Tipp 2 — Ansatz</summary>
 
 **Rekursiv:** Basisfall `n <= 1` — dann ist das Ergebnis `n` selbst (das deckt
-`fib(0) = 0` und `fib(1) = 1` ab). Sonst die Summe der beiden Vorgaenger, direkt
+`fib(0) = 0` und `fib(1) = 1` ab). Sonst die Summe der beiden Vorgänger, direkt
 nach der Definition.
 
-**Iterativ:** Zwei `long`-Variablen fuer die beiden letzten Werte, starten mit
-`fib(0)` und `fib(1)`. In jedem Durchlauf den naechsten Wert als Summe
+**Iterativ:** Zwei `long`-Variablen für die beiden letzten Werte, starten mit
+`fib(0)` und `fib(1)`. In jedem Durchlauf den nächsten Wert als Summe
 berechnen und beide Variablen eine Position weiterschieben. Denkfalle beim
-Weiterschieben: Ueberschreibst du eine Variable, bevor du ihren alten Wert
-benutzt hast, ist er weg — nimm eine Hilfsvariable. Zaehle genau, wie viele
-Durchlaeufe du fuer `n` brauchst, und behandle `n = 0` so, dass `0` herauskommt.
+Weiterschieben: Überschreibst du eine Variable, bevor du ihren alten Wert
+benutzt hast, ist er weg — nimm eine Hilfsvariable. Zähle genau, wie viele
+Durchläufe du für `n` brauchst, und behandle `n = 0` so, dass `0` herauskommt.
 `long` ist Pflicht: `fib(90)` ist `2880067194370816120`.
 
 </details>
 
-<details><summary>Tipp 3 — Geruest</summary>
+<details><summary>Tipp 3 — Gerüst</summary>
 
 ```java
 public static long fibRekursiv(int n) {
@@ -116,7 +116,7 @@ public static long fibIterativ(int n) {
 
 <details><summary>Tipp 1 — Richtung</summary>
 
-Abschnitt 4.5, Varargs. Frag dich: Was fuer ein Typ ist `zahlen` **innerhalb**
+Abschnitt 4.5, Varargs. Frag dich: Was für ein Typ ist `zahlen` **innerhalb**
 der Methode — und was steckt darin, wenn jemand `summeAlle()` ganz ohne
 Argumente aufruft?
 
@@ -125,9 +125,9 @@ Argumente aufruft?
 <details><summary>Tipp 2 — Ansatz</summary>
 
 Innen ist `int... zahlen` ein ganz normales `int[]`. Du kannst also mit
-`for-each` darueberlaufen und in einer Variablen aufsummieren, die bei `0`
-startet. Ein leerer Aufruf uebergibt ein **leeres Array**, nicht `null` — die
-Schleife laeuft dann einfach nicht, und `0` kommt ohne Sonderfall heraus.
+`for-each` darüberlaufen und in einer Variablen aufsummieren, die bei `0`
+startet. Ein leerer Aufruf übergibt ein **leeres Array**, nicht `null` — die
+Schleife läuft dann einfach nicht, und `0` kommt ohne Sonderfall heraus.
 Negative Zahlen brauchen keine Extrabehandlung (`summeAlle(4, -5)` ist `-1`).
 
 </details>
@@ -137,9 +137,9 @@ Negative Zahlen brauchen keine Extrabehandlung (`summeAlle(4, -5)` ist `-1`).
 <details><summary>Tipp 1 — Richtung</summary>
 
 Abschnitt 4.4 (Rekursion: Basisfall und Schritt) und die Guard Clauses aus
-Abschnitt 4.1. Die oeffentliche Methode ruft nur eine private Hilfsmethode
-auf, die zusaetzlich den Suchbereich `von`/`bis` kennt. Frag dich: Woran
-erkennst du, dass der Suchbereich leer ist — und in welcher Haelfte suchst du
+Abschnitt 4.1. Die öffentliche Methode ruft nur eine private Hilfsmethode
+auf, die zusätzlich den Suchbereich `von`/`bis` kennt. Frag dich: Woran
+erkennst du, dass der Suchbereich leer ist — und in welcher Hälfte suchst du
 weiter, wenn das mittlere Element zu klein ist?
 
 </details>
@@ -151,18 +151,18 @@ inklusiv; der Startaufruf steht im TODO). Ablauf pro Aufruf:
 
 1. Basisfall: `von > bis` heisst "Bereich leer" -> `-1`.
 2. Mitte bestimmen — **nicht** mit `(von + bis) / 2`, denn die Summe kann bei
-   riesigen Indizes ueberlaufen. Rechne stattdessen von `von` aus die halbe
+   riesigen Indizes überlaufen. Rechne stattdessen von `von` aus die halbe
    Differenz dazu.
-3. Treffer -> Mitte zurueckgeben. Sonst in der passenden Haelfte weitersuchen.
+3. Treffer -> Mitte zurückgeben. Sonst in der passenden Hälfte weitersuchen.
 
 Denkfalle: Die neue Grenze muss `mitte + 1` bzw. `mitte - 1` sein, nicht
 `mitte` — sonst schrumpft der Bereich irgendwann nicht mehr, und du bekommst
 einen `StackOverflowError`. Beim leeren Array ist `bis` gleich `-1`, der
-Basisfall greift sofort; genau das prueft der Test.
+Basisfall greift sofort; genau das prüft der Test.
 
 </details>
 
-<details><summary>Tipp 3 — Geruest</summary>
+<details><summary>Tipp 3 — Gerüst</summary>
 
 ```java
 public static int binaereSuche(int[] sortiert, int gesucht) {
@@ -185,7 +185,7 @@ private static int suche(int[] a, int gesucht, int von, int bis) {
 <details><summary>Tipp 1 — Richtung</summary>
 
 Abschnitt 4.2, "Java ist immer call-by-value", besonders der Merksatz. Frag
-dich: Willst du hier das **Objekt** (den Array-Inhalt) veraendern oder die
+dich: Willst du hier das **Objekt** (den Array-Inhalt) verändern oder die
 Variable `werte` auf etwas Neues zeigen lassen — und was davon sieht der
 Aufrufer?
 
@@ -193,9 +193,9 @@ Aufrufer?
 
 <details><summary>Tipp 2 — Ansatz</summary>
 
-Du musst jedes Element **ueber seinen Index** neu setzen, also eine klassische
+Du musst jedes Element **über seinen Index** neu setzen, also eine klassische
 `for`-Schleife mit `i` und `*= 2`. Zwei Fallen, die beide still nichts tun:
-`for (int w : werte) w *= 2;` veraendert nur die lokale Kopie `w`, nicht das
+`for (int w : werte) w *= 2;` verändert nur die lokale Kopie `w`, nicht das
 Array — `for-each` taugt hier nicht. Und `werte = new int[]{...}` biegt nur die
 lokale Kopie der Referenz um; der Aufrufer sieht weiter sein altes Array. Ein
 `return` brauchst du nicht, die Methode ist `void`.
@@ -208,23 +208,23 @@ lokale Kopie der Referenz um; der Aufrufer sieht weiter sein altes Array. Ein
 
 Abschnitt 4.2 (Referenzen werden kopiert, nicht Objekte) und aus Kapitel 3,
 Abschnitt 3.6 "Arrays sind Referenztypen" (`clone()`). Frag dich: Wie tauschst
-du zwei Werte, ohne dass einer davon beim Ueberschreiben verloren geht?
+du zwei Werte, ohne dass einer davon beim Überschreiben verloren geht?
 
 </details>
 
 <details><summary>Tipp 2 — Ansatz</summary>
 
 Zuerst eine echte Kopie mit `werte.clone()` oder `Arrays.copyOf(...)`, dann nur
-in der Kopie tauschen und sie zurueckgeben. `int[] kopie = werte;` waere keine
-Kopie, und der Test "Original ist unveraendert" schluege fehl. Denkfalle beim
+in der Kopie tauschen und sie zurückgeben. `int[] kopie = werte;` wäre keine
+Kopie, und der Test "Original ist unverändert" schlüge fehl. Denkfalle beim
 Tauschen: `kopie[i] = kopie[j]; kopie[j] = kopie[i];` schreibt zweimal
 denselben Wert — der alte Inhalt von `kopie[i]` ist nach der ersten Zeile weg.
 Du brauchst eine Hilfsvariable. Der Fall `i == j` funktioniert mit dem
-Tausch ueber die Hilfsvariable automatisch.
+Tausch über die Hilfsvariable automatisch.
 
 </details>
 
-<details><summary>Tipp 3 — Geruest</summary>
+<details><summary>Tipp 3 — Gerüst</summary>
 
 ```java
 public static int[] getauscht(int[] werte, int i, int j) {
@@ -244,22 +244,22 @@ public static int[] getauscht(int[] werte, int i, int j) {
 
 <details><summary>Warum wirkt `arr[0] = 99` in einer Methode nach aussen, `arr = neuesArray` aber nicht?</summary>
 
-Java uebergibt immer eine Kopie des Werts — bei Arrays und Objekten ist dieser
+Java übergibt immer eine Kopie des Werts — bei Arrays und Objekten ist dieser
 Wert die **Referenz**. Methode und Aufrufer haben also zwei Variablen, die auf
-dasselbe Array zeigen. `arr[0] = 99` aendert das gemeinsame Array, das sieht
-der Aufrufer. `arr = neuesArray` laesst dagegen nur die lokale Kopie der
+dasselbe Array zeigen. `arr[0] = 99` ändert das gemeinsame Array, das sieht
+der Aufrufer. `arr = neuesArray` lässt dagegen nur die lokale Kopie der
 Referenz auf ein anderes Array zeigen; die Variable des Aufrufers zeigt
-weiterhin auf das alte. Merksatz: Du kannst das Objekt veraendern, aber nicht,
+weiterhin auf das alte. Merksatz: Du kannst das Objekt verändern, aber nicht,
 worauf die Variable des Aufrufers zeigt.
 
 </details>
 
-<details><summary>Warum darf man nicht nur ueber den Rueckgabetyp ueberladen?</summary>
+<details><summary>Warum darf man nicht nur über den Rückgabetyp überladen?</summary>
 
-Der Rueckgabetyp gehoert nicht zur Signatur (Name + Parametertypen). Der
-Compiler waehlt die Ueberladung anhand der **Argumente** aus, und die waeren bei
+Der Rückgabetyp gehört nicht zur Signatur (Name + Parametertypen). Der
+Compiler wählt die Überladung anhand der **Argumente** aus, und die wären bei
 `int wert()` und `long wert()` identisch. Da ein Aufruf wie `wert();` als
-Anweisung gueltig ist und sein Ergebnis gar nicht verwendet, gaebe es keinen
+Anweisung gültig ist und sein Ergebnis gar nicht verwendet, gäbe es keinen
 Anhaltspunkt, welche Methode gemeint ist. Deshalb meldet schon die zweite
 Deklaration einen Compilerfehler (`method wert() is already defined in class ...`).
 
@@ -269,7 +269,7 @@ Deklaration einen Compilerfehler (`method wert() is already defined in class ...
 
 Erstens einen **Basisfall**, der ohne weiteren Selbstaufruf ein Ergebnis
 liefert (z. B. `if (n <= 1) return 1;`). Zweitens einen **rekursiven Schritt**,
-der das Problem so verkleinert, dass er sich dem Basisfall garantiert naehert
+der das Problem so verkleinert, dass er sich dem Basisfall garantiert nähert
 (z. B. `n - 1` oder beim ggT der Rest `a % b`). Fehlt eins davon, ruft sich die
 Methode endlos auf, bis der Stack voll ist und ein `StackOverflowError` kommt.
 
@@ -277,10 +277,10 @@ Methode endlos auf, bis der Stack voll ist und ein `StackOverflowError` kommt.
 
 <details><summary>Wann ist Rekursion die bessere Wahl als eine Schleife?</summary>
 
-Wenn die Daten oder das Problem selbst rekursiv aufgebaut sind: Baeume,
-Verzeichnisstrukturen, geschachtelte Ausdruecke oder Teile-und-herrsche-Verfahren
-wie die binaere Suche. Dort ist der rekursive Code kuerzer und entspricht
-direkt der Struktur. Bei linearen Ablaeufen wie Summen oder Zaehlen ist eine
+Wenn die Daten oder das Problem selbst rekursiv aufgebaut sind: Bäume,
+Verzeichnisstrukturen, geschachtelte Ausdrücke oder Teile-und-herrsche-Verfahren
+wie die binäre Suche. Dort ist der rekursive Code kürzer und entspricht
+direkt der Struktur. Bei linearen Abläufen wie Summen oder Zählen ist eine
 Schleife besser, weil jeder Aufruf einen Stack-Frame kostet, Java keine
 Endrekursionsoptimierung hat und naive Rekursion wie bei `fib` Werte vielfach
 neu berechnet.
@@ -289,11 +289,11 @@ neu berechnet.
 
 <details><summary>Was ist der Unterschied im Vertrag zwischen `verdoppleAlle` und `getauscht`?</summary>
 
-`verdoppleAlle` ist `void` und veraendert das uebergebene Array **an Ort und
+`verdoppleAlle` ist `void` und verändert das übergebene Array **an Ort und
 Stelle** — die Wirkung ist eine Nebenwirkung, die der Aufrufer an seinem eigenen
-Array sieht. `getauscht` laesst das Original unangetastet und liefert das
-Ergebnis als **neues** Array zurueck. Der zweite Stil ist leichter zu testen und
-ueberrascht niemanden; der erste spart Speicher, muss aber klar dokumentiert
-sein, weil der Aufrufer sonst nicht mit der Aenderung rechnet.
+Array sieht. `getauscht` lässt das Original unangetastet und liefert das
+Ergebnis als **neues** Array zurück. Der zweite Stil ist leichter zu testen und
+überrascht niemanden; der erste spart Speicher, muss aber klar dokumentiert
+sein, weil der Aufrufer sonst nicht mit der Änderung rechnet.
 
 </details>

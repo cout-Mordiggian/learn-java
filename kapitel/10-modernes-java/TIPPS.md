@@ -1,42 +1,42 @@
 # Kapitel 10 — Tipps und Antworten
 
-> Erst selbst probieren. Klappe immer nur die **naechste** Stufe auf — jede verraet mehr.
+> Erst selbst probieren. Klappe immer nur die **nächste** Stufe auf — jede verrät mehr.
 > Die Tests in `tests/Tests.java` zeigen dir ausserdem genau, welche Eingabe welches Ergebnis erwartet.
 
 ## `Artikel.java` — Record mit Validierung
 
 <details><summary>Tipp 1 — Richtung</summary>
 
-Abschnitt 10.2, besonders "Kompakter Konstruktor" und "Zusaetzliche Methoden und
-statische Fabriken". Drei Teilaufgaben: pruefen und normalisieren im kompakten
+Abschnitt 10.2, besonders "Kompakter Konstruktor" und "Zusätzliche Methoden und
+statische Fabriken". Drei Teilaufgaben: prüfen und normalisieren im kompakten
 Konstruktor, `gesamtCent()` rechnen, `mitMenge(...)` ein neues Objekt bauen.
-Frag dich bei `mitMenge`: Darf ein Record sein eigenes Feld aendern?
+Frag dich bei `mitMenge`: Darf ein Record sein eigenes Feld ändern?
 
 </details>
 
 <details><summary>Tipp 2 — Ansatz</summary>
 
 Im kompakten Konstruktor heissen die Parameter genauso wie die Komponenten:
-`name`, `preisCent`, `menge`. Du pruefst sie mit `if` und wirfst
+`name`, `preisCent`, `menge`. Du prüfst sie mit `if` und wirfst
 `IllegalArgumentException`. Danach darfst du `name` selbst neu zuweisen
 (`strip()`); die Felder setzt der Compiler am Ende automatisch.
 
-Randfaelle aus den Tests:
+Randfälle aus den Tests:
 
 - `null` als Name muss eine `IllegalArgumentException` geben, **keine**
-  `NullPointerException`. Pruefe also zuerst auf `null` — erst danach darfst du
+  `NullPointerException`. Prüfe also zuerst auf `null` — erst danach darfst du
   eine Methode auf `name` aufrufen. `||` wertet kurzschliessend aus.
 - `""` und `"   "` erkennt `isBlank()` beide.
 - Preis oder Menge `0` sind erlaubt, nur negative Werte nicht.
-- Pruefe den Namen vor `strip()`, sonst gibt es bei `null` wieder die NPE.
+- Prüfe den Namen vor `strip()`, sonst gibt es bei `null` wieder die NPE.
 
-`gesamtCent()` gibt `long` zurueck. `mitMenge` baut ein **neues** `Artikel`
-ueber den Konstruktor — damit laeuft die Pruefung auch fuer die neue Menge.
-Der Test prueft, dass das Original danach unveraendert ist.
+`gesamtCent()` gibt `long` zurück. `mitMenge` baut ein **neues** `Artikel`
+über den Konstruktor — damit läuft die Prüfung auch für die neue Menge.
+Der Test prüft, dass das Original danach unverändert ist.
 
 </details>
 
-<details><summary>Tipp 3 — Geruest</summary>
+<details><summary>Tipp 3 — Gerüst</summary>
 
 ```java
 public Artikel {
@@ -65,8 +65,8 @@ public Artikel mitMenge(int neueMenge) {
 
 Abschnitt 10.3. Ein Enum ist eine Klasse mit Feld und Konstruktor; die Argumente
 in `MONTAG(true)` gehen an diesen Konstruktor. Frag dich bei `naechster()`: Wie
-kommst du von einer Position zur naechsten, sodass nach der letzten wieder die
-erste kommt? Und bei `vonNummer`: Wie verhaelt sich die Nummer 1..7 zu den
+kommst du von einer Position zur nächsten, sodass nach der letzten wieder die
+erste kommt? Und bei `vonNummer`: Wie verhält sich die Nummer 1..7 zu den
 Positionen im Array?
 
 </details>
@@ -74,19 +74,19 @@ Positionen im Array?
 <details><summary>Tipp 2 — Ansatz</summary>
 
 - Feld `private final boolean werktag;` anlegen, im Konstruktor mit
-  `this.werktag = werktag;` setzen, `istWerktag()` gibt es zurueck.
+  `this.werktag = werktag;` setzen, `istWerktag()` gibt es zurück.
 - `values()` liefert alle Konstanten als Array in Deklarationsreihenfolge,
   `ordinal()` die eigene Position ab 0. Der Rest-Operator `%` mit der
-  Array-Laenge sorgt dafuer, dass nach Position 6 wieder 0 kommt.
-- `vonNummer`: Nummer 1 ist Position 0. **Vorher** den Bereich pruefen.
+  Array-Länge sorgt dafür, dass nach Position 6 wieder 0 kommt.
+- `vonNummer`: Nummer 1 ist Position 0. **Vorher** den Bereich prüfen.
 
 Denkfalle: `values()[n - 1]` wirft bei `0` oder `8` von selbst schon eine
 Exception — aber eine `ArrayIndexOutOfBoundsException`. Die Tests verlangen
-`IllegalArgumentException`, du musst also selbst pruefen und werfen.
+`IllegalArgumentException`, du musst also selbst prüfen und werfen.
 
 </details>
 
-<details><summary>Tipp 3 — Geruest</summary>
+<details><summary>Tipp 3 — Gerüst</summary>
 
 ```java
 public Wochentag naechster() {
@@ -109,8 +109,8 @@ public static Wochentag vonNummer(int n) {
 <details><summary>Tipp 1 — Richtung</summary>
 
 Abschnitt 10.4 (`sealed`) und 10.2 (kompakter Konstruktor). Das `sealed`
-und die drei Records stehen schon da — du ergaenzt nur die Pruefungen in den
-drei kompakten Konstruktoren. Frag dich: Was genau ist "ungueltig"? Und ist
+und die drei Records stehen schon da — du ergänzt nur die Prüfungen in den
+drei kompakten Konstruktoren. Frag dich: Was genau ist "ungültig"? Und ist
 `0` erlaubt?
 
 </details>
@@ -118,14 +118,14 @@ drei kompakten Konstruktoren. Frag dich: Was genau ist "ungueltig"? Und ist
 <details><summary>Tipp 2 — Ansatz</summary>
 
 Pro Konstruktor ein `if` mit `< 0`, bei Rechteck und Dreieck mit `||`
-verknuepft. Die Tests pruefen **jede Komponente einzeln** (`Rechteck(1, -1)`
+verknüpft. Die Tests prüfen **jede Komponente einzeln** (`Rechteck(1, -1)`
 und `Rechteck(-1, 1)`, beim Dreieck jede der drei Seiten) — ein `&&` statt
-`||` faellt also auf. `Kreis(0)` muss erlaubt sein, der Test fuer
+`||` fällt also auf. `Kreis(0)` muss erlaubt sein, der Test für
 `flaeche` benutzt ihn.
 
 </details>
 
-<details><summary>Tipp 3 — Geruest</summary>
+<details><summary>Tipp 3 — Gerüst</summary>
 
 ```java
 record Rechteck(double breite, double hoehe) implements Form {
@@ -143,7 +143,7 @@ record Rechteck(double breite, double hoehe) implements Form {
 
 <details><summary>Tipp 1 — Richtung</summary>
 
-Abschnitt 10.5, "Record-Muster", und 10.4 (warum kein `default` noetig ist).
+Abschnitt 10.5, "Record-Muster", und 10.4 (warum kein `default` nötig ist).
 Das TODO in `src/Aufgaben.java` zeigt dir die drei `case`-Zeilen schon. Frag
 dich: Wie lautet die Formel pro Form — und wie schreibst du einen Zweig, der
 mehr als einen Ausdruck braucht?
@@ -155,17 +155,17 @@ mehr als einen Ausdruck braucht?
 Da die Records **in** `Form` stehen, heissen sie ausserhalb `Form.Kreis`,
 `Form.Rechteck`, `Form.Dreieck`. Kreis: `Math.PI * r * r`, Rechteck: `b * h`.
 
-Fuer Heron brauchst du erst `s`, dann die Wurzel (`Math.sqrt`). Das sind zwei
+Für Heron brauchst du erst `s`, dann die Wurzel (`Math.sqrt`). Das sind zwei
 Schritte, also ein Block `{ ... }` hinter dem Pfeil — und im Block gibst du das
-Ergebnis mit `yield` zurueck, nicht mit `return` (das wuerde die ganze Methode
+Ergebnis mit `yield` zurück, nicht mit `return` (das würde die ganze Methode
 verlassen und kompiliert hier nicht).
 
-Test: Dreieck 3/4/5 hat Flaeche `6.0`. Achte darauf, `(a + b + c) / 2` mit
+Test: Dreieck 3/4/5 hat Fläche `6.0`. Achte darauf, `(a + b + c) / 2` mit
 `double` zu rechnen — sind `a`, `b`, `c` `double`, passt das von selbst.
 
 </details>
 
-<details><summary>Tipp 3 — Geruest</summary>
+<details><summary>Tipp 3 — Gerüst</summary>
 
 ```java
 return switch (form) {
@@ -186,7 +186,7 @@ return switch (form) {
 
 Abschnitt 10.5 (Record-Muster), wie in Aufgabe 1 — nur liefert jeder Zweig
 jetzt einen `String`. Frag dich: Wie formatierst du eine Kommazahl so, dass
-unabhaengig von der Systemsprache `2.0` und nicht `2,0` herauskommt?
+unabhängig von der Systemsprache `2.0` und nicht `2,0` herauskommt?
 
 </details>
 
@@ -199,11 +199,11 @@ Nachkommastelle aus. Achte auf die exakten Texte der Tests:
 Leerzeichen), `"Dreieck 3.0/4.0/5.0"`.
 
 Ohne `Locale.ROOT` liefert `%.1f` auf einem deutschen System `2,0` — auf deinem
-Rechner ist der Test dann vielleicht gruen, auf einem anderen rot.
+Rechner ist der Test dann vielleicht grün, auf einem anderen rot.
 
 </details>
 
-<details><summary>Tipp 3 — Geruest</summary>
+<details><summary>Tipp 3 — Gerüst</summary>
 
 ```java
 return switch (form) {
@@ -223,7 +223,7 @@ return switch (form) {
 <details><summary>Tipp 1 — Richtung</summary>
 
 Abschnitt 10.5, "`switch` mit Typmustern" und "guarded pattern" (`when`).
-Frag dich: In welcher **Reihenfolge** muessen die Faelle stehen, wenn "das erste
+Frag dich: In welcher **Reihenfolge** müssen die Fälle stehen, wenn "das erste
 passende Muster gewinnt"? Und warum braucht dieser `switch` — anders als in
 Aufgabe 1 — ein `default`?
 
@@ -233,19 +233,19 @@ Aufgabe 1 — ein `default`?
 
 - `case null -> ...` ist ein eigener Fall. Ohne ihn wirft `switch (o)` bei
   `null` eine `NullPointerException`.
-- Die eingeschraenkten Faelle (`case Integer i when i < 0`, `when i == 0`) muessen
+- Die eingeschränkten Fälle (`case Integer i when i < 0`, `when i == 0`) müssen
   **vor** dem allgemeinen `case Integer i` stehen. Andersherum meldet der
   Compiler: `this case label is dominated by a preceding case label`.
-- Dasselbe fuer `String`: erst der leere, dann der allgemeine Fall.
-- `Object` ist nicht `sealed`, also ist `default` Pflicht — fuer `3.14`
+- Dasselbe für `String`: erst der leere, dann der allgemeine Fall.
+- `Object` ist nicht `sealed`, also ist `default` Pflicht — für `3.14`
   (ein `Double`) muss `"unbekannt"` herauskommen.
 
-Achtung beim Text fuer `0`: Erwartet wird das Wort `"null"` — nicht zu
+Achtung beim Text für `0`: Erwartet wird das Wort `"null"` — nicht zu
 verwechseln mit dem Fall `case null`, der `"nichts"` liefert.
 
 </details>
 
-<details><summary>Tipp 3 — Geruest</summary>
+<details><summary>Tipp 3 — Gerüst</summary>
 
 ```java
 return switch (o) {
@@ -265,8 +265,8 @@ return switch (o) {
 
 <details><summary>Tipp 1 — Richtung</summary>
 
-Abschnitt 10.6, Textbloecke mit `formatted`. Frag dich: Welche Teile des Textes
-sind fest, welche kommen aus dem `Artikel`? Und wovon haengt ab, ob am Ende ein
+Abschnitt 10.6, Textblöcke mit `formatted`. Frag dich: Welche Teile des Textes
+sind fest, welche kommen aus dem `Artikel`? Und wovon hängt ab, ob am Ende ein
 Zeilenumbruch steht?
 
 </details>
@@ -274,21 +274,21 @@ Zeilenumbruch steht?
 <details><summary>Tipp 2 — Ansatz</summary>
 
 Schreib die vier Zeilen in einen Textblock `"""` … `"""` und setze Platzhalter
-ein: `%s` fuer den Namen, `%d` fuer `long`/`int`. Danach
+ein: `%s` für den Namen, `%d` für `long`/`int`. Danach
 `.formatted(...)` mit den Werten in derselben Reihenfolge — `gesamtCent()`
 hast du im Record schon.
 
 Zwei Stolperstellen, die der Test sieht:
 
-- Die Leerzeichen nach `Preis:`, `Menge:`, `Gesamt:` muessen exakt stimmen
+- Die Leerzeichen nach `Preis:`, `Menge:`, `Gesamt:` müssen exakt stimmen
   (alle Werte beginnen in derselben Spalte).
 - Der abschliessende Zeilenumbruch entsteht, wenn die schliessenden `"""` auf
-  einer **eigenen Zeile** stehen. Rueck sie nicht weiter nach links als den
-  Inhalt, sonst landen fuehrende Leerzeichen im Ergebnis.
+  einer **eigenen Zeile** stehen. Rück sie nicht weiter nach links als den
+  Inhalt, sonst landen führende Leerzeichen im Ergebnis.
 
 </details>
 
-<details><summary>Tipp 3 — Geruest</summary>
+<details><summary>Tipp 3 — Gerüst</summary>
 
 ```java
 return """
@@ -314,8 +314,8 @@ Welche Tage willst du behalten, und welche Terminaloperation liefert direkt ein
 <details><summary>Tipp 2 — Ansatz</summary>
 
 `filter` mit der Methode `istWerktag()` aus `Wochentag` — das geht elegant als
-Methodenreferenz auf den Parameter (Abschnitt 9.3). Danach zaehlt `count()`,
-und das gibt schon `long` zurueck. Leere Liste und "nur Wochenende" ergeben von
+Methodenreferenz auf den Parameter (Abschnitt 9.3). Danach zählt `count()`,
+und das gibt schon `long` zurück. Leere Liste und "nur Wochenende" ergeben von
 selbst `0`.
 
 </details>
@@ -327,45 +327,45 @@ selbst `0`.
 <details><summary>Wann `record`, wann normale Klasse?</summary>
 
 Ein `record` passt, wenn der Typ vor allem **Daten transportiert** und sein
-Wert ihn ausmacht: Koordinaten, Ergebnisobjekte, Schluessel fuer Maps, DTOs.
-Er ist unveraenderlich, und `equals`/`hashCode`/`toString` bekommst du gratis.
-Eine normale Klasse brauchst du, wenn der Typ **veraenderlichen Zustand**
-kapselt (wie das `Konto` aus Kapitel 5), zusaetzliche private Felder braucht,
+Wert ihn ausmacht: Koordinaten, Ergebnisobjekte, Schlüssel für Maps, DTOs.
+Er ist unveränderlich, und `equals`/`hashCode`/`toString` bekommst du gratis.
+Eine normale Klasse brauchst du, wenn der Typ **veränderlichen Zustand**
+kapselt (wie das `Konto` aus Kapitel 5), zusätzliche private Felder braucht,
 die nicht Teil der Schnittstelle sind, oder von einer anderen Klasse erben
 muss — das kann ein Record nicht.
 
 </details>
 
-<details><summary>Warum ist `ordinal()` gefaehrlich, sobald Werte gespeichert werden?</summary>
+<details><summary>Warum ist `ordinal()` gefährlich, sobald Werte gespeichert werden?</summary>
 
 `ordinal()` ist nur die Position in der Deklarationsreihenfolge. Sortiert
-jemand die Konstanten um oder fuegt eine in der Mitte ein, verschieben sich alle
+jemand die Konstanten um oder fügt eine in der Mitte ein, verschieben sich alle
 Nummern — und gespeicherte Werte (Datenbank, Datei) bedeuten still etwas
-anderes: Aus der gespeicherten `5` wird ploetzlich ein anderer Tag. Kein
+anderes: Aus der gespeicherten `5` wird plötzlich ein anderer Tag. Kein
 Compiler und keine Exception warnen dich. Speichere deshalb `name()` und lies
-mit `valueOf(...)` zurueck, oder gib dem Enum ein eigenes, festes Feld als Code.
+mit `valueOf(...)` zurück, oder gib dem Enum ein eigenes, festes Feld als Code.
 
 </details>
 
-<details><summary>Warum braucht ein `switch` ueber ein `sealed interface` kein `default`?</summary>
+<details><summary>Warum braucht ein `switch` über ein `sealed interface` kein `default`?</summary>
 
 `sealed` legt abschliessend fest, welche Typen das Interface implementieren
-duerfen. Deckt der `switch` alle diese Typen ab, weiss der Compiler, dass kein
-Fall fehlen kann — der `switch` ist **vollstaendig** (exhaustive). Das ist sogar
-ein Vorteil: Kommt spaeter ein neuer Untertyp dazu, meldet der Compiler jede
-Stelle, an der der Fall fehlt. Ein `default` wuerde genau diese Warnung
+dürfen. Deckt der `switch` alle diese Typen ab, weiss der Compiler, dass kein
+Fall fehlen kann — der `switch` ist **vollständig** (exhaustive). Das ist sogar
+ein Vorteil: Kommt später ein neuer Untertyp dazu, meldet der Compiler jede
+Stelle, an der der Fall fehlt. Ein `default` würde genau diese Warnung
 verschlucken und den neuen Typ still falsch behandeln.
 
 </details>
 
 <details><summary>Was ist der Unterschied zwischen `case Kreis k` und `case Kreis(double r)`?</summary>
 
-`case Kreis k` ist ein **Typmuster**: Es prueft den Typ und bindet das ganze
+`case Kreis k` ist ein **Typmuster**: Es prüft den Typ und bindet das ganze
 Objekt an `k`; an den Radius kommst du mit `k.radius()`. `case Kreis(double r)`
-ist ein **Record-Muster**: Es prueft den Typ und **zerlegt** den Record gleich
+ist ein **Record-Muster**: Es prüft den Typ und **zerlegt** den Record gleich
 in seine Komponenten, `r` ist direkt der Radius. Record-Muster lassen sich auch
 verschachteln (`case Linie(Punkt(var x1, var y1), Punkt p2)`). Welches du nimmst,
-haengt davon ab, ob du das Objekt als Ganzes oder seine Teile brauchst.
+hängt davon ab, ob du das Objekt als Ganzes oder seine Teile brauchst.
 
 ```java
 case Form.Kreis k        -> Math.PI * k.radius() * k.radius();
@@ -376,12 +376,12 @@ case Form.Kreis(double r) -> Math.PI * r * r;
 
 <details><summary>Warum darf ein kompakter Konstruktor `name = name.strip()`, aber nicht `this.name = ...`?</summary>
 
-Im kompakten Konstruktor ist `name` der **Parameter**, eine gewoehnliche lokale
+Im kompakten Konstruktor ist `name` der **Parameter**, eine gewöhnliche lokale
 Variable — die darfst du neu zuweisen. Die Felder sind `final` und werden vom
 Compiler **ganz am Ende** automatisch aus den Parametern gesetzt
 (`this.name = name;`). Ein `final`-Feld darf nur genau einmal zugewiesen werden;
-wuerdest du `this.name` selbst setzen, kaeme die automatische Zuweisung ein
+würdest du `this.name` selbst setzen, käme die automatische Zuweisung ein
 zweites Mal. Deshalb meldet der Compiler `cannot assign a value to final
-variable name`. Du veraenderst also den Parameter, und der landet dann im Feld.
+variable name`. Du veränderst also den Parameter, und der landet dann im Feld.
 
 </details>
