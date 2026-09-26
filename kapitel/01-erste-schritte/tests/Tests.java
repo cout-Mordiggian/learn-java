@@ -2,7 +2,7 @@ public class Tests {
     public static void main(String[] args) {
         Pruef.abschnitt("Aufgabe 1: begruessung");
         Pruef.gleich("Hallo, Anna!", Aufgaben.begruessung("Anna"), "begruessung(\"Anna\")");
-        Pruef.gleich("Hallo, Gregor!", Aufgaben.begruessung("Gregor"), "begruessung(\"Gregor\")");
+        Pruef.gleich("Hallo, Greg!", Aufgaben.begruessung("Greg"), "begruessung(\"Greg\")");
 
         Pruef.abschnitt("Aufgabe 2: celsiusZuFahrenheit");
         Pruef.fastGleich(32.0, Aufgaben.celsiusZuFahrenheit(0.0), "0 Grad C sind 32 F");

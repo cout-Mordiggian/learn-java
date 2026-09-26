@@ -51,10 +51,10 @@ Compile-Zeit feststeht und sich nie ändert.
 ```java
 int alter = 34;              // Typ, Name, Wert
 final double MWST = 0.19;    // final = kann nicht mehr geaendert werden
-var name = "Gregor";         // seit Java 10: Typ wird abgeleitet -> String
+var name = "Greg";           // seit Java 10: Typ wird abgeleitet -> String
 ```
 
-`var` ist **keine** dynamische Typisierung. `var name = "Gregor"` erzeugt eine
+`var` ist **keine** dynamische Typisierung. `var name = "Greg"` erzeugt eine
 Variable vom Typ `String`, endgültig. Der Compiler tippt nur weniger.
 
 ### Die acht primitiven Typen
@@ -244,7 +244,7 @@ Anführungszeichen in der Ausgabe helfen dir, auch Leerzeichen am Rand zu sehen.
 
 ```
   OK  begruessung("Anna")
-  OK  begruessung("Gregor")
+  OK  begruessung("Greg")
 ```
 
 **Und wenn es gar nicht kompiliert?** Vergisst du das Semikolon, läuft kein

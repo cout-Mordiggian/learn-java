@@ -175,8 +175,8 @@ im Hintergrund trotzdem kompiliert.)
 <details><summary>Warum ist `var` keine dynamische Typisierung?</summary>
 
 Bei `var` leitet der **Compiler** den Typ aus dem Initialwert ab, und dieser
-Typ steht danach endgültig fest. `var name = "Gregor";` ist exakt dasselbe wie
-`String name = "Gregor";`. Ein späteres `name = 5;` ist ein Compilerfehler
+Typ steht danach endgültig fest. `var name = "Greg";` ist exakt dasselbe wie
+`String name = "Greg";`. Ein späteres `name = 5;` ist ein Compilerfehler
 (`incompatible types: int cannot be converted to String`). Bei echter
 dynamischer Typisierung (z. B. in Python) könnte dieselbe Variable nacheinander
 Werte verschiedener Typen halten — das geht in Java nie.
