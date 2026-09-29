@@ -1,3 +1,5 @@
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Modifier;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -96,6 +98,52 @@ public class Tests {
         menge.add(new Punkt(1, 1));
         menge.add(new Punkt(1, 1));
         Pruef.gleich(1, menge.size(), "HashSet erkennt das Duplikat (der hashCode-Vertrag)");
+
+        Pruef.abschnitt("Punkt: statische Fabrikmethoden");
+        Punkt o = Punkt.ursprung();
+        Pruef.fastGleich(0.0, o.getX(), "ursprung(): x = 0");
+        Pruef.fastGleich(0.0, o.getY(), "ursprung(): y = 0");
+        Pruef.wahr(Punkt.ursprung() == Punkt.ursprung(),
+                "ursprung() liefert jedes Mal DASSELBE Objekt (==), nicht nur ein gleiches");
+        Punkt oben = Punkt.polar(2, 90);
+        Pruef.fastGleich(0.0, oben.getX(), "polar(2, 90): x = 0");
+        Pruef.fastGleich(2.0, oben.getY(), "polar(2, 90): y = 2");
+        Punkt rechts = Punkt.polar(3, 0);
+        Pruef.fastGleich(3.0, rechts.getX(), "polar(3, 0): x = 3");
+        Pruef.fastGleich(0.0, rechts.getY(), "polar(3, 0): y = 0");
+        Punkt schraeg = Punkt.polar(Math.sqrt(2), 45);
+        Pruef.fastGleich(1.0, schraeg.getX(), "polar(Wurzel 2, 45): x = 1");
+        Pruef.fastGleich(1.0, schraeg.getY(), "polar(Wurzel 2, 45): y = 1");
+        Pruef.fastGleich(5.0, Punkt.polar(5, 123).abstandZumUrsprung(),
+                "polar(5, 123) hat Abstand 5 zum Ursprung");
+
+        // Singleton: Die Reihenfolge dieser Pruefungen ist nicht egal! Die eine
+        // Instanz lebt bis zum Programmende, und was ein Test an ihr aendert,
+        // sieht der naechste. Deshalb stehen die Standardwerte ganz vorn.
+        // (Genau dieses Problem mit Singletons erklaert Kapitel 13.8.)
+        Pruef.abschnitt("Konfiguration: Singleton");
+        Konfiguration k1 = Konfiguration.instanz();
+        Pruef.gleich("de", k1.getSprache(), "Standard-Sprache ist \"de\"");
+        Pruef.falsch(k1.isFarbig(), "Standard: nicht farbig");
+        Konfiguration k2 = Konfiguration.instanz();
+        Pruef.wahr(k1 != null, "instanz() liefert ein Objekt");
+        Pruef.wahr(k1 == k2, "instanz() liefert jedes Mal DASSELBE Objekt (==)");
+        k1.setSprache("en");
+        k1.setFarbig(true);
+        Pruef.gleich("en", k2.getSprache(), "Sprache ueber k1 gesetzt, ueber k2 gelesen");
+        Pruef.wahr(k2.isFarbig(), "farbig ueber k1 gesetzt, ueber k2 gelesen");
+        Pruef.gleich("en", Konfiguration.instanz().getSprache(), "auch ein spaeterer instanz()-Aufruf sieht es");
+        Pruef.wirft(IllegalArgumentException.class, () -> k1.setSprache(null), "setSprache(null) abgelehnt");
+        Pruef.wirft(IllegalArgumentException.class, () -> k1.setSprache("  "), "leere Sprache abgelehnt");
+        Pruef.gleich("en", k2.getSprache(), "nach den Fehlversuchen: Sprache unveraendert");
+        // Ein Blick in die Klasse zur Laufzeit ("Reflection" - kein Kursthema,
+        // hier nur, um zu pruefen, was der Compiler in einem Test nicht pruefen
+        // kann): Gibt es irgendeinen Konstruktor, den andere Klassen aufrufen koennen?
+        boolean allePrivat = true;
+        for (Constructor<?> konstruktor : Konfiguration.class.getDeclaredConstructors()) {
+            if (!Modifier.isPrivate(konstruktor.getModifiers())) allePrivat = false;
+        }
+        Pruef.wahr(allePrivat, "alle Konstruktoren sind private - niemand sonst kann 'new' sagen");
 
         Pruef.bericht();
     }

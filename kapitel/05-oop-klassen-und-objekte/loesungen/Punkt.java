@@ -13,6 +13,10 @@ public final class Punkt {
     private final double x;
     private final double y;
 
+    // Unveraenderliche Objekte darf man gefahrlos teilen: Niemand kann den
+    // Ursprung veraendern, also reicht ein einziges Objekt fuer alle.
+    private static final Punkt URSPRUNG = new Punkt(0, 0);
+
     public Punkt(double x, double y) {
         this.x = x;
         this.y = y;
@@ -31,7 +35,20 @@ public final class Punkt {
 
     public double abstandZumUrsprung() {
         // Wiederverwendung statt zweiter Formel: eine Stelle, die stimmen muss.
-        return abstand(new Punkt(0, 0));
+        return abstand(ursprung());   // kein neues Objekt noetig
+    }
+
+    public static Punkt ursprung() {
+        // Eine Fabrikmethode darf ein vorhandenes Objekt liefern - ein
+        // Konstruktor nicht: new erzeugt immer ein neues.
+        return URSPRUNG;
+    }
+
+    public static Punkt polar(double radius, double winkelGrad) {
+        // Als Konstruktor ginge das nicht: Punkt(double, double) gibt es schon
+        // fuer x und y. Erst der Name "polar" macht beide unterscheidbar.
+        double w = Math.toRadians(winkelGrad);
+        return new Punkt(radius * Math.cos(w), radius * Math.sin(w));
     }
 
     public Punkt verschoben(double dx, double dy) {

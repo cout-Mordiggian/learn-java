@@ -1,5 +1,7 @@
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.CountDownLatch;
 import java.util.function.Consumer;
 import java.util.stream.IntStream;
@@ -64,7 +66,59 @@ public class Tests {
         Pruef.gleich(viele.stream().map(String::length).toList(), Aufgaben.laengenParallel(viele),
                 "Reihenfolge erhalten (2000 Texte)");
 
+        Pruef.abschnitt("IdGenerator: Singleton fuer viele Threads");
+        Pruef.wahr(IdGenerator.class.isEnum(), "IdGenerator ist ein enum");
+        Pruef.gleich(1, IdGenerator.values().length, "genau eine Konstante");
+        Pruef.gleich(1L, IdGenerator.INSTANZ.naechsteId(), "die erste vergebene ID ist 1");
+        Pruef.gleich(2L, IdGenerator.INSTANZ.naechsteId(), "die zweite ist 2");
+        Pruef.gleich(3L, IdGenerator.valueOf("INSTANZ").naechsteId(),
+                "valueOf(\"INSTANZ\") ist dieselbe Instanz, der Zaehler laeuft weiter");
+        // Wie oben: 4 Threads warten am Startsignal und holen dann gleichzeitig
+        // je 25.000 IDs. Kommt eine doppelt vor, ist naechsteId nicht atomar.
+        for (int versuch = 1; versuch <= 3; versuch++) {
+            Pruef.gleich(100_000, verschiedeneIds(4, 25_000),
+                    "4 Threads x 25.000 IDs, keine doppelt (Versuch " + versuch + ")");
+        }
+
         Pruef.bericht();
+    }
+
+    /**
+     * Startet "threads" Threads, die nach einem gemeinsamen Startsignal je
+     * "proThread" IDs holen. Liefert, wie viele VERSCHIEDENE IDs dabei
+     * herauskamen - bei korrektem Zaehler threads * proThread.
+     */
+    private static int verschiedeneIds(int threads, int proThread) throws InterruptedException {
+        long[][] ids = new long[threads][proThread];
+        CountDownLatch start = new CountDownLatch(1);
+        List<Thread> alle = new ArrayList<>();
+        for (int i = 0; i < threads; i++) {
+            long[] meine = ids[i];
+            Thread t = new Thread(() -> {
+                try {
+                    start.await();
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                    return;
+                }
+                for (int j = 0; j < proThread; j++) {
+                    meine[j] = IdGenerator.INSTANZ.naechsteId();
+                }
+            });
+            alle.add(t);
+            t.start();
+        }
+        start.countDown();
+        for (Thread t : alle) {
+            t.join();
+        }
+        Set<Long> verschieden = new HashSet<>();
+        for (long[] meine : ids) {
+            for (long id : meine) {
+                verschieden.add(id);
+            }
+        }
+        return verschieden.size();
     }
 
     /**

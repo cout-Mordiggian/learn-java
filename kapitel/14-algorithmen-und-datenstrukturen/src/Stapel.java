@@ -1,3 +1,4 @@
+import java.util.Iterator;
 import java.util.NoSuchElementException;
 
 /**
@@ -7,8 +8,11 @@ import java.util.NoSuchElementException;
  *
  *   push(1), push(2), push(3):   oben -> [3] -> [2] -> [1] -> null
  *   pop() liefert 3:             oben -> [2] -> [1] -> null
+ *
+ * Aufgabe 9 (erst nach Aufgabe 7): Der Stapel wird Iterable, dann laeuft
+ * for-each von oben nach unten ueber ihn. Siehe README 14.9.
  */
-public class Stapel<E> {
+public class Stapel<E> implements Iterable<E> {
 
     /**
      * Ein Glied der Kette - schon fertig.
@@ -62,5 +66,36 @@ public class Stapel<E> {
     public int groesse() {
         // TODO
         return 0;
+    }
+
+    // ------------------------------------------------------------ Aufgabe 9
+
+    /** Liefert einen Iterator, der von oben nach unten laeuft. Entfernt nichts. */
+    @Override
+    public Iterator<E> iterator() {
+        return new StapelIterator();
+    }
+
+    /**
+     * Bewusst OHNE static (anders als Knoten): Der Iterator braucht "seinen"
+     * Stapel, denn er startet bei dessen oberstem Knoten. Siehe README 14.9.
+     */
+    private class StapelIterator implements Iterator<E> {
+
+        // TODO: ein Feld fuer den Knoten, dessen Wert next() als naechstes liefert.
+        //       Startwert: der oberste Knoten des Stapels.
+
+        @Override
+        public boolean hasNext() {
+            // TODO
+            return false;
+        }
+
+        @Override
+        public E next() {
+            // TODO: nichts mehr da -> NoSuchElementException.
+            //       Sonst Wert merken, einen Knoten weiterruecken, Wert zurueckgeben.
+            return null;
+        }
     }
 }

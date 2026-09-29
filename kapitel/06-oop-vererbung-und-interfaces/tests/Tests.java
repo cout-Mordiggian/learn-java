@@ -80,6 +80,67 @@ public class Tests {
         Pruef.fastGleich(Math.PI, alsFigur.flaeche(), "Figur-Variable, Kreis-Verhalten");
         Pruef.gleich("Kreis", alsFigur.getName(), "getName kommt vom echten Typ");
 
+        Pruef.abschnitt("Aufgabe 7a: MitZeilennummer (Dekorierer)");
+        TextProtokoll pn1 = new TextProtokoll();
+        schreibeAlle(new MitZeilennummer(pn1), "a", "b", "c");
+        Pruef.gleich("1: a\n2: b\n3: c\n", pn1.inhalt(), "nummeriert ab 1");
+        TextProtokoll pn2 = new TextProtokoll();
+        new MitZeilennummer(pn2).schreibe("x");
+        Pruef.gleich("1: x\n", pn2.inhalt(), "jeder Dekorierer zaehlt fuer sich");
+
+        Pruef.abschnitt("Aufgabe 7b: Grossgeschrieben (Dekorierer)");
+        TextProtokoll pg1 = new TextProtokoll();
+        new Grossgeschrieben(pg1).schreibe("Hallo Welt");
+        Pruef.gleich("HALLO WELT\n", pg1.inhalt(), "Hallo Welt -> HALLO WELT");
+
+        Pruef.abschnitt("Aufgabe 7c: NurMit (Dekorierer)");
+        String[] eingabe = {"INFO Start", "FEHLER Platte voll", "INFO weiter", "FEHLER Netz weg"};
+        TextProtokoll pf1 = new TextProtokoll();
+        schreibeAlle(new NurMit("FEHLER", pf1), eingabe);
+        Pruef.gleich("FEHLER Platte voll\nFEHLER Netz weg\n", pf1.inhalt(),
+                "nur Zeilen, die FEHLER enthalten");
+        TextProtokoll pf2 = new TextProtokoll();
+        schreibeAlle(new NurMit("fehler", pf2), eingabe);
+        Pruef.gleich("", pf2.inhalt(), "Gross-/Kleinschreibung zaehlt: \"fehler\" passt nicht");
+
+        Pruef.abschnitt("Aufgabe 7: Dekorierer kombinieren");
+        TextProtokoll pk1 = new TextProtokoll();
+        schreibeAlle(new NurMit("FEHLER", new MitZeilennummer(pk1)), eingabe);
+        Pruef.gleich("1: FEHLER Platte voll\n2: FEHLER Netz weg\n", pk1.inhalt(),
+                "aussen Filter, innen Nummer: nur durchgelassene Zeilen werden gezaehlt");
+        TextProtokoll pk2 = new TextProtokoll();
+        schreibeAlle(new MitZeilennummer(new NurMit("FEHLER", pk2)), eingabe);
+        Pruef.gleich("2: FEHLER Platte voll\n4: FEHLER Netz weg\n", pk2.inhalt(),
+                "aussen Nummer, innen Filter: ALLE Zeilen werden gezaehlt");
+        TextProtokoll pk3 = new TextProtokoll();
+        schreibeAlle(new Grossgeschrieben(new NurMit("FEHLER", pk3)), "fehler klein", "info");
+        Pruef.gleich("FEHLER KLEIN\n", pk3.inhalt(),
+                "aussen gross, innen Filter: der Filter sieht schon Grossbuchstaben");
+        TextProtokoll pk4 = new TextProtokoll();
+        schreibeAlle(new NurMit("FEHLER", new Grossgeschrieben(pk4)), "fehler klein", "info");
+        Pruef.gleich("", pk4.inhalt(), "aussen Filter, innen gross: der Filter sieht noch Kleinbuchstaben");
+        TextProtokoll pk5 = new TextProtokoll();
+        Protokoll dreiSchichten = new Grossgeschrieben(new MitZeilennummer(new Grossgeschrieben(pk5)));
+        dreiSchichten.schreibe("drei schichten");
+        Pruef.gleich("1: DREI SCHICHTEN\n", pk5.inhalt(), "drei Schichten, derselbe Dekorierer zweimal");
+
+        Pruef.abschnitt("Aufgabe 7: null frueh ablehnen");
+        Pruef.wirft(NullPointerException.class, () -> new MitZeilennummer(null),
+                "new MitZeilennummer(null) -> sofort NullPointerException");
+        Pruef.wirft(NullPointerException.class, () -> new Grossgeschrieben(null),
+                "new Grossgeschrieben(null) -> sofort NullPointerException");
+        Pruef.wirft(NullPointerException.class, () -> new NurMit("x", null),
+                "new NurMit(\"x\", null) -> sofort NullPointerException");
+        Pruef.wirft(NullPointerException.class, () -> new NurMit(null, new TextProtokoll()),
+                "new NurMit(null, ..) -> sofort NullPointerException");
+
         Pruef.bericht();
+    }
+
+    /** Schreibt alle Zeilen der Reihe nach in das Protokoll. */
+    private static void schreibeAlle(Protokoll p, String... zeilen) {
+        for (String z : zeilen) {
+            p.schreibe(z);
+        }
     }
 }

@@ -242,6 +242,172 @@ Und `.parallelStream()`: fast nie. Es lohnt erst bei sehr grossen Datenmengen
 und teuren, unabhängigen Operationen — und bringt alle Probleme der
 Nebenläufigkeit mit (Kapitel 12). Miss nach, statt zu raten.
 
+## 9.8 Strategie und Fabrik mit Lambdas
+
+In 6.9 hast du das **Strategie-Muster** mit Klassen kennengelernt: Das
+austauschbare Verhalten steckt hinter einem Interface, der **Kontext** ruft es
+auf, ohne zu wissen, welche Implementierung dahintersteckt. Ist das Interface
+funktional, ist jede Strategie einfach ein Lambda. Du benutzt das längst:
+
+```java
+personen.sort(Comparator.comparing(Person::getAlter));   // Comparator: Vergleichs-Strategie fuer sort
+namen.stream().filter(n -> n.length() > 3)               // Predicate: Auswahl-Strategie fuer filter
+     .map(String::toUpperCase);                          // Function: Umwandlungs-Strategie fuer map
+```
+
+`sort`, `filter` und `map` kennen den Ablauf, das Lambda liefert den variablen
+Teil. Die funktionalen Interfaces aus 9.2 sind fertige Strategie-Schnittstellen.
+Ein eigenes lohnt sich, wenn der Name etwas sagen soll:
+
+```java
+@FunctionalInterface
+public interface Rabatt {
+    long anwenden(long betragCent);        // Betrag nach Abzug
+}
+
+public class Kasse {                       // der Kontext
+    private Rabatt rabatt = Rabatte.keiner();
+    public void setzeRabatt(Rabatt r) { this.rabatt = r; }
+    public long zuZahlenCent()        { return rabatt.anwenden(summeCent); }
+}
+
+kasse.setzeRabatt(betrag -> betrag / 2);   // eine Strategie als Lambda
+```
+
+Neue Rabattarten brauchen keine Änderung an der Kasse. Eine eigene Klasse pro
+Strategie braucht man nur noch, wenn sie Zustand oder mehrere Methoden hat.
+
+**Fabrikmethoden, die Lambdas liefern.** Statt die Lambdas überall hinzuschreiben,
+sammelt man sie in statischen Fabrikmethoden (5.10). Das Lambda **fängt** dabei
+den Parameter ein, er ist effektiv final (9.4). So merkt sich jede Strategie ihren
+eigenen Wert:
+
+```java
+public static Rabatt prozent(int prozent) {
+    if (prozent < 0 || prozent > 100) {                  // pruefen, BEVOR die Strategie entsteht
+        throw new IllegalArgumentException("Prozent: " + prozent);
+    }
+    return betrag -> betrag - betrag * prozent / 100;    // prozent ist eingefangen
+}
+
+Rabatt zehn = Rabatte.prozent(10), zwanzig = Rabatte.prozent(20);   // zwei unabhaengige Strategien
+```
+
+Braucht eine Strategie keinen Parameter, reicht **eine** Instanz für alle.
+Die legt man als Konstante ab und gibt immer sie zurück. Das kann eine
+Fabrikmethode, ein Konstruktor nicht: `new` liefert jedes Mal ein neues Objekt (5.10).
+
+```java
+private static final Rabatt KEINER = betrag -> betrag;
+public static Rabatt keiner() { return KEINER; }
+```
+
+**Die Fabrik wählt die Strategie.** Steht erst zur Laufzeit fest, welche
+Strategie gebraucht wird, etwa weil sie als Text in einer Datei oder Eingabe
+steht, gehört diese Entscheidung an **eine** Stelle:
+
+```java
+public static Rabatt ausCode(String code) {             // "PROZENT15", "MINUS500", "KEIN"
+    String c = code.strip().toUpperCase(Locale.ROOT);
+    if (c.equals("KEIN"))        return keiner();
+    if (c.startsWith("PROZENT")) return prozent(Integer.parseInt(c.substring("PROZENT".length())));
+    ...
+    throw new IllegalArgumentException("Unbekannter Rabattcode: " + code);
+}
+```
+
+Der Rest des Programms kennt nur das Interface `Rabatt`. Kommt ein Code dazu,
+ändert sich nur diese Methode. Und weil sie die vorhandenen Fabrikmethoden
+aufruft, steht jede Regel (z. B. "höchstens 100 %") nur einmal im Code.
+
+**`Supplier` als Fabrik.** Oft gibt man nicht das fertige Objekt mit, sondern
+das Rezept, wie man eins erzeugt:
+
+```java
+TreeSet<String> s = namen.stream().collect(Collectors.toCollection(TreeSet::new));
+gruppen.computeIfAbsent(stadt, k -> new ArrayList<>()).add(name);
+```
+
+`TreeSet::new` ist ein `Supplier<TreeSet<String>>`: "Wenn du eine Collection
+brauchst, so erzeugst du sie." `computeIfAbsent` ruft die Fabrik nur auf, wenn
+der Schlüssel noch fehlt.
+
+Strategien lassen sich auch **kombinieren**: Eine Methode nimmt eine Strategie und
+liefert eine neue, die sie einpackt. `Comparator.reversed()` und `thenComparing`
+tun das, deine `Transformation.dann` aus Aufgabe 9 ebenso, und
+`Rabatte.abMindestwert(5000, r)` in Aufgabe 11 wendet `r` nur ab einem Mindestbetrag
+an. Das ist der Dekorierer aus 6.9 in Lambda-Form.
+
+## 9.9 Beobachter und anonyme Klassen
+
+**Problem:** Wird im Lager ein Artikel knapp, sollen der Einkauf, eine E-Mail und
+eine Anzeige davon erfahren, nächsten Monat vielleicht noch mehr. Ruft das Lager
+alle direkt auf, muss es jeden kennen, und jede Neuerung ändert das Lager.
+
+**Lösung, das Beobachter-Muster** (*Observer*): Das Lager, das **Subjekt**, führt
+eine Liste von Beobachtern, die nur ein kleines Interface erfüllen. Wer
+informiert werden will, meldet sich an.
+
+```
+                          anmelden(b)
+   Einkauf  ──┐          ┌──────────────────────┐
+   Mail     ──┼────────> │ Lager                │
+   Anzeige  ──┘          │  beobachter: [E,M,A] │
+                         └──────────┬───────────┘
+      Mehl faellt unter 5:          │ fuer jeden b: b.knapp("Mehl", 4)
+                                    v
+                   Einkauf.knapp(..)  Mail.knapp(..)  Anzeige.knapp(..)
+```
+
+```java
+@FunctionalInterface
+public interface LagerBeobachter {
+    void knapp(String artikel, int bestand);
+}
+
+lager.anmelden((artikel, bestand) -> System.out.println(artikel + " nachbestellen!"));
+```
+
+Ist das Interface funktional, ist jeder Beobachter ein Lambda. Das Lager kennt nur
+`LagerBeobachter`, wer dahintersteckt, weiss es nicht.
+
+**Fallstricke:**
+
+- **Abmelden während der Benachrichtigung.** Meldet sich ein Beobachter in
+  `knapp()` ab, ändert er die Liste, über die das Lager gerade läuft. Das gibt
+  die `ConcurrentModificationException` aus 8.6, oder, noch schlimmer, der
+  nächste Beobachter wird still übersprungen. Abhilfe wie in 8.6: über eine
+  **Kopie** laufen (`List.copyOf(beobachter)`). Das prüft Aufgabe 13.
+- **Vergessenes Abmelden.** Die Liste hält jeden Beobachter am Leben. Wer sich
+  nie abmeldet, wird nie vom Garbage Collector weggeräumt, ein Speicherleck.
+- **Exceptions.** Wirft ein Beobachter, erfahren die restlichen nichts mehr.
+  Robuste Subjekte fangen deshalb pro Beobachter.
+
+Im JDK: `java.util.Observer` ist seit Java 9 veraltet. Heute schreibt man ein
+eigenes kleines Interface wie hier. Grafische Oberflächen bestehen aus
+Beobachtern (`button.addActionListener(...)`).
+
+**Neu: die anonyme Klasse.** Der erste Codeblock in 9.1 hatte schon eine:
+`new Comparator<String>() { ... }`. Das ist eine Klasse ohne Namen, die direkt bei
+`new` definiert und sofort instanziiert wird. Ein Lambda kann nicht auf sich selbst
+zeigen. Soll sich ein Beobachter selbst abmelden, braucht man deshalb eine
+anonyme Klasse, denn darin ist `this` das Objekt selbst:
+
+```java
+lager.anmelden(new LagerBeobachter() {          // "eine Klasse, die LagerBeobachter implementiert"
+    @Override
+    public void knapp(String artikel, int bestand) {
+        System.out.println("Einmalige Warnung: " + artikel);
+        lager.abmelden(this);                   // this = dieser Beobachter
+    }
+});
+```
+
+Heute nimmst du ein Lambda, ausser du brauchst `this`, eigene Felder oder mehrere
+Methoden (dann ist das Interface ohnehin nicht funktional). Die Tests von
+Aufgabe 13 benutzen genau so eine Klasse. In einem Lambda heisst `this` dagegen
+dasselbe wie in der umgebenden Methode.
+
 ---
 
 ## Aufgaben
@@ -249,9 +415,11 @@ Nebenläufigkeit mit (Kapitel 12). Miss nach, statt zu raten.
 > Hängst du fest? Gestufte Hinweise zu jeder Aufgabe stehen in
 > [`TIPPS.md`](TIPPS.md) — erst Tipp 1, dann wieder selbst probieren.
 
-Zwei Dateien in [`src/`](src/) — prüfen mit `./lerne.sh 09`.
-`Person.java` ist bereits fertig, du arbeitest in `Aufgaben.java` und
-`Transformation.java`.
+Prüfen mit `./lerne.sh 09`. `Person.java` ist bereits fertig, für die
+Aufgaben 1–10 arbeitest du in `Aufgaben.java` und `Transformation.java`, für
+11–13 in `Rabatte.java` und `Lager.java`. Die Interfaces `Rabatt` und
+`LagerBeobachter` sowie die `Kasse` sind fertig. Lies sie trotzdem, sie gehören
+zum Muster.
 
 1. **`geradeQuadrate(List<Integer>)`** — gerade Zahlen filtern, quadrieren.
 2. **`laengstesWort(List<String>)`** -> `Optional<String>`.
@@ -276,6 +444,20 @@ Zwei Dateien in [`src/`](src/) — prüfen mit `./lerne.sh 09`.
    `gross.dann(umgedreht).anwenden("abc")` -> `"CBA"`.
 10. **`alleAnwenden(List<Transformation>, String)`** — alle der Reihe nach
     anwenden. Tipp: `reduce` — oder eine schlichte Schleife.
+11. **`Rabatte`: Strategien** (9.8) — `keiner()`, `prozent(p)`, `festbetrag(cent)`,
+    `abMindestwert(mindest, rabatt)`. Jede liefert einen `Rabatt`, am besten als
+    Lambda. Ungültige Werte scheitern **sofort**, nicht erst beim Anwenden.
+    `keiner()` liefert bei jedem Aufruf dieselbe Instanz.
+12. **`Rabatte.ausCode`: Fabrik** (9.8) — aus `"KEIN"`, `"PROZENT15"`, `"MINUS500"`
+    die passende Strategie, Gross-/Kleinschreibung und Leerzeichen am Rand egal.
+    Benutze deine Methoden aus Aufgabe 11, statt die Rechnungen zu wiederholen.
+13. **`Lager`: Beobachter** (9.9) — Bestände verwalten, Beobachter an- und
+    abmelden, benachrichtigen, wenn ein Artikel **unter** den Meldebestand fällt.
+    Ein Beobachter darf sich während der Meldung selbst abmelden.
+
+Wirft dein Code in den Aufgaben 11–13 eine Exception, melden die Tests sie als FEHL
+mit Datei und Zeile und laufen weiter. Ehrlicher Hinweis: `keiner()` besteht den
+Test "dieselbe Instanz" auch ohne Konstante. Warum, steht in `TIPPS.md`.
 
 ## Was gibt das aus?
 
@@ -327,6 +509,23 @@ System.out.println(Stream.of(1, 2, 3, 4)
 
 </details>
 
+**4.**
+
+```java
+List<Rabatt> rabatte = new ArrayList<>();
+for (int p = 10; p <= 30; p += 10) {
+    int satz = p;
+    rabatte.add(betrag -> betrag - betrag * satz / 100);
+}
+for (Rabatt r : rabatte) System.out.print(r.anwenden(1000) + " ");
+```
+
+<details><summary>Auflösung</summary>
+
+`900 800 700 ` — Jedes Lambda fängt **seine** Kopie von `satz` ein (9.4), deshalb merkt sich jede Strategie ihren eigenen Satz, obwohl alle an derselben Stelle entstehen. `satz` ist in jedem Durchlauf eine neue Variable und effektiv final. `p` selbst dagegen dürfte das Lambda nicht benutzen, `p += 10` ändert es: Compilerfehler. Genau so arbeitet `Rabatte.prozent` in Aufgabe 11.
+
+</details>
+
 ## Selbstcheck
 
 Erst selbst antworten, dann vergleichen: Die Antworten stehen am Ende von
@@ -337,3 +536,5 @@ Erst selbst antworten, dann vergleichen: Die Antworten stehen am Ende von
 - Warum passiert ohne Terminaloperation gar nichts?
 - Wann `orElse`, wann `orElseGet`?
 - Nenne zwei Fälle, in denen eine Schleife besser ist als ein Stream.
+- Warum braucht man für eine Strategie wie `Comparator` heute selten eine eigene Klasse?
+- Warum läuft `Lager` beim Benachrichtigen über eine Kopie der Beobachterliste?

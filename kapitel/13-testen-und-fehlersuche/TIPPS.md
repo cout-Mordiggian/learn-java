@@ -278,3 +278,17 @@ String, der zur Laufzeit entsteht, etwa durch Tastatureingabe, `substring` oder
 `false`. Ein guter Test wählt deshalb auch solche Eingaben.
 
 </details>
+
+<details><summary>Warum ist eine Methode, die intern <code>LocalTime.now()</code> oder <code>Konfiguration.instanz()</code> aufruft, schwer zu testen, und wie behebst du das?</summary>
+
+Weil ihr Ergebnis von etwas abhängt, das der Test nicht kontrolliert und das in
+der Signatur nicht auftaucht. Mit `LocalTime.now()` hängt das Ergebnis von der
+Uhrzeit ab: Der Test ist mal grün, mal rot, und die Grenze um 12 Uhr lässt sich
+gar nicht gezielt prüfen. Mit einem Singleton hängt es vom Zustand ab, den
+andere Tests zurückgelassen haben, also von der Reihenfolge. Die Abhilfe ist,
+die Abhängigkeit **hineinzureichen**: als Parameter (`text(name, stunde)`) oder
+als Objekt im Konstruktor, am besten als Interface (`new Begruessung(uhr)`). Das
+echte Programm reicht die echte Uhr oder Konfiguration hinein, der Test eine
+feste, die er selbst gebaut hat. Das nennt man Dependency Injection.
+
+</details>

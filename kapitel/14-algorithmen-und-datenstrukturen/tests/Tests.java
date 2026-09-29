@@ -1,4 +1,5 @@
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.Random;
 
@@ -234,6 +235,159 @@ public class Tests {
             Pruef.gleich("!tleW ollaH", Anwendungen.umkehren("Hallo Welt!"), "mit Leerzeichen");
         });
 
+        // ------------------------------------------------------------ Iterator
+        Pruef.abschnitt("Aufgabe 9: Stapel ist Iterable (for-each von oben nach unten)");
+        sicher("Iterator: leerer Stapel", () -> {
+            Stapel<String> leer = new Stapel<>();
+            int anzahl = 0;
+            for (String element : leer) anzahl++;
+            Pruef.gleich(0, anzahl, "for-each ueber leeren Stapel: kein Durchlauf");
+            Iterator<String> it = leer.iterator();
+            Pruef.falsch(it.hasNext(), "leerer Stapel: hasNext() ist false");
+            Pruef.wirft(NoSuchElementException.class, it::next, "leerer Stapel: next() wirft NoSuchElementException");
+        });
+        sicher("Iterator: Reihenfolge", () -> {
+            Stapel<Integer> st = new Stapel<>();
+            st.push(1);
+            st.push(2);
+            st.push(3);
+            StringBuilder sb = new StringBuilder();
+            for (int x : st) sb.append(x);
+            Pruef.gleich("321", sb.toString(), "push 1, 2, 3 -> for-each liefert 3, 2, 1 (von oben nach unten)");
+            Pruef.gleich(3, st.groesse(), "for-each entfernt nichts: groesse bleibt 3");
+            Pruef.gleich(3, st.peek(), "for-each entfernt nichts: oben liegt weiter die 3");
+        });
+        sicher("Iterator: hasNext und next", () -> {
+            Stapel<String> st = new Stapel<>();
+            st.push("unten");
+            st.push("oben");
+            Iterator<String> it = st.iterator();
+            Pruef.wahr(it.hasNext(), "hasNext() am Anfang");
+            Pruef.wahr(it.hasNext(), "hasNext() zweimal hintereinander rueckt nicht weiter");
+            Pruef.gleich("oben", it.next(), "erstes next(): das oberste Element");
+            Pruef.gleich("unten", it.next(), "zweites next(): das darunter");
+            Pruef.falsch(it.hasNext(), "danach: hasNext() ist false");
+            Pruef.wirft(NoSuchElementException.class, it::next, "next() nach dem Ende wirft NoSuchElementException");
+        });
+        sicher("Iterator: jeder Aufruf ein neuer Iterator", () -> {
+            Stapel<Integer> st = new Stapel<>();
+            for (int i = 1; i <= 3; i++) st.push(i);
+            Iterator<Integer> a = st.iterator();
+            a.next();
+            a.next();
+            Iterator<Integer> b = st.iterator();
+            Pruef.gleich(3, b.next(), "ein zweiter Iterator beginnt wieder oben");
+            Pruef.gleich(1, a.next(), "der erste laeuft unabhaengig weiter");
+            int paare = 0;
+            for (int x : st) for (int y : st) paare++;
+            Pruef.gleich(9, paare, "zwei verschachtelte for-each ueber denselben Stapel: 3 x 3 = 9");
+            st.pop();
+            StringBuilder sb = new StringBuilder();
+            for (int x : st) sb.append(x);
+            Pruef.gleich("21", sb.toString(), "nach pop(): ein neuer Durchlauf beginnt beim neuen obersten");
+        });
+
+        // ------------------------------------------------------------ Befehl
+        Pruef.abschnitt("Aufgabe 10a: EinfuegenBefehl und LoeschenBefehl");
+        sicher("EinfuegenBefehl", () -> {
+            Textpuffer t = puffer("Hallo");
+            Befehl b = new EinfuegenBefehl(t, 5, " Welt");
+            Pruef.gleich("Hallo", t.text(), "der Konstruktor allein aendert nichts");
+            b.ausfuehren();
+            Pruef.gleich("Hallo Welt", t.text(), "ausfuehren: hinten eingefuegt");
+            b.rueckgaengig();
+            Pruef.gleich("Hallo", t.text(), "rueckgaengig: wieder wie vorher");
+            Befehl vorn = new EinfuegenBefehl(t, 0, ">> ");
+            vorn.ausfuehren();
+            Pruef.gleich(">> Hallo", t.text(), "vorn eingefuegt");
+            vorn.rueckgaengig();
+            Pruef.gleich("Hallo", t.text(), "vorn: rueckgaengig");
+        });
+        sicher("LoeschenBefehl", () -> {
+            Textpuffer t = puffer("Hallo Welt");
+            Befehl b = new LoeschenBefehl(t, 5, 5);
+            Pruef.gleich("Hallo Welt", t.text(), "der Konstruktor allein aendert nichts");
+            b.ausfuehren();
+            Pruef.gleich("Hallo", t.text(), "ausfuehren: hinten geloescht");
+            b.rueckgaengig();
+            Pruef.gleich("Hallo Welt", t.text(), "rueckgaengig: wieder da");
+            Befehl mitte = new LoeschenBefehl(t, 1, 3);
+            mitte.ausfuehren();
+            Pruef.gleich("Ho Welt", t.text(), "in der Mitte geloescht");
+            mitte.rueckgaengig();
+            Pruef.gleich("Hallo Welt", t.text(), "Mitte: rueckgaengig");
+        });
+        sicher("LoeschenBefehl: merkt sich beim Ausfuehren", () -> {
+            Textpuffer t = puffer("abcdef");
+            Befehl b = new LoeschenBefehl(t, 0, 2);
+            t.einfuegen(0, "XY");                 // Puffer aendert sich NACH dem Erzeugen
+            b.ausfuehren();
+            Pruef.gleich("abcdef", t.text(), "loescht, was beim Ausfuehren vorn steht (XY)");
+            b.rueckgaengig();
+            Pruef.gleich("XYabcdef", t.text(),
+                    "rueckgaengig bringt XY zurueck - nicht das, was beim Erzeugen vorn stand");
+        });
+
+        Pruef.abschnitt("Aufgabe 10b: Verlauf (Rueckgaengig / Wiederholen)");
+        sicher("Verlauf: leer", () -> {
+            Verlauf v = new Verlauf();
+            Pruef.falsch(v.kannRueckgaengig(), "neu: nichts rueckgaengig zu machen");
+            Pruef.falsch(v.kannWiederholen(), "neu: nichts zu wiederholen");
+            Pruef.falsch(v.rueckgaengig(), "rueckgaengig() auf leerem Verlauf -> false");
+            Pruef.falsch(v.wiederholen(), "wiederholen() auf leerem Verlauf -> false");
+        });
+        sicher("Verlauf: hin und her", () -> {
+            Textpuffer t = new Textpuffer();
+            Verlauf v = new Verlauf();
+            v.ausfuehren(new EinfuegenBefehl(t, 0, "Hallo"));
+            v.ausfuehren(new EinfuegenBefehl(t, 5, " Welt"));
+            v.ausfuehren(new LoeschenBefehl(t, 0, 6));
+            Pruef.gleich("Welt", t.text(), "drei Befehle ausgefuehrt");
+            Pruef.wahr(v.kannRueckgaengig(), "jetzt gibt es etwas rueckgaengig zu machen");
+            Pruef.wahr(v.rueckgaengig(), "rueckgaengig() -> true");
+            Pruef.gleich("Hallo Welt", t.text(), "1x rueckgaengig: der juengste Befehl zuerst");
+            v.rueckgaengig();
+            Pruef.gleich("Hallo", t.text(), "2x rueckgaengig");
+            Pruef.wahr(v.kannWiederholen(), "jetzt gibt es etwas zu wiederholen");
+            Pruef.wahr(v.wiederholen(), "wiederholen() -> true");
+            Pruef.gleich("Hallo Welt", t.text(), "1x wiederholen");
+            v.wiederholen();
+            Pruef.gleich("Welt", t.text(), "2x wiederholen");
+            Pruef.falsch(v.wiederholen(), "3x wiederholen -> false, es gibt nichts mehr");
+            Pruef.gleich("Welt", t.text(), "... und der Text bleibt");
+            v.rueckgaengig();
+            v.rueckgaengig();
+            v.rueckgaengig();
+            Pruef.gleich("", t.text(), "alles rueckgaengig");
+            Pruef.falsch(v.rueckgaengig(), "noch einmal -> false");
+            Pruef.falsch(v.kannRueckgaengig(), "kannRueckgaengig() -> false");
+        });
+        sicher("Verlauf: neuer Befehl verwirft Wiederholen", () -> {
+            Textpuffer t = new Textpuffer();
+            Verlauf v = new Verlauf();
+            v.ausfuehren(new EinfuegenBefehl(t, 0, "abc"));
+            v.ausfuehren(new EinfuegenBefehl(t, 3, "def"));
+            v.rueckgaengig();
+            Pruef.wahr(v.kannWiederholen(), "nach rueckgaengig: wiederholen moeglich");
+            v.ausfuehren(new EinfuegenBefehl(t, 0, ">"));
+            Pruef.falsch(v.kannWiederholen(), "nach einem NEUEN Befehl: nichts mehr zu wiederholen");
+            Pruef.falsch(v.wiederholen(), "wiederholen() -> false");
+            Pruef.gleich(">abc", t.text(), "Text nach dem neuen Befehl");
+            v.rueckgaengig();
+            v.rueckgaengig();
+            Pruef.gleich("", t.text(), "zweimal rueckgaengig: zurueck zum Anfang");
+        });
+        sicher("Verlauf: viele Befehle", () -> {
+            Textpuffer t = new Textpuffer();
+            Verlauf v = new Verlauf();
+            for (int i = 0; i < 1_000; i++) v.ausfuehren(new EinfuegenBefehl(t, t.laenge(), "x"));
+            Pruef.gleich(1_000, t.laenge(), "1.000 Befehle ausgefuehrt");
+            int zurueck = 0;
+            while (v.rueckgaengig()) zurueck++;
+            Pruef.gleich(1_000, zurueck, "1.000-mal rueckgaengig");
+            Pruef.gleich("", t.text(), "danach leer");
+        });
+
         Pruef.bericht();
     }
 
@@ -308,5 +462,11 @@ public class Tests {
         // -1000 .. 1000: viele Duplikate und negative Zahlen
         for (int i = 0; i < n; i++) a[i] = zufall.nextInt(2001) - 1000;
         return a;
+    }
+
+    private static Textpuffer puffer(String inhalt) {
+        Textpuffer t = new Textpuffer();
+        t.einfuegen(0, inhalt);
+        return t;
     }
 }

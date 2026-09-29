@@ -101,6 +101,85 @@ public class Tests {
         Pruef.gleich(0L, Aufgaben.werktageZaehlen(
                 List.of(Wochentag.SAMSTAG, Wochentag.SONNTAG)), "nur Wochenende");
 
+        Pruef.abschnitt("Pizza: Builder (10.9)");
+        // Diese Bloecke laufen ueber sicher(...): Wirft dein Builder unterwegs
+        // eine Exception, wird das als FEHL gemeldet, und der Rest laeuft weiter.
+        sicher("Pizza: ohne Extras", () -> {
+            Pizza p = Pizza.builder(Pizza.Groesse.MITTEL).build();
+            Pruef.gleich(Pizza.Groesse.MITTEL, p.groesse(), "Groesse kommt an");
+            Pruef.gleich(List.of(), p.belaege(), "ohne belag(): leere Liste, nicht null");
+            Pruef.falsch(p.hatExtraKaese(), "ohne extraKaese(): false");
+            Pruef.gleich(1000L, p.preisCent(), "MITTEL ohne alles: 1000 Cent");
+        });
+        sicher("Pizza: mit Extras", () -> {
+            Pizza p = Pizza.builder(Pizza.Groesse.KLEIN)
+                    .belag("Salami")
+                    .belag(" Pilze ")
+                    .extraKaese()
+                    .build();
+            Pruef.gleich(List.of("Salami", "Pilze"), p.belaege(),
+                    "Belaege in Reihenfolge, Leerzeichen am Rand entfernt");
+            Pruef.wahr(p.hatExtraKaese(), "extraKaese() kommt an");
+            Pruef.gleich(1300L, p.preisCent(), "KLEIN 800 + 2 x 150 + 200 = 1300");
+            Pruef.gleich("Pizza KLEIN: Salami, Pilze + extra Kaese", p.toString(), "toString");
+            Pizza gross = Pizza.builder(Pizza.Groesse.GROSS)
+                    .belag("a").belag("b").belag("c").belag("d").belag("e").build();
+            Pruef.gleich(1950L, gross.preisCent(), "GROSS mit 5 Belaegen: 1200 + 750 = 1950");
+        });
+        sicher("Pizza: fluent", () -> {
+            Pizza.Builder b = Pizza.builder(Pizza.Groesse.KLEIN);
+            Pruef.wahr(b.belag("Oliven") == b, "belag() gibt denselben Builder zurueck (return this)");
+            Pruef.wahr(b.extraKaese() == b, "extraKaese() gibt denselben Builder zurueck");
+        });
+        sicher("Pizza: Pruefungen", () -> {
+            Pruef.wirft(NullPointerException.class, () -> Pizza.builder(null),
+                    "builder(null) -> NullPointerException");
+            Pruef.wirft(IllegalArgumentException.class, () -> Pizza.builder(Pizza.Groesse.KLEIN).belag(""),
+                    "belag(\"\") -> IllegalArgumentException");
+            Pruef.wirft(IllegalArgumentException.class, () -> Pizza.builder(Pizza.Groesse.KLEIN).belag("   "),
+                    "belag(\"   \") -> IllegalArgumentException");
+            Pruef.wirft(IllegalArgumentException.class, () -> Pizza.builder(Pizza.Groesse.KLEIN).belag(null),
+                    "belag(null) -> IllegalArgumentException");
+            Pizza.Builder sechs = Pizza.builder(Pizza.Groesse.GROSS);
+            for (int i = 1; i <= 6; i++) sechs.belag("Belag " + i);
+            Pruef.wirft(IllegalStateException.class, sechs::build,
+                    "6 Belaege -> build() wirft IllegalStateException");
+        });
+        sicher("Pizza: unveraenderlich", () -> {
+            Pizza p = Pizza.builder(Pizza.Groesse.KLEIN).belag("Salami").build();
+            Pruef.wirft(UnsupportedOperationException.class, () -> p.belaege().add("Ananas"),
+                    "belaege() laesst sich von aussen nicht aendern");
+            Pizza.Builder b = Pizza.builder(Pizza.Groesse.MITTEL).belag("Tomate");
+            Pizza erste = b.build();
+            b.belag("Mais");
+            Pizza zweite = b.build();
+            Pruef.gleich(List.of("Tomate"), erste.belaege(),
+                    "Builder nach build() weiter benutzt: die erste Pizza bleibt, wie sie war");
+            Pruef.gleich(List.of("Tomate", "Mais"), zweite.belaege(), "die zweite hat beide Belaege");
+        });
+
         Pruef.bericht();
+    }
+
+    /**
+     * Fuehrt einen Pruefblock aus. Wirft dein Code unterwegs eine Exception,
+     * wird das als FEHL gemeldet - mit Datei und Zeile - und die restlichen
+     * Pruefungen laufen trotzdem weiter.
+     */
+    private static void sicher(String was, Runnable block) {
+        try {
+            block.run();
+        } catch (RuntimeException e) {
+            String ort = "";
+            for (StackTraceElement stelle : e.getStackTrace()) {
+                String datei = stelle.getFileName();
+                if (datei != null && !datei.equals("Tests.java") && !datei.equals("Pruef.java")
+                        && !stelle.getClassName().startsWith("java.")) {
+                    ort = "  bei " + datei + ":" + stelle.getLineNumber();
+                    break;
+                }
+            }
+            Pruef.gleich("keine Exception", e.getClass().getSimpleName() + ": " + e.getMessage() + ort, was);
+        }
     }
 }

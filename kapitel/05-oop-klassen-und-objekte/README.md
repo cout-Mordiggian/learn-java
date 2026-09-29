@@ -287,6 +287,92 @@ eingesammelt, sobald keine Referenz mehr auf sie zeigt. Du gibst nichts
 manuell frei. `finalize()` ist veraltet — nicht benutzen. Für Ressourcen
 (Dateien, Verbindungen) gibt es try-with-resources (Kapitel 7).
 
+## 5.10 Erste Entwurfsmuster: statische Fabrikmethode und Singleton
+
+Ein **Entwurfsmuster** (*design pattern*) ist eine bewährte, benannte Lösung
+für ein Entwurfsproblem, das immer wieder auftaucht. Kein fertiger Code, sondern
+eine Idee mit **Name**, **Problem**, **Lösung** und **Preis**. Bekannt gemacht hat
+sie 1994 das Buch *Design Patterns* der "Gang of Four" (GoF) mit 23 Mustern in
+drei Gruppen:
+
+| Gruppe | Frage | im Kurs |
+|--------|-------|---------|
+| **Erzeugungsmuster** | Wie entstehen Objekte? | Fabrikmethode und Singleton (hier), Builder (10.9) |
+| **Strukturmuster** | Wie setzen sich Objekte zusammen? | Dekorierer, Adapter (6.9, 11.9) |
+| **Verhaltensmuster** | Wie arbeiten Objekte zusammen? | Strategie (6.9, 9.8), Beobachter (9.9), Befehl (14.10), Iterator (14.9) |
+
+Der größte Nutzen ist das **Vokabular**: "Das ist ein Singleton" sagt in drei
+Worten, wofür man sonst einen Absatz braucht. Und du erkennst die Muster im JDK
+wieder. Einen Überblick über alle gibt [`spickzettel/entwurfsmuster.md`](../../spickzettel/entwurfsmuster.md).
+Die englischen Namen sind in der Praxis üblicher, im Text steht meist der deutsche.
+
+### Die statische Fabrikmethode
+
+Eine `static`-Methode, die ein Objekt liefert, statt dass der Aufrufer `new`
+schreibt. Du kennst schon eine: `String.valueOf(42)` (Kapitel 3).
+
+```java
+public final class Temperatur {
+    private final double celsius;
+
+    private Temperatur(double celsius) { this.celsius = celsius; }
+
+    public static Temperatur ausCelsius(double c)    { return new Temperatur(c); }
+    public static Temperatur ausFahrenheit(double f) { return new Temperatur((f - 32) * 5 / 9); }
+}
+
+Temperatur t = Temperatur.ausFahrenheit(98.6);   // liest sich wie ein Satz
+```
+
+Sie kann Dinge, die ein Konstruktor nicht kann:
+
+1. **Sie hat einen Namen.** Zwei Konstruktoren `Temperatur(double)` für Celsius
+   und Fahrenheit verbietet der Compiler, die Parameterliste ist gleich (4.3).
+   Zwei Fabrikmethoden mit verschiedenen Namen sind kein Problem.
+2. **Sie muss kein neues Objekt liefern.** Sie darf ein vorhandenes
+   zurückgeben, etwa eine Konstante, die es nur einmal gibt. `new` erzeugt
+   dagegen **jedes Mal** ein neues Objekt. `Integer.valueOf` nutzt das
+   ("Was gibt das aus?" Nr. 4).
+3. **Sie darf einen Untertyp liefern.** Der Aufrufer kennt nur den Rückgabetyp,
+   die tatsächliche Klasse bleibt versteckt. Das lohnt sich erst mit Vererbung
+   und Interfaces (Kapitel 6 und 9.8).
+
+Macht man den Konstruktor wie oben `private`, führt der **einzige** Weg zum
+Objekt über die Fabrikmethoden. Weil sie in der Dokumentation weniger auffallen
+als Konstruktoren, gibt es feste Namen: `of`, `from`, `valueOf`, `parse`,
+`getInstance`, oder sprechende wie `ausCelsius`.
+
+### Der Singleton — genau eine Instanz
+
+**Problem:** Von einer Klasse soll es im ganzen Programm genau ein Objekt geben,
+und jeder soll es finden, etwa eine Konfiguration.
+
+**Lösung:** Der Konstruktor wird `private`, die eine Instanz steckt in einem
+`static final`-Feld, eine statische Methode liefert sie heraus.
+
+```java
+public final class Konfiguration {
+    private static final Konfiguration INSTANZ = new Konfiguration();
+
+    private Konfiguration() { }                 // niemand sonst kann "new" sagen
+
+    public static Konfiguration instanz() {
+        return INSTANZ;
+    }
+}
+```
+
+Die JVM legt `INSTANZ` genau einmal an, wenn die Klasse geladen wird. Der
+private Konstruktor wird dabei innerhalb der eigenen Klasse aufgerufen, das ist
+erlaubt. Jeder andere bekommt den Compilerfehler `Konfiguration() has private
+access`. Wichtig: Schreibst du **gar keinen** Konstruktor, erzeugt der Compiler
+einen öffentlichen (5.2), und das Singleton ist keins.
+
+Mehr zum Singleton kommt später: warum die Variante "erst beim ersten Aufruf
+erzeugen" bei mehreren Threads falsch ist (12.3), die kürzeste Form als `enum`
+(10.9) und warum Singletons einen schlechten Ruf haben (13.8). Kurz gesagt: Ein
+Singleton ist eine globale Variable mit schönerem Namen. Setz es sparsam ein.
+
 ---
 
 ## Aufgaben
@@ -294,7 +380,7 @@ manuell frei. `finalize()` ist veraltet — nicht benutzen. Für Ressourcen
 > Hängst du fest? Gestufte Hinweise zu jeder Aufgabe stehen in
 > [`TIPPS.md`](TIPPS.md) — erst Tipp 1, dann wieder selbst probieren.
 
-Zwei Klassen, beide in [`src/`](src/) — prüfen mit `./lerne.sh 05`.
+Drei Klassen, alle in [`src/`](src/) — prüfen mit `./lerne.sh 05`.
 
 ### `Konto.java` — Kapselung und Invarianten
 
@@ -333,6 +419,31 @@ Diese Unterscheidung vertiefst du in Kapitel 7.
 - `toString()` -> `Punkt(1.0, 2.0)`
 - `equals` und `hashCode` — vollständig und vertragstreu. Die Tests prüfen
   auch die Ecken `0.0`/`-0.0` und `NaN` (siehe 5.6: `Double.compare` statt `==`).
+- Zwei **statische Fabrikmethoden** (5.10):
+  - `static Punkt ursprung()` — der Punkt (0, 0), und zwar bei **jedem** Aufruf
+    **dasselbe** Objekt. Tipp: eine Konstante.
+  - `static Punkt polar(double radius, double winkelGrad)` — ein Punkt aus Abstand
+    und Winkel: `x = radius * cos(w)`, `y = radius * sin(w)`, wobei `w` der Winkel
+    im Bogenmass ist. Umrechnen mit `Math.toRadians(winkelGrad)`, dann
+    `Math.cos` und `Math.sin`. Beispiel: `polar(2, 90)` ist (0, 2).
+    Als Konstruktor ginge das nicht: `Punkt(double, double)` gibt es schon.
+
+### `Konfiguration.java` — Singleton
+
+Die Einstellungen des Programms: `getSprache()`/`setSprache(String)` (Standard
+`"de"`, `null` oder leer -> `IllegalArgumentException`) und
+`isFarbig()`/`setFarbig(boolean)` (Standard `false`). Die Klasse soll ein
+**Singleton** werden (5.10): Im Gerüst ist der Konstruktor noch `public`, und
+`instanz()` liefert jedes Mal ein neues, frisches Objekt. Danach gilt:
+
+- `Konfiguration.instanz() == Konfiguration.instanz()`
+- Was über eine Referenz gesetzt wird, sieht man über jede andere.
+- `new Konfiguration()` kompiliert ausserhalb der Klasse nicht mehr. Die Tests
+  prüfen, dass **alle** Konstruktoren `private` sind.
+
+Achte beim Lesen der Tests darauf: Die Prüfung der Standardwerte muss **zuerst**
+laufen. Danach hat ein anderer Test die eine Instanz schon verändert, und es
+gibt keinen Weg zurück zu einer frischen. Genau dieses Problem behandelt 13.8.
 
 ## Was gibt das aus?
 
@@ -392,6 +503,20 @@ System.out.println(l.size());
 
 </details>
 
+**4.**
+
+```java
+Integer a = Integer.valueOf(127), b = Integer.valueOf(127);
+Integer c = Integer.valueOf(128), d = Integer.valueOf(128);
+System.out.println((a == b) + " " + (c == d) + " " + c.equals(d));
+```
+
+<details><summary>Auflösung</summary>
+
+`true false true` — `Integer.valueOf` ist eine statische Fabrikmethode mit Zwischenspeicher (5.10). Für -128 bis 127 liefert sie immer **dasselbe** Objekt, `==` ist deshalb `true`. 128 liegt ausserhalb, jeder Aufruf erzeugt ein neues Objekt, und `==` vergleicht Referenzen. Ein Konstruktor könnte das nicht, `new` liefert immer ein neues Objekt. Die Lehre aus Kapitel 3 gilt weiter: Objekte mit `equals` vergleichen, dann ist der Zwischenspeicher egal. Auch Autoboxing (`Integer x = 127;`) benutzt intern `valueOf`.
+
+</details>
+
 ## Selbstcheck
 
 Erst selbst antworten, dann vergleichen: Die Antworten stehen am Ende von
@@ -402,3 +527,5 @@ Erst selbst antworten, dann vergleichen: Die Antworten stehen am Ende von
 - Warum darf eine `static`-Methode nicht auf Instanzfelder zugreifen?
 - Was geht kaputt, wenn du `equals` ohne `hashCode` überschreibst?
 - Warum ist `private final List<X> liste` trotzdem veränderbar?
+- Nenne zwei Dinge, die eine statische Fabrikmethode kann, ein Konstruktor aber nicht.
+- Warum braucht ein Singleton einen `private`-Konstruktor, und was passiert, wenn du gar keinen schreibst?

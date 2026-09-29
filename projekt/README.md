@@ -148,6 +148,10 @@ Klasse `Konsole` mit der Menüschleife. Anforderungen:
 - Statt CSV: JSON von Hand schreiben und lesen
 - JUnit-Tests für `Aufgabenliste` und `CsvSpeicher`
   (Kapitel 12, `werkzeuge/pom.xml` als Vorlage)
+- Rückgängig: jede Änderung als Befehl-Objekt, ein Verlauf mit zwei Stapeln
+  (Kapitel 14.10)
+- Speicherformat austauschbar: ein Interface `Speicher` mit CSV- und
+  JSON-Variante, die Auswahl trifft eine Fabrik (Kapitel 6.9, 9.8)
 
 ---
 

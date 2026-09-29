@@ -1,10 +1,22 @@
 # Glossar
 
+**Adapter** — Entwurfsmuster: Übersetzt eine vorhandene Schnittstelle in die
+erwartete, z. B. `Arrays.asList`. Siehe 6.9 und 11.9.
+
 **Annotation** — Metadaten am Code, z. B. `@Override`, `@FunctionalInterface`.
 Manche prüft der Compiler, andere werten Bibliotheken zur Laufzeit aus.
 
 **Autoboxing** — Automatische Umwandlung zwischen `int` und `Integer`.
 Bequem, aber nicht gratis: In heissen Schleifen erzeugt es viele Objekte.
+
+**Befehl (Command)** — Entwurfsmuster: eine Aktion als Objekt, das man
+speichern, später ausführen und rückgängig machen kann. Siehe 14.10.
+
+**Beobachter (Observer)** — Entwurfsmuster: Ein Objekt benachrichtigt alle
+angemeldeten Interessenten, ohne sie zu kennen. Siehe 9.9.
+
+**Builder** — Entwurfsmuster: Ein Hilfsobjekt sammelt viele (oft freiwillige)
+Angaben, `build()` erzeugt daraus das fertige Objekt. Siehe 10.9.
 
 **Bytecode** — Das Zwischenformat in `.class`-Dateien. Plattformunabhängig,
 wird von der JVM ausgeführt bzw. per JIT in Maschinencode übersetzt.
@@ -20,6 +32,12 @@ Alles unter `Exception` ausser `RuntimeException`. Siehe Kapitel 7.
 **Deadlock** — Zwei Threads warten gegenseitig auf Sperren, die der jeweils
 andere hält. Beide stehen für immer.
 
+**Dekorierer (Decorator)** — Entwurfsmuster: Packt ein Objekt ein, hat
+dasselbe Interface und fügt Verhalten hinzu. `BufferedReader`. Siehe 6.9.
+
+**Dependency Injection** — Ein Objekt bekommt seine Abhängigkeiten von aussen
+(meist per Konstruktor), statt sie sich selbst zu holen. Die Alternative zum Singleton. Siehe 13.8.
+
 **Diamond Operator** — Das `<>` in `new ArrayList<>()`. Der Compiler liest die
 Typargumente von der linken Seite ab.
 
@@ -30,11 +48,18 @@ Methodenaufruf (Polymorphie).
 **Effektiv final** — Eine lokale Variable, die nach der Initialisierung nicht
 mehr verändert wird. Nur solche darf ein Lambda benutzen.
 
+**Entwurfsmuster (Design Pattern)** — Bewährte, benannte Lösung für ein
+wiederkehrendes Entwurfsproblem. Kein fertiger Code, eine Idee. Siehe 5.10 und
+[`entwurfsmuster.md`](entwurfsmuster.md).
+
 **Enum** — Typ mit einer festen Menge benannter Werte (`ROT, GELB, GRUEN`).
 Vollwertige Klasse: darf Felder und Methoden haben.
 
 **Erasure (Typlöschung)** — Generics existieren nur zur Compile-Zeit; zur
 Laufzeit ist `List<String>` einfach `List`.
+
+**Fabrikmethode (Factory Method)** — Statische Methode, die statt `new` ein
+Objekt liefert: `List.of`, `Integer.valueOf`. Darf cachen und Untertypen liefern. Siehe 5.10.
 
 **Garbage Collector** — Gibt Objekte frei, die nicht mehr erreichbar sind.
 Du gibst in Java nichts von Hand frei.
@@ -125,7 +150,13 @@ darf. Ermöglicht vollständigkeitsgeprüfte `switch`-Ausdrücke.
 **Signatur** — Name plus Parametertypen einer Methode. **Nicht** der
 Rückgabetyp.
 
+**Singleton** — Entwurfsmuster: Von einer Klasse gibt es genau eine Instanz.
+Am einfachsten als `enum` mit einer Konstante. Globaler Zustand, sparsam einsetzen. Siehe 5.10.
+
 **Stacktrace** — Der Aufrufpfad zum Zeitpunkt einer Exception. Von oben lesen.
+
+**Strategie (Strategy)** — Entwurfsmuster: austauschbares Verhalten hinter
+einem Interface, z. B. `Comparator` für `sort`. Oft einfach ein Lambda. Siehe 6.9 und 9.8.
 
 **Stream** — Pipeline über Daten, faul ausgewertet, einmal benutzbar.
 Keine Datenstruktur.

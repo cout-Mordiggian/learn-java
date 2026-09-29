@@ -322,6 +322,69 @@ selbst `0`.
 
 ---
 
+## `Pizza.java` — Builder
+
+<details><summary>Tipp 1 — Richtung</summary>
+
+Abschnitt 10.9 zeigt den Aufbau fast vollständig. Arbeite von innen nach aussen:
+erst den Builder (`belag`, `extraKaese`), dann `build`, dann den Konstruktor von
+`Pizza`, zuletzt `preisCent`. Frag dich bei jeder Builder-Methode: Was muss sie
+zurückgeben, damit `.belag("a").belag("b")` funktioniert?
+
+</details>
+
+<details><summary>Tipp 2 — Ansatz</summary>
+
+- Builder-Konstruktor: `this.groesse = Objects.requireNonNull(groesse, "groesse");`
+- `belag`: `null` oder `isBlank()` -> `IllegalArgumentException`. Sonst
+  `belaege.add(belag.strip())` und `return this;`. Reihenfolge der Bedingung:
+  erst auf `null` prüfen, dann `isBlank()` aufrufen (Kapitel 2, `||` bricht früh ab).
+- `extraKaese`: Feld auf `true`, `return this;`
+- `build`: Mehr als `MAX_BELAEGE`? -> `IllegalStateException`. Sonst `new Pizza(this)`.
+- Pizza-Konstruktor: die drei Werte aus `b` übernehmen, die Liste aber mit
+  `List.copyOf(b.belaege)`. Das löst **beide** Tests zur Unveränderlichkeit
+  auf einmal: Die Pizza hat ihre eigene Liste, und `List.copyOf` ist selbst
+  unveränderlich. Ohne Kopie teilen sich Builder und Pizza eine Liste, genau
+  wie der Record in "Was gibt das aus?" Nr. 2, und ein späteres `belag()`
+  ändert die schon fertige Pizza. `Collections.unmodifiableList(b.belaege)`
+  reicht **nicht**: Das ist nur eine Ansicht auf die Liste des Builders.
+- `preisCent`: Grundpreis der Größe plus `PREIS_BELAG * belaege.size()` plus
+  `PREIS_EXTRA_KAESE`, falls `extraKaese`. Der Bedingungsoperator `? :` hilft.
+
+</details>
+
+<details><summary>Tipp 3 — Gerüst</summary>
+
+```java
+private Pizza(Builder b) {
+    this.groesse = b.groesse;
+    this.belaege = List.copyOf(...);
+    this.extraKaese = ...;
+}
+
+public long preisCent() {
+    return groesse.grundpreisCent() + ... + (extraKaese ? ... : 0);
+}
+
+// im Builder:
+public Builder belag(String belag) {
+    if (belag == null || ...) {
+        throw new IllegalArgumentException("...");
+    }
+    belaege.add(...);
+    return this;
+}
+
+public Pizza build() {
+    if (belaege.size() > MAX_BELAEGE) {
+        throw new ...;
+    }
+    return new Pizza(this);
+}
+```
+
+</details>
+
 ## Selbstcheck — Antworten
 
 <details><summary>Wann `record`, wann normale Klasse?</summary>
@@ -383,5 +446,29 @@ Compiler **ganz am Ende** automatisch aus den Parametern gesetzt
 würdest du `this.name` selbst setzen, käme die automatische Zuweisung ein
 zweites Mal. Deshalb meldet der Compiler `cannot assign a value to final
 variable name`. Du veränderst also den Parameter, und der landet dann im Feld.
+
+</details>
+
+<details><summary>Wann lohnt sich ein Builder, und wann ist ein `record` besser?</summary>
+
+Ein Builder lohnt sich bei vielen Angaben, etwa ab vier, vor allem wenn viele
+freiwillig sind oder Standardwerte haben. Aufrufe wie `new X(a, true, false,
+null, 0)` sind unlesbar, und gleichartige Parameter vertauscht man leicht. Der
+Builder benennt jede Angabe, erlaubt beliebige Reihenfolge, prüft alles an
+einer Stelle (`build`) und liefert trotzdem ein unveränderliches Objekt. Bei
+zwei oder drei Pflichtangaben ohne Optionen ist er Ballast: Ein `record` mit
+kompaktem Konstruktor ist kürzer und genauso klar.
+
+</details>
+
+<details><summary>Warum braucht man das Besucher-Muster heute kaum noch?</summary>
+
+Der Besucher sollte neue Operationen über eine feste Typ-Hierarchie erlauben,
+ohne jede Klasse zu ändern. Dafür brauchte er ein Interface mit einer Methode
+je Typ und eine `accept`-Methode in jeder Klasse, viel Gerüst für wenig
+Inhalt. Mit einem `sealed interface` weiss der Compiler, welche Typen es gibt.
+Eine neue Operation ist dann einfach eine Methode mit `switch` und Typ- oder
+Record-Mustern, und der Compiler meldet jeden vergessenen Fall. Das ist
+kürzer, liest sich an einem Ort und ist genauso sicher.
 
 </details>

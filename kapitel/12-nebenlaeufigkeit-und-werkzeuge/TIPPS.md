@@ -236,6 +236,44 @@ try (ExecutorService pool = Executors.newFixedThreadPool(...)) {
 
 ---
 
+## `IdGenerator.java`
+
+<details><summary>Tipp 1 — Richtung</summary>
+
+Das Singleton ist fertig, du baust nur einen Zähler. Der Haken sind die vier
+Threads im Test. Lies 12.2 noch einmal: Warum ist `zaehler++` kein einzelner
+Schritt? Und welches Werkzeug aus 12.3 ist für einen einzelnen Zähler die
+erste Wahl?
+
+</details>
+
+<details><summary>Tipp 2 — Ansatz</summary>
+
+Ein Feld `private final AtomicLong zaehler = new AtomicLong();` (beginnt bei 0,
+`AtomicLong` funktioniert wie `AtomicInteger`, nur mit `long`). `naechsteId()`
+muss erhöhen **und** den neuen Wert liefern, in einem einzigen unteilbaren
+Schritt. Zwei getrennte Aufrufe (`incrementAndGet()` und danach `get()`) wären
+wieder zwei Schritte, zwischen denen ein anderer Thread dazwischenkommen kann.
+Und `getAndIncrement()` liefert den **alten** Wert, die erste ID wäre dann 0.
+
+`synchronized` an der Methode mit einem normalen `long` wäre auch richtig, nur
+langsamer. `volatile long` mit `++` dagegen nicht: `volatile` sorgt nur für
+Sichtbarkeit (12.2).
+
+</details>
+
+<details><summary>Tipp 3 — Gerüst</summary>
+
+```java
+private final AtomicLong zaehler = new AtomicLong();
+
+public long naechsteId() {
+    return zaehler.......();   // erhoehen, dann den NEUEN Wert liefern
+}
+```
+
+</details>
+
 ## Selbstcheck — Antworten
 
 <details><summary>Warum ist `zaehler++` nicht atomar?</summary>
@@ -292,5 +330,21 @@ sogar, dass andere Threads die Feldwerte vollständig sehen. Deshalb sind
 Records (Kapitel 10), unveränderliche Listen (`List.of`, `toList()`) und
 "jede Aufgabe rechnet lokal, zusammengeführt wird am Ende" (wie in
 `summeParallel`) der sicherste Weg.
+
+</details>
+
+<details><summary>Warum ist ein Singleton mit `static final`-Feld ohne `synchronized` thread-sicher, die faule Variante mit `if (instanz == null)` aber nicht?</summary>
+
+Ein `static final`-Feld wird bei der Initialisierung der Klasse gesetzt. Die JVM
+initialisiert jede Klasse genau einmal und sichert das selbst mit einer Sperre
+ab: Wollen zwei Threads gleichzeitig die Klasse benutzen, wartet der zweite, bis
+der erste fertig ist, und sieht danach das fertige Objekt. Die faule Variante
+macht dagegen *check-then-act* von Hand: Zwei Threads können beide `null`
+sehen, bevor einer von ihnen zugewiesen hat, und erzeugen dann zwei Instanzen.
+Ausserdem ist ohne Synchronisierung nicht einmal garantiert, dass ein anderer
+Thread das zugewiesene Objekt vollständig sieht. Ein `enum` mit einer
+Konstante hat dieselbe Garantie wie das `static final`-Feld. Wichtig: Beides
+sichert nur das **Erzeugen**. Ändert der Singleton danach Zustand, braucht der
+Zustand eigenen Schutz, etwa `AtomicLong`.
 
 </details>

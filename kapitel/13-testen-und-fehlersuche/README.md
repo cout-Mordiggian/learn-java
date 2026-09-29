@@ -132,7 +132,7 @@ try {
 In echten Projekten nimmt man **JUnit 5**: `assertEquals` statt `Pruef.gleich`,
 `assertThrows` statt `Pruef.wirft`, jeder Test eine Methode mit `@Test`, die
 Maven, Gradle oder die IDE automatisch finden. Beispiel in Abschnitt 12.12,
-Projektdateien in [`../12-nebenlaeufigkeit-und-werkzeuge/werkzeuge/`](../12-nebenläufigkeit-und-werkzeuge/werkzeuge/).
+Projektdateien in [`../12-nebenlaeufigkeit-und-werkzeuge/werkzeuge/`](../12-nebenlaeufigkeit-und-werkzeuge/werkzeuge/).
 Die Regeln für gute Testfälle gelten dort unverändert.
 
 ## 13.6 Fehlersuche systematisch
@@ -245,6 +245,95 @@ Der Compiler hilft mit, wenn du ihn lässt: `javac -Xlint:all ...` warnt unter
 anderem vor `;` nach `if` (`empty statement after if`) und vor dem
 Durchfallen im `switch` (`possible fall-through into case`).
 
+## 13.8 Testbarer Code: Abhängigkeiten hineinreichen
+
+Manche Methoden lassen sich kaum testen, egal wie gut deine Fälle sind:
+
+```java
+public class Begruessung {
+    public String text(String name) {
+        int stunde = java.time.LocalTime.now().getHour();   // die aktuelle Uhrzeit
+        return (stunde < 12 ? "Guten Morgen, " : "Guten Tag, ") + name;
+    }
+}
+```
+
+Welcher Text herauskommt, hängt davon ab, **wann** der Test läuft. Um 9 Uhr ist
+er grün, um 14 Uhr rot. Das verletzt "wiederholbar" aus 13.2. Das Problem ist
+nicht die Uhrzeit, sondern dass die Methode sie sich **heimlich selbst holt**. In
+ihrer Signatur steht davon nichts. Dasselbe passiert mit allem, was eine Methode
+sich von irgendwoher beschafft: Zufallszahlen, Tastatureingaben, Dateien und
+**Singletons** wie `Konfiguration.instanz()` aus 5.10.
+
+Die Lösung klingt größer, als sie ist: **Dependency Injection**, auf Deutsch
+etwa "Abhängigkeiten hineinreichen". Die Methode holt sich nichts selbst, sie
+bekommt es.
+
+**Stufe 1: als Parameter.** Oft reicht das schon:
+
+```java
+public String text(String name, int stunde) {
+    return (stunde < 12 ? "Guten Morgen, " : "Guten Tag, ") + name;
+}
+
+// im Test: voellig wiederholbar, jede Grenze pruefbar
+Pruef.gleich("Guten Morgen, Anna", b.text("Anna", 11), "11 Uhr ist noch Morgen");
+Pruef.gleich("Guten Tag, Anna", b.text("Anna", 12), "ab 12 Uhr: Tag");
+```
+
+Der Aufrufer im echten Programm übergibt die echte Uhrzeit. Der Test übergibt,
+was er gerade braucht, auch 11 und 12 Uhr für die Grenzwerte aus 13.3.
+
+**Stufe 2: als Objekt im Konstruktor.** Braucht eine Klasse etwas an vielen
+Stellen, bekommt sie es einmal im Konstruktor, am besten als Interface (6.5):
+
+```java
+public interface Uhr {
+    int stunde();
+}
+
+public class Begruessung {
+    private final Uhr uhr;
+
+    public Begruessung(Uhr uhr) { this.uhr = uhr; }   // hineingereicht
+
+    public String text(String name) {
+        return (uhr.stunde() < 12 ? "Guten Morgen, " : "Guten Tag, ") + name;
+    }
+}
+
+// echtes Programm: eine Uhr, die wirklich auf die Zeit schaut
+// im Test: eine feste Uhr, die immer 9 Uhr sagt
+class NeunUhr implements Uhr {
+    public int stunde() { return 9; }
+}
+Pruef.gleich("Guten Morgen, Anna", new Begruessung(new NeunUhr()).text("Anna"), "vormittags");
+```
+
+Das kennst du schon: In Teil A dieses Kapitels bekommt `alleBestanden` den
+`Rabattrechner` **hineingereicht**. Nur deshalb kann derselbe Test einmal die
+richtige Implementierung und siebenmal einen Mutanten prüfen. Hätte
+`alleBestanden` sich selbst einen Rabattrechner erzeugt, ginge das nicht.
+
+**Und Singletons?** Ein Singleton ist bequem, weil jeder es findet. Genau das ist
+beim Testen das Problem:
+
+- **Versteckte Abhängigkeit.** Wer mitten in einer Methode
+  `Konfiguration.instanz()` aufruft, verrät das in keiner Signatur.
+- **Tests beeinflussen sich.** Die eine Instanz lebt bis zum Programmende. Was
+  ein Test an ihr ändert, sieht der nächste. In den Tests von Kapitel 5 muss
+  die Prüfung der Standardwerte deshalb **zuerst** laufen.
+- **Nicht austauschbar.** Einem Test eine andere Konfiguration unterzuschieben,
+  geht nur über Umwege.
+
+Die Alternative: Das Objekt wird **einmal** erzeugt, meist in `main`, und an alle,
+die es brauchen, hineingereicht. "Genau eins" gibt es dann trotzdem, weil man eben
+nur eins erzeugt, aber niemand hängt heimlich an einem globalen Feld, und jeder
+Test erzeugt sich ein frisches. Frameworks wie Spring (12.14) machen im Grunde
+nichts anderes. **Faustregel:** Singletons nur für Dinge ohne veränderlichen
+Zustand oder für echte Einzelressourcen. Alles, was ein Test kontrollieren
+muss, gehört in einen Parameter oder den Konstruktor.
+
 ---
 
 ## Aufgaben
@@ -345,6 +434,27 @@ System.out.println("weiter mit " + konto);
 
 </details>
 
+**4.** `Konfiguration` ist der Singleton aus Kapitel 5 (Standard-Sprache `"de"`).
+
+```java
+static void testA() {
+    Konfiguration.instanz().setSprache("en");
+    System.out.print("A:" + Konfiguration.instanz().getSprache() + " ");
+}
+static void testB() {
+    System.out.print("B:" + Konfiguration.instanz().getSprache());
+}
+
+testA();
+testB();
+```
+
+<details><summary>Auflösung</summary>
+
+`A:en B:en` — `testB` erwartet vermutlich die Standard-Sprache, bekommt aber die, die `testA` zurückgelassen hat. Es gibt nur **eine** Instanz, und sie überlebt jeden Test. Ruft man `testB` zuerst auf, kommt `B:de` heraus: Das Ergebnis hängt von der **Reihenfolge** ab, ein klassisch nicht wiederholbarer Test (13.2). Mit einer hineingereichten Konfiguration (13.8) erzeugt jeder Test sein eigenes Objekt, und das Problem verschwindet.
+
+</details>
+
 ## Selbstcheck
 
 Erst selbst antworten, dann vergleichen: Die Antworten stehen am Ende von
@@ -355,6 +465,7 @@ Erst selbst antworten, dann vergleichen: Die Antworten stehen am Ende von
 - Warum schreibt man nach dem Beheben eines Fehlers noch einen Test dafür?
 - Warum darfst du einen negativen Preis nicht mit `assert` abweisen?
 - Warum kann ein Test mit `istAdmin("admin")` den `==`-Fehler nicht finden?
+- Warum ist eine Methode, die intern `LocalTime.now()` oder `Konfiguration.instanz()` aufruft, schwer zu testen, und wie behebst du das?
 
 ---
 

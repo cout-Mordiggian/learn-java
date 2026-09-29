@@ -9,6 +9,8 @@ public final class Punkt {
 
     // TODO: private final double x, y
 
+    // TODO (Fabrikmethode ursprung): eine Konstante fuer den Punkt (0, 0)
+
     public Punkt(double x, double y) {
         // TODO
     }
@@ -36,6 +38,25 @@ public final class Punkt {
 
     /** Gibt einen NEUEN, verschobenen Punkt zurueck. Dieser hier bleibt, wie er ist. */
     public Punkt verschoben(double dx, double dy) {
+        // TODO
+        return new Punkt(0, 0);
+    }
+
+    /**
+     * Statische Fabrikmethode: der Punkt (0, 0) - bei jedem Aufruf DASSELBE Objekt.
+     * (README 5.10: eine Fabrikmethode muss kein neues Objekt liefern.)
+     */
+    public static Punkt ursprung() {
+        // TODO: die Konstante zurueckgeben statt jedes Mal ein neues Objekt
+        return new Punkt(0, 0);
+    }
+
+    /**
+     * Statische Fabrikmethode: Punkt aus Abstand zum Ursprung und Winkel in Grad.
+     *   polar(2, 90) -> Punkt(0, 2)   (bis auf winzige Rundungsfehler)
+     * x = radius * cos(w), y = radius * sin(w), w im Bogenmass: Math.toRadians(winkelGrad)
+     */
+    public static Punkt polar(double radius, double winkelGrad) {
         // TODO
         return new Punkt(0, 0);
     }

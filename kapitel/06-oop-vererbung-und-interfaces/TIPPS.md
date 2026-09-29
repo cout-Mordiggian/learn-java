@@ -256,6 +256,60 @@ public static Figur groesste(Figur[] figuren) {
 
 </details>
 
+## 7. Dekorierer: `MitZeilennummer`, `Grossgeschrieben`, `NurMit`
+
+<details><summary>Tipp 1 — Richtung</summary>
+
+Abschnitt 6.9 zeigt `MitZeilennummer` fast vollständig. Alle drei Dekorierer
+haben dasselbe Grundgerüst: ein `final`-Feld `innen`, im Konstruktor gesetzt,
+und in `schreibe` am Ende `innen.schreibe(...)`. Frag dich pro Dekorierer: Was
+mache ich mit der Zeile, bevor ich sie weiterreiche, oder reiche ich sie
+überhaupt weiter?
+
+</details>
+
+<details><summary>Tipp 2 — Ansatz</summary>
+
+- Konstruktor: `this.innen = Objects.requireNonNull(innen, "innen");` (5.7). So
+  scheitert `null` sofort und nicht erst beim ersten `schreibe`, wie der Test
+  verlangt. Bei `NurMit` genauso für `teil`. `import java.util.Objects;` nicht
+  vergessen.
+- `MitZeilennummer`: ein `int`-Feld `nummer`, in `schreibe` erst erhöhen, dann
+  `innen.schreibe(nummer + ": " + zeile)`. Das Feld gehört zum Objekt (nicht
+  `static`!), deshalb zählt jeder Dekorierer für sich.
+- `Grossgeschrieben`: `innen.schreibe(zeile.toUpperCase(Locale.ROOT))`.
+- `NurMit`: nur wenn `zeile.contains(teil)`, weiterreichen, sonst nichts tun.
+
+Warum ergeben die Kombinationen im Test unterschiedliche Ergebnisse? Der Aufruf
+kommt immer zuerst beim **äußersten** Objekt an. Steht der Filter aussen,
+erreichen nur die durchgelassenen Zeilen den Zähler. Steht `Grossgeschrieben`
+aussen, sieht der Filter schon Grossbuchstaben.
+
+</details>
+
+<details><summary>Tipp 3 — Gerüst</summary>
+
+```java
+public class NurMit implements Protokoll {
+    private final String teil;
+    private final Protokoll innen;
+
+    public NurMit(String teil, Protokoll innen) {
+        this.teil = Objects.requireNonNull(...);
+        this.innen = Objects.requireNonNull(...);
+    }
+
+    @Override
+    public void schreibe(String zeile) {
+        if (...) {
+            innen.schreibe(zeile);
+        }
+    }
+}
+```
+
+</details>
+
 ---
 
 ## Selbstcheck — Antworten
@@ -322,5 +376,33 @@ Prüft `Quadrat.equals` aber mit `instanceof Quadrat`, fällt das Rechteck durch
 und `new Quadrat(3).equals(new Rechteck(3, 3))` sagt "nein". Auswege sind
 `getClass() != o.getClass()` statt `instanceof` oder, besser, solche Werttypen
 gar nicht voneinander erben zu lassen.
+
+</details>
+
+<details><summary>Warum muss die <code>Kasse</code> nicht geändert werden, wenn eine neue Rabattart dazukommt?</summary>
+
+Weil die Kasse nur das Interface `Rabatt` kennt und `anwenden` aufruft. Wie
+gerechnet wird, steckt in der Klasse, die das Interface implementiert. Eine neue
+Rabattart ist also eine neue Klasse wie `ProzentRabatt`, die man der Kasse im
+Konstruktor oder über `setzeRabatt` gibt. Dank Polymorphie (6.3) ruft die Kasse
+dann automatisch die neue Rechnung auf. Mit der `if`-Kette dagegen muss jede neue
+Art in die Kasse selbst hinein, und jede Änderung kann die alten Arten kaputt
+machen. Das ist das Strategie-Muster.
+
+</details>
+
+<details><summary>Was unterscheidet einen Dekorierer von einer Unterklasse, und was von einem Adapter?</summary>
+
+**Von der Unterklasse:** Eine Unterklasse legt beim Kompilieren fest, was eine
+Klasse zusätzlich kann, und zwar für alle ihre Objekte. Kombinationen brauchen
+je eine eigene Klasse (bei drei Eigenschaften schon 7). Ein Dekorierer wird zur
+**Laufzeit** und **pro Objekt** um ein anderes gelegt. Er lässt sich beliebig
+stapeln und in jeder Reihenfolge kombinieren, und er hängt nur am Interface,
+nicht an den Interna einer Oberklasse (6.6).
+
+**Vom Adapter:** Beide packen ein Objekt ein. Der Dekorierer **behält** die
+Schnittstelle, er ist ein `Protokoll`, das ein `Protokoll` einpackt, und fügt
+Verhalten hinzu. Der Adapter **übersetzt** eine Schnittstelle in eine andere,
+etwa ein `AltesThermometer` in eine `Temperaturquelle`, ohne neues Verhalten.
 
 </details>

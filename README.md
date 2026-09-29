@@ -45,16 +45,16 @@ Meldet die Shell `Permission denied`, fehlt das Ausführungsrecht:
 | 02 | Kontrollfluss | Operatoren, `if`/`switch`, Schleifen, `break`/`continue` |
 | 03 | Strings und Arrays | Unveränderlichkeit, `equals` vs `==`, `StringBuilder`, 1D-/2D-Arrays |
 | 04 | Methoden | Signatur, call-by-value, Überladung, Rekursion, Varargs |
-| 05 | OOP I: Klassen und Objekte | Felder, Konstruktoren, Kapselung, `static`, `toString`/`equals` |
-| 06 | OOP II: Vererbung und Interfaces | `extends`, Polymorphie, abstrakte Klassen, Interfaces, Sichtbarkeiten |
+| 05 | OOP I: Klassen und Objekte | Felder, Konstruktoren, Kapselung, `static`, `toString`/`equals`, Singleton, Fabrikmethode |
+| 06 | OOP II: Vererbung und Interfaces | `extends`, Polymorphie, abstrakte Klassen, Interfaces, Sichtbarkeiten, Strategie, Dekorierer, Adapter |
 | 07 | Exceptions | checked/unchecked, `try`/`catch`/`finally`, try-with-resources, eigene Fehler |
 | 08 | Collections und Generics | `List`, `Set`, `Map`, `Comparator`, Typparameter, Wildcards |
-| 09 | Lambdas und Streams | funktionale Interfaces, Methodenreferenzen, Pipelines, `Optional` |
-| 10 | Modernes Java | `var`, `record`, `enum`, `sealed`, Pattern Matching, Textblöcke |
+| 09 | Lambdas und Streams | funktionale Interfaces, Methodenreferenzen, Pipelines, `Optional`, Fabrik, Beobachter |
+| 10 | Modernes Java | `var`, `record`, `enum`, `sealed`, Pattern Matching, Textblöcke, Builder |
 | 11 | Dateien und IO | `Path`/`Files`, Zeichensätze, Zeilen-Streams, CSV |
 | 12 | Nebenläufigkeit und Werkzeuge | Threads, `ExecutorService`, Race Conditions, Maven/Gradle, JUnit |
 | 13 | Testen und Fehlersuche | eigene Tests schreiben, Grenzwerte, Mutanten entlarven, systematisch debuggen |
-| 14 | Algorithmen und Datenstrukturen | Aufwand/O-Notation, Sortieren, eigene Liste und eigener Stapel |
+| 14 | Algorithmen und Datenstrukturen | Aufwand/O-Notation, Sortieren, eigene Liste und eigener Stapel, Iterator, Befehl/Rückgängig |
 |  — | [Abschlussprojekt](projekt/README.md) | Aufgabenverwaltung als Konsolen-Anwendung |
 
 Zusätzlich:
@@ -63,6 +63,7 @@ Zusätzlich:
 - [`spickzettel/syntax.md`](spickzettel/syntax.md) — Syntax auf einen Blick
 - [`spickzettel/glossar.md`](spickzettel/glossar.md) — Begriffe von "Bytecode" bis "Wildcard"
 - [`spickzettel/fehlermeldungen.md`](spickzettel/fehlermeldungen.md) — die häufigsten Compiler- und Laufzeitfehler und was sie bedeuten
+- [`spickzettel/entwurfsmuster.md`](spickzettel/entwurfsmuster.md) — die Entwurfsmuster sind auf die Kapitel verteilt; hier stehen alle auf einen Blick, mit Fundstelle im Kurs und im JDK
 
 ---
 

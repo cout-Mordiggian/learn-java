@@ -356,6 +356,170 @@ return schritte.stream()
 
 </details>
 
+## Aufgabe 11: Rabatt-Strategien
+
+<details><summary>Tipp 1 — Richtung</summary>
+
+Abschnitt 9.8 und 9.1. `Rabatt` hat genau eine Methode
+`long anwenden(long betragCent)`, also ist jedes Lambda `betrag -> ...` ein
+Rabatt. Jede der vier Methoden prüft ihre Parameter und gibt dann ein Lambda
+zurück. Frag dich: Welche Prüfung gehört **vor** das `return`, und was
+rechnet das Lambda **selbst**?
+
+</details>
+
+<details><summary>Tipp 2 — Ansatz</summary>
+
+- `keiner`: `betrag -> betrag`. "Immer dieselbe Instanz" bekommst du sicher mit
+  einer Konstanten: `private static final Rabatt KEINER = betrag -> betrag;` und
+  `return KEINER;`.
+- `prozent`: erst `prozent < 0 || prozent > 100` -> `IllegalArgumentException`,
+  dann `return betrag -> betrag - betrag * prozent / 100;`. Ganzzahlige Division
+  rundet den **Abzug** ab, genau wie verlangt. Das Lambda darf `prozent` benutzen,
+  weil der Parameter effektiv final ist (9.4). So merkt sich jede Strategie ihren
+  eigenen Satz.
+- `festbetrag`: negativ -> Exception. Das Lambda nimmt `Math.max(0, ...)`.
+- `abMindestwert`: `Objects.requireNonNull(rabatt, "rabatt")` **vor** dem Lambda,
+  sonst fällt `null` erst beim Anwenden auf. Im Lambda: Ist der Betrag
+  mindestens `mindestCent`, `rabatt.anwenden(betrag)`, sonst `betrag`.
+
+Warum besteht `keiner()` den Test auch ohne Konstante? Ein Lambda, das keine
+Variablen von aussen benutzt, erzeugt die übliche JVM (HotSpot) nur einmal und
+gibt danach immer dasselbe Objekt heraus. Das ist ein Implementierungsdetail, die
+Sprachspezifikation verspricht es nicht. Erst die Konstante macht es zu einer
+Zusage, auf die sich Aufrufer verlassen dürfen. Bei `prozent(10)` klappt der
+Trick nicht, das Lambda fängt `prozent` ein, deshalb entsteht jedes Mal ein
+neues Objekt.
+
+</details>
+
+<details><summary>Tipp 3 — Gerüst</summary>
+
+```java
+private static final Rabatt KEINER = ...;
+
+public static Rabatt prozent(int prozent) {
+    if (...) {
+        throw new IllegalArgumentException("...");
+    }
+    return betrag -> ...;
+}
+
+public static Rabatt abMindestwert(long mindestCent, Rabatt rabatt) {
+    Objects.requireNonNull(rabatt, "rabatt");
+    return betrag -> betrag >= mindestCent ? ... : ...;
+}
+```
+
+</details>
+
+## Aufgabe 12: `Rabatte.ausCode`
+
+<details><summary>Tipp 1 — Richtung</summary>
+
+Abschnitt 9.8, "Die Fabrik wählt die Strategie". Erst den Code vereinheitlichen, dann anhand des
+Anfangs entscheiden, welche deiner Methoden aus Aufgabe 11 zuständig ist. Frag
+dich: Wie viele der ungültigen Fälle aus dem Test behandeln `prozent` und
+`festbetrag` schon von selbst?
+
+</details>
+
+<details><summary>Tipp 2 — Ansatz</summary>
+
+`code.strip().toUpperCase(Locale.ROOT)` macht aus `"  prozent15 "` ein
+`"PROZENT15"`. Ist `code` `null`, wirft schon `strip()` die verlangte
+`NullPointerException`. Deutlicher ist ein `Objects.requireNonNull` am Anfang.
+
+Dann: `equals("KEIN")` -> `keiner()`. `startsWith("PROZENT")` -> den Rest mit
+`substring("PROZENT".length())` abschneiden, mit `Integer.parseInt` umwandeln
+und an `prozent(...)` geben. Genauso `MINUS` mit `Long.parseLong` und
+`festbetrag`. Alles andere -> `IllegalArgumentException`.
+
+Die ungültigen Codes erledigen sich dann fast von selbst:
+`"PROZENT"`, `"PROZENTabc"` und `"PROZENT 10"` lassen `parseInt` eine
+`NumberFormatException` werfen, und die **ist** eine `IllegalArgumentException`
+(Unterklasse, Kapitel 7). `"PROZENT150"` und `"MINUS-5"` lehnen `prozent` bzw.
+`festbetrag` ab. Das ist der Gewinn, wenn die Fabrik vorhandene Methoden benutzt,
+statt selbst zu rechnen: Jede Regel steht nur an einer Stelle.
+
+`Locale.ROOT`: Ohne Angabe richtet sich `toUpperCase` nach der Sprache des
+Rechners. Auf einem türkischen System wird aus `"i"` ein `"İ"`, und `"minus"`
+passt nicht mehr zu `"MINUS"`.
+
+</details>
+
+<details><summary>Tipp 3 — Gerüst</summary>
+
+```java
+public static Rabatt ausCode(String code) {
+    Objects.requireNonNull(code, "code");
+    String c = code.strip().toUpperCase(Locale.ROOT);
+    if (c.equals("KEIN")) {
+        return ...;
+    }
+    if (c.startsWith("PROZENT")) {
+        return prozent(Integer.parseInt(c.substring(...)));
+    }
+    if (...) {
+        ...
+    }
+    throw new IllegalArgumentException("Unbekannter Rabattcode: " + code);
+}
+```
+
+</details>
+
+## Aufgabe 13: `Lager`
+
+<details><summary>Tipp 1 — Richtung</summary>
+
+Abschnitt 9.9. Zuerst nur die Bestände (`einlagern`, `entnehmen`, `bestand`),
+bis der erste Testblock grün ist. Dann `anmelden`/`abmelden` und die Meldung.
+Frag dich bei der Meldung: Welche **zwei** Bestände musst du vergleichen, damit
+nur das Unterschreiten meldet und nicht jede Entnahme darunter?
+
+</details>
+
+<details><summary>Tipp 2 — Ansatz</summary>
+
+- `bestand`: `bestaende.getOrDefault(artikel, 0)`.
+- `einlagern`: `menge <= 0` -> `IllegalArgumentException`, sonst
+  `bestaende.merge(artikel, menge, Integer::sum)` (addiert oder legt neu an).
+- `entnehmen`: Menge prüfen. `vorher = bestand(artikel)`. `menge > vorher` ->
+  `IllegalStateException`, **bevor** du etwas änderst. Dann
+  `nachher = vorher - menge` speichern. Melden, wenn
+  `vorher >= meldebestand && nachher < meldebestand`.
+- `anmelden`: `Objects.requireNonNull`, dann nur hinzufügen, wenn
+  `!beobachter.contains(b)`.
+- `abmelden`: `beobachter.remove(b)` tut bei Unbekannten einfach nichts.
+- Benachrichtigen: `for (LagerBeobachter b : List.copyOf(beobachter))`. Ohne die
+  Kopie meldet sich der erste Beobachter im Test ab, während du über die Liste
+  läufst. Dann wirft der Iterator eine `ConcurrentModificationException` (8.6), oder
+  bei nur zwei Beobachtern wird der zweite still übersprungen. Probier es aus.
+
+</details>
+
+<details><summary>Tipp 3 — Gerüst</summary>
+
+```java
+public void entnehmen(String artikel, int menge) {
+    pruefeMenge(menge);                  // eigene kleine private Methode
+    int vorher = bestand(artikel);
+    if (menge > vorher) {
+        throw new IllegalStateException("...");
+    }
+    int nachher = ...;
+    bestaende.put(artikel, nachher);
+    if (vorher >= meldebestand && ...) {
+        for (LagerBeobachter b : List.copyOf(beobachter)) {
+            b.knapp(..., ...);
+        }
+    }
+}
+```
+
+</details>
+
 ---
 
 ## Selbstcheck — Antworten
@@ -418,5 +582,31 @@ Standardwert teuer ist oder Seiteneffekte hat (`orElseGet(() -> ladeAusDatenbank
 Weitere: Zustand, der über mehrere Elemente mitgeführt wird (Kapitel 11.5),
 frühes Abbrechen mit komplizierter Bedingung, oder checked Exceptions im
 Schleifenrumpf — die lassen sich in Lambdas nicht einfach weiterwerfen.
+
+</details>
+
+<details><summary>Warum braucht man für eine Strategie wie `Comparator` heute selten eine eigene Klasse?</summary>
+
+`List.sort` ist der Kontext. Es kennt den Ablauf des Sortierens, nicht aber, wie
+zwei Elemente verglichen werden. Diesen austauschbaren Teil bekommt es als
+Objekt, das ein Interface erfüllt (`Comparator`). Das ist genau das
+Strategie-Muster. Weil `Comparator` ein funktionales Interface ist, genügt ein
+Lambda oder eine Fabrikmethode wie `Comparator.comparing(Person::getAlter)`.
+Früher brauchte jede Sortierreihenfolge eine eigene Klasse. Eine Klasse lohnt
+sich heute nur noch, wenn die Strategie Zustand oder mehrere Methoden hat.
+
+</details>
+
+<details><summary>Warum läuft `Lager` beim Benachrichtigen über eine Kopie der Beobachterliste?</summary>
+
+Weil ein Beobachter in `knapp()` beliebigen Code ausführen darf, auch
+`lager.abmelden(this)` oder `lager.anmelden(...)`. Das ändert die Liste, über
+die das Lager gerade läuft. Der Iterator von `ArrayList` bemerkt das und wirft
+eine `ConcurrentModificationException`. In einem Sonderfall (Abmelden beim
+vorletzten Element) merkt er es nicht und beendet die Schleife still, dann
+bekommt der letzte Beobachter keine Meldung. Beides fällt nur bei bestimmten
+Beobachtern auf, also spät. Mit `List.copyOf(beobachter)` läuft die Schleife
+über einen Schnappschuss. Änderungen wirken erst bei der nächsten Meldung.
+Alternative: `CopyOnWriteArrayList` (12.6) kopiert bei jedem Schreiben selbst.
 
 </details>

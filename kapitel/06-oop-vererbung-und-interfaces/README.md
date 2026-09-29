@@ -133,7 +133,7 @@ public abstract class Figur {
   selbst `abstract` sein.
 
 `beschreibung()` ruft `flaeche()` auf, ohne zu wissen, wie sie rechnet. Diese
-Umkehrung ("die Basis ruft die Ableitung") heisst *Template Method* und ist der
+Umkehrung ("die Basis ruft die Ableitung") heisst *Template Method* (Schablonenmethode, mehr in 6.9) und ist der
 häufigste sinnvolle Einsatz abstrakter Klassen.
 
 Warum `protected` beim Konstruktor? Er ist für Unterklassen gedacht, die ihn
@@ -240,6 +240,161 @@ Rechteck "ja" und das Quadrat "nein" — die Symmetrie des Vertrags ist
 gebrochen. Der übliche Ausweg: `getClass() != o.getClass()` statt `instanceof`,
 oder — besser — solche Typen gar nicht erst voneinander erben lassen.
 
+## 6.9 Entwurfsmuster mit Interfaces
+
+Was ein Entwurfsmuster ist, steht in 5.10. Die vier Muster hier leben alle von
+zwei Regeln dieses Kapitels: **gegen ein Interface programmieren** (6.5) und
+**Komposition statt Vererbung** (6.6).
+
+### Strategie (Strategy): Verhalten austauschbar machen
+
+**Problem:** Eine Kasse kennt verschiedene Rabattarten. Die naheliegende Lösung
+wächst mit jeder neuen Art:
+
+```java
+long zuZahlen(long summe) {
+    if (rabattArt.equals("PROZENT")) return summe - summe * satz / 100;
+    if (rabattArt.equals("FEST"))    return Math.max(0, summe - abzug);
+    return summe;                    // jede neue Art: die Kasse aendern
+}
+```
+
+**Lösung:** Das Verhalten wandert hinter ein Interface. Die Kasse, der
+**Kontext**, hält eine Strategie und ruft sie auf, ohne zu wissen, welche es ist:
+
+```java
+public interface Rabatt {
+    long anwenden(long betragCent);
+}
+
+public class ProzentRabatt implements Rabatt {
+    private final int prozent;
+    public ProzentRabatt(int prozent) { this.prozent = prozent; }
+
+    @Override
+    public long anwenden(long betragCent) {
+        return betragCent - betragCent * prozent / 100;
+    }
+}
+
+public class Kasse {
+    private Rabatt rabatt;
+    public Kasse(Rabatt rabatt)       { this.rabatt = rabatt; }
+    public void setzeRabatt(Rabatt r) { this.rabatt = r; }
+    public long zuZahlen(long summe)  { return rabatt.anwenden(summe); }
+}
+
+new Kasse(new ProzentRabatt(10)).zuZahlen(2000)    // 1800
+```
+
+Eine neue Rabattart ist eine neue Klasse, die Kasse bleibt, wie sie ist. Die
+Strategie lässt sich einzeln testen und zur Laufzeit austauschen. Du wirst das
+Muster wiedertreffen: `Comparator` ist eine Sortier-Strategie (8.7), und mit
+Lambdas schrumpft jede Strategie-Klasse auf eine Zeile (9.8).
+
+### Dekorierer (Decorator): Verhalten um ein Objekt herumlegen
+
+**Problem:** Ein Protokoll soll wahlweise Zeilen nummerieren, gross schreiben
+oder filtern, in jeder Kombination. Mit Unterklassen bräuchte man
+`NummeriertesProtokoll`, `GrossesProtokoll`, `NummeriertesGrossesProtokoll`, ...:
+Bei drei Eigenschaften sind es schon 7 Klassen, und die Reihenfolge ist fest.
+
+**Lösung:** Komposition wie in 6.6, mit einem Kniff. Ein Dekorierer
+**implementiert dasselbe Interface** wie das Objekt, das er einpackt, und
+**reicht an es weiter**. Vorher oder nachher tut er seins. Weil er selbst wieder
+ein `Protokoll` ist, kann man ihn beliebig schachteln:
+
+```java
+Protokoll p = new MitZeilennummer(new Grossgeschrieben(new TextProtokoll()));
+p.schreibe("start");
+```
+
+```
+  p.schreibe("start")
+    ┌─ MitZeilennummer ─────────────────────────────────┐
+    │ "1: start" ->  ┌─ Grossgeschrieben ──────────────┐ │
+    │                │ "1: START" -> ┌─ TextProtokoll ┐│ │
+    │                │               │ speichert      ││ │
+    │                │               └────────────────┘│ │
+    │                └─────────────────────────────────┘ │
+    └────────────────────────────────────────────────────┘
+```
+
+```java
+public class MitZeilennummer implements Protokoll {     // "ist ein" Protokoll ...
+    private final Protokoll innen;                     // ... und "hat ein" Protokoll
+    private int nummer;
+
+    public MitZeilennummer(Protokoll innen) { this.innen = innen; }
+
+    @Override
+    public void schreibe(String zeile) {
+        nummer++;
+        innen.schreibe(nummer + ": " + zeile);          // veraendern, weiterreichen
+    }
+}
+```
+
+Die **Reihenfolge zählt**. Der Aufruf kommt immer zuerst beim äußersten Objekt
+an. Steht ein Filter aussen und die Nummer innen, werden nur die durchgelassenen
+Zeilen gezählt. Umgekehrt zählt die Nummer alle, und der Filter sieht schon
+`"1: ..."`. Im Unterschied zur Vererbung wird zur **Laufzeit** und **pro Objekt**
+kombiniert. Im JDK sind die Reader aus Kapitel 11 das bekannteste Beispiel (11.9).
+
+### Adapter: eine passende Schnittstelle nachrüsten
+
+**Problem:** Dein Programm erwartet ein Interface, die vorhandene Klasse bietet
+ein anderes. Oft stammt sie aus einer Bibliothek, die du nicht ändern kannst:
+
+```java
+public interface Temperaturquelle { double celsius(); }     // das erwartest du
+
+public class AltesThermometer {                              // das hast du
+    public double leseFahrenheit() { ... }
+}
+```
+
+**Lösung:** Eine kleine Klasse dazwischen, die das eine in das andere
+übersetzt:
+
+```java
+public class ThermometerAdapter implements Temperaturquelle {
+    private final AltesThermometer alt;
+    public ThermometerAdapter(AltesThermometer alt) { this.alt = alt; }
+
+    @Override
+    public double celsius() {
+        return (alt.leseFahrenheit() - 32) * 5 / 9;
+    }
+}
+```
+
+**Adapter oder Dekorierer?** Beide packen ein Objekt ein. Der Adapter **ändert**
+die Schnittstelle, der Dekorierer **behält** sie und fügt Verhalten hinzu.
+
+### Schablonenmethode (Template Method): der Ablauf steht, die Schritte variieren
+
+Das Prinzip kennst du aus 6.4: `beschreibung()` in `Figur` ruft `flaeche()` auf,
+die Unterklassen liefern sie. Als Muster ausgebaut legt eine `final`-Methode den
+**Ablauf** fest, die **Schritte** sind abstrakt oder haben einen Standard:
+
+```java
+public abstract class Bericht {
+    public final String erstelle() {                   // die Schablone: final, Ablauf fest
+        return kopf() + "\n" + inhalt() + "\n" + fuss();
+    }
+    protected String kopf() { return "=== Bericht ==="; }   // Standard, ueberschreibbar
+    protected abstract String inhalt();                     // muss jede Unterklasse liefern
+    protected String fuss() { return "=== Ende ==="; }
+}
+```
+
+Das Paradebeispiel im JDK ist `AbstractList`: Wer von ihr erbt und nur `get(int)`
+und `size()` schreibt, bekommt `contains`, `indexOf`, `equals`, `toString` und
+den Rest geschenkt (Listen kommen in Kapitel 8). Die Schablonenmethode ist
+Vererbung, mit allen Nachteilen aus 6.6. Die Alternative ist eine Strategie:
+den variablen Schritt als Objekt hineinreichen, statt ihn zu überschreiben.
+
 ---
 
 ## Aufgaben
@@ -247,7 +402,8 @@ oder — besser — solche Typen gar nicht erst voneinander erben lassen.
 > Hängst du fest? Gestufte Hinweise zu jeder Aufgabe stehen in
 > [`TIPPS.md`](TIPPS.md) — erst Tipp 1, dann wieder selbst probieren.
 
-Sechs Dateien in [`src/`](src/) — prüfen mit `./lerne.sh 06`.
+Neun Dateien in [`src/`](src/) — prüfen mit `./lerne.sh 06`. `Protokoll.java`
+und `TextProtokoll.java` sind fertig und gehören zu Aufgabe 7.
 
 ### 1. `Figur.java` — abstrakte Basisklasse
 
@@ -300,6 +456,20 @@ Zwei statische Methoden, die **nur** den Typ `Figur` kennen:
 
 Der Punkt der Aufgabe: In diesen beiden Methoden darf kein `instanceof` und
 kein Cast vorkommen. Genau das ist Polymorphie.
+
+### 7. `MitZeilennummer`, `Grossgeschrieben`, `NurMit` — drei Dekorierer
+
+Drei Klassen, die `Protokoll` implementieren und ein anderes `Protokoll`
+einpacken (6.9). Ganz innen steckt das fertige `TextProtokoll`, das alle Zeilen
+sammelt; `inhalt()` liefert sie, jede mit `\n` dahinter.
+
+- `MitZeilennummer(innen)`: setzt `"1: "`, `"2: "`, ... davor. Jedes Objekt zählt für sich.
+- `Grossgeschrieben(innen)`: schreibt die Zeile gross (`Locale.ROOT`).
+- `NurMit(teil, innen)`: lässt nur Zeilen durch, die `teil` enthalten.
+- `null` für `innen` oder `teil`: `NullPointerException` schon im Konstruktor (5.7).
+
+Die Tests stapeln die Dekorierer in verschiedenen Reihenfolgen. Überleg vorher,
+was jeweils herauskommen muss.
 
 ## Was gibt das aus?
 
@@ -360,6 +530,28 @@ new C();
 
 </details>
 
+**4.**
+
+```java
+TextProtokoll basis = new TextProtokoll();
+Protokoll p = new MitZeilennummer(new NurMit("2", basis));
+p.schreibe("Zeile A");
+p.schreibe("Zeile B");
+p.schreibe("Raum 2");
+System.out.print(basis.inhalt());
+```
+
+<details><summary>Auflösung</summary>
+
+```
+2: Zeile B
+3: Raum 2
+```
+
+Der Aufruf kommt zuerst beim **äußeren** Dekorierer an. `MitZeilennummer` nummeriert alle drei Zeilen, und erst danach prüft `NurMit`, ob eine `"2"` darin steckt. In `"2: Zeile B"` steckt sie, in der Nummer. Wer nur `Raum 2` erwartet hat, las die Schachtelung von innen nach aussen. Andersherum geschachtelt, `new NurMit("2", new MitZeilennummer(basis))`, käme `1: Raum 2` heraus.
+
+</details>
+
 ## Selbstcheck
 
 Erst selbst antworten, dann vergleichen: Die Antworten stehen am Ende von
@@ -370,3 +562,5 @@ Erst selbst antworten, dann vergleichen: Die Antworten stehen am Ende von
 - Warum sind Felder nicht polymorph?
 - Wann Interface, wann abstrakte Klasse?
 - Warum bricht `equals` zwischen `Rechteck` und `Quadrat` die Symmetrie?
+- Warum muss die `Kasse` nicht geändert werden, wenn eine neue Rabattart dazukommt?
+- Was unterscheidet einen Dekorierer von einer Unterklasse, und was von einem Adapter?

@@ -70,6 +70,8 @@ public record Artikel(String name, long preisCent, int menge) {
 }
 ```
 
+Warum eine statische Fabrik oft besser ist als ein weiterer Konstruktor: 5.10.
+
 ### Grenzen
 
 - Records sind **immer** `final` und ihre Felder **immer** `final`
@@ -303,6 +305,151 @@ alle sechs Monate und sind ein guter Blick auf das, was als Nächstes kommt.
 Neue Features starten oft als *Preview* und müssen dann mit
 `--enable-preview` freigeschaltet werden.
 
+## 10.9 Muster mit `record`, `enum` und `sealed`
+
+Entwurfsmuster kennst du seit 5.10. Mit den Sprachmitteln dieses Kapitels
+bekommen vier davon eine moderne Form. Einen, den Builder, schreibst du selbst.
+
+### Builder — wenn es für einen Record zu viele Angaben werden
+
+Ein `record` ist ideal für wenige Pflichtfelder. Hat ein Objekt aber viele
+Felder, die meisten freiwillig, werden Konstruktoraufrufe unlesbar:
+
+```java
+new Pizza(Groesse.MITTEL, List.of("Salami"), true, false, null, 0);   // was ist "true"?
+```
+
+Für jede Kombination einen eigenen Konstruktor zu schreiben (*telescoping
+constructors*) skaliert nicht. Setter würden halb fertige Objekte erlauben, und
+unveränderlich wäre nichts mehr. Das Muster **Builder** (*Erbauer*) löst
+beides: Ein eigenes Objekt sammelt die Angaben, `build()` baut daraus das
+fertige, unveränderliche Objekt.
+
+```java
+Pizza p = Pizza.builder(Pizza.Groesse.MITTEL)   // Pflichtangaben als Parameter
+        .belag("Salami")                        // freiwillige als Methoden
+        .belag("Pilze")
+        .extraKaese()
+        .build();                               // prueft und baut
+```
+
+So ist er aufgebaut:
+
+```java
+public final class Pizza {
+    private final Groesse groesse;
+    private final List<String> belaege;
+
+    private Pizza(Builder b) {                  // nur der Builder baut Pizzen
+        this.groesse = b.groesse;
+        this.belaege = List.copyOf(b.belaege);  // Kopie! (vgl. "Was gibt das aus?" Nr. 2)
+    }
+
+    public static Builder builder(Groesse g) { return new Builder(g); }
+
+    public static final class Builder {         // statische innere Klasse wie Knoten in 14.6
+        private final Groesse groesse;
+        private final List<String> belaege = new ArrayList<>();
+
+        private Builder(Groesse g) { this.groesse = Objects.requireNonNull(g, "groesse"); }
+
+        public Builder belag(String b) {
+            belaege.add(b);
+            return this;                        // "fluent": erlaubt die Kette
+        }
+
+        public Pizza build() {
+            /* Regeln pruefen, die das ganze Objekt betreffen */
+            return new Pizza(this);
+        }
+    }
+}
+```
+
+- **Pflichtangaben** sind Parameter von `builder(...)`, sie fehlen also nie.
+- Jede Methode liefert **`this`** zurück, deshalb lässt sich alles verketten
+  (eine *fluent* Schnittstelle).
+- **`build()`** prüft Regeln, die das ganze Objekt betreffen, an einer Stelle.
+- **`static`**, weil ein Builder vor der Pizza existiert. Aussen und innen dürfen
+  gegenseitig auf ihre privaten Member zugreifen, wie bei `Knoten` in 14.6.
+- **`List.copyOf`** im Konstruktor: Ohne Kopie teilten sich Builder und Pizza
+  eine Liste, und ein späteres `belag()` änderte die schon fertige Pizza.
+
+Im JDK: `StringBuilder` (sammelt Text, `toString()` baut den String),
+`HttpRequest.newBuilder().uri(...).GET().build()`, `Stream.builder()`,
+`Locale.Builder`. **Wann nicht:** Bei zwei, drei Pflichtfeldern ist ein `record`
+mit kompaktem Konstruktor kürzer und genauso klar. Ein Builder lohnt sich ab
+etwa vier Angaben, vor allem wenn viele freiwillig sind.
+
+### Singleton als `enum`
+
+Den klassischen Singleton mit privatem Konstruktor kennst du aus 5.10. Kürzer
+und sicherer ist ein `enum` mit genau einer Konstante. Die JVM garantiert, dass
+es keine zweite Instanz geben kann, auch nicht über Tricks mit Serialisierung
+oder Reflection:
+
+```java
+public enum Waehrung {
+    INSTANZ;
+
+    public String formatiere(long cent) {
+        return String.format(Locale.ROOT, "%d,%02d EUR", cent / 100, cent % 100);
+    }
+}
+
+Waehrung.INSTANZ.formatiere(1299);   // "12,99 EUR"
+```
+
+Für zustandslose Helfer wie diesen ist das unproblematisch. Hat der Singleton
+**Zustand** und benutzen ihn mehrere Threads, reicht das nicht. Das zeigt 12.3,
+dort baust du einen thread-sicheren ID-Generator.
+
+### Zustand (State) — das Verhalten hängt am Zustand
+
+Ein Objekt, das sich je nach Zustand anders verhält, bekommt schnell überall
+`if (status == ...)`-Ketten. Das Muster **Zustand** legt das Verhalten in die
+Zustände selbst. Stehen die Zustände fest, ist ein `enum` mit Methoden je
+Konstante (10.3) die natürliche Form:
+
+```java
+public enum Bestellstatus {
+    NEU        { public Bestellstatus weiter() { return BEZAHLT; } },
+    BEZAHLT    { public Bestellstatus weiter() { return VERSENDET; } },
+    VERSENDET  { public Bestellstatus weiter() { return ZUGESTELLT; } },
+    ZUGESTELLT { public Bestellstatus weiter() { throw new IllegalStateException("schon zugestellt"); } };
+
+    public abstract Bestellstatus weiter();
+
+    public boolean darfStornieren() { return this == NEU || this == BEZAHLT; }
+}
+```
+
+Kommt ein Zustand dazu, verlangt der Compiler sein `weiter()`, und jeder
+`switch`-Ausdruck über den Status meldet die fehlende Konstante. Dein
+`Wochentag.naechster()` ist ein kleiner Verwandter davon.
+
+### Besucher (Visitor) — heute `sealed` + `switch`
+
+Das GoF-Muster **Besucher** löst ein Problem, das du aus 10.5 kennst: Eine feste
+Typ-Hierarchie (`Form` mit `Kreis`, `Rechteck`, `Dreieck`) soll immer neue
+Operationen bekommen (Fläche, Umfang, Name), ohne dass man jedes Mal alle
+Klassen ändert. Früher brauchte man dafür ein Besucher-Interface mit einer
+Methode je Typ und in jeder Klasse eine `accept`-Methode:
+
+```java
+interface FormBesucher<R> {                         // der alte Weg
+    R kreis(Kreis k);
+    R rechteck(Rechteck r);
+    R dreieck(Dreieck d);
+}
+// jede Form: public <R> R accept(FormBesucher<R> b) { return b.kreis(this); }
+```
+
+Heute ist jede neue Operation einfach eine Methode mit einem `switch` über das
+`sealed interface`, genau wie `flaeche` und `benenne` in den Aufgaben. Der
+Compiler prüft die Vollständigkeit, ein vergessener Typ ist ein Compilerfehler.
+Den Besucher schreibt man nur noch, wo es kein `sealed` gibt, etwa in altem Code.
+
 ---
 
 ## Aufgaben
@@ -310,7 +457,7 @@ Neue Features starten oft als *Preview* und müssen dann mit
 > Hängst du fest? Gestufte Hinweise zu jeder Aufgabe stehen in
 > [`TIPPS.md`](TIPPS.md) — erst Tipp 1, dann wieder selbst probieren.
 
-Vier Dateien in [`src/`](src/) — prüfen mit `./lerne.sh 10`.
+Fünf Dateien in [`src/`](src/) — prüfen mit `./lerne.sh 10`.
 
 ### `Artikel.java` — Record mit Validierung
 
@@ -363,6 +510,21 @@ prüfen nur negative Werte.
    ```
    (mit abschliessendem Zeilenumbruch)
 5. **`werktageZaehlen(List<Wochentag>)`** -> `long`.
+
+### `Pizza.java` — Builder (10.9)
+
+`Pizza.Groesse` ist fertig. Du schreibst den `Builder` und den privaten
+Konstruktor von `Pizza`:
+
+- `Pizza.builder(null)` -> `NullPointerException`
+- `belag(x)`: `x` `null` oder nur Leerzeichen -> `IllegalArgumentException`,
+  sonst `x` ohne Leerzeichen am Rand anhängen. `belag` und `extraKaese`
+  geben den Builder selbst zurück.
+- `build()`: mehr als `MAX_BELAEGE` Beläge -> `IllegalStateException`
+- `preisCent()`: Grundpreis der Größe + `PREIS_BELAG` je Belag +
+  `PREIS_EXTRA_KAESE`, falls `extraKaese()`
+- Eine fertige Pizza ist unveränderlich: `belaege()` lässt sich nicht ändern,
+  und ein weiterbenutzter Builder ändert keine schon gebaute Pizza.
 
 ## Was gibt das aus?
 
@@ -419,6 +581,21 @@ System.out.println(s);
 
 </details>
 
+**4.**
+
+```java
+StringBuilder sb = new StringBuilder("a");
+StringBuilder sb2 = sb.append("b");
+sb2.append("c");
+System.out.println(sb + " " + (sb == sb2));
+```
+
+<details><summary>Auflösung</summary>
+
+`abc true`: `append` verändert den `StringBuilder` und gibt ihn selbst zurück, `return this` wie in deinem Pizza-Builder. `sb` und `sb2` sind dasselbe Objekt. Genau das macht Ketten wie `sb.append("x").append(42).append('!')` möglich. Bei `String` ist es anders: `s.concat("b")` liefert ein **neues** Objekt, `s` bleibt, wie es war (Kapitel 3).
+
+</details>
+
 ## Selbstcheck
 
 Erst selbst antworten, dann vergleichen: Die Antworten stehen am Ende von
@@ -429,3 +606,5 @@ Erst selbst antworten, dann vergleichen: Die Antworten stehen am Ende von
 - Warum braucht ein `switch` über ein `sealed interface` kein `default`?
 - Was ist der Unterschied zwischen `case Kreis k` und `case Kreis(double r)`?
 - Warum darf ein kompakter Konstruktor `name = name.strip()`, aber nicht `this.name = ...`?
+- Wann lohnt sich ein Builder, und wann ist ein `record` besser?
+- Warum braucht man das Besucher-Muster heute kaum noch?

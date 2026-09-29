@@ -167,6 +167,41 @@ Path tempOrdner = Files.createTempDirectory("test");
 Path tempDatei = Files.createTempFile("daten", ".csv");
 ```
 
+## 11.9 Muster in `java.io`
+
+Hinter `Files.newBufferedReader` aus 11.5 steckt eine Kette von drei Objekten.
+Von Hand gebaut, wie es vor Java 7 üblich war:
+
+```java
+BufferedReader r = new BufferedReader(          // Puffer und readLine()
+        new InputStreamReader(                  // Bytes -> Zeichen, im Zeichensatz UTF-8
+                new FileInputStream("daten.csv"),   // Bytes aus der Datei
+                StandardCharsets.UTF_8));
+```
+
+Das sind die Muster aus 6.9:
+
+- **`BufferedReader` ist ein Dekorierer.** Er *ist* ein `Reader` und *hat* einen
+  `Reader`, reicht jedes `read()` an ihn weiter und legt einen Puffer dazu. Genauso
+  `BufferedInputStream` um einen `InputStream`. Soll eine gepackte Logdatei gelesen
+  werden, kommt einfach eine Schicht dazu:
+  `new GZIPInputStream(new FileInputStream("log.gz"))`. Der Code, der danach liest,
+  merkt davon nichts.
+- **`InputStreamReader` ist ein Adapter.** Er nimmt einen `InputStream` (Bytes) und
+  ist selbst ein `Reader` (Zeichen), er übersetzt also eine Schnittstelle in
+  eine andere. Darüber, ob er nicht auch ein Dekorierer ist, wird gern gestritten:
+  Beim Übersetzen dekodiert er, fügt also Verhalten hinzu. Die Faustregel: Ist
+  der äußere Typ derselbe wie der innere, ist es ein Dekorierer, sonst ein Adapter.
+- **`Files` ist eine Fassade.** `Files.readString(pfad)` öffnet, dekodiert, liest
+  und schliesst in einem Aufruf, `Files.newBufferedReader` baut die Kette oben
+  fertig zusammen. Eine Fassade ist eine einfache Schnittstelle vor einem
+  komplizierten Teilsystem. Sie versperrt es nicht: Wer mehr Kontrolle braucht,
+  baut die Kette selbst.
+
+Eine Folge der Dekorierer-Kette: **`close()` wird nach innen weitergereicht.** Wer
+das äußerste Objekt schliesst, schliesst alle. Deshalb steht in
+try-with-resources nur die äußerste Variable ("Was gibt das aus?" Nr. 4).
+
 ---
 
 ## Aufgaben
@@ -250,6 +285,25 @@ try {
 
 </details>
 
+**4.**
+
+```java
+StringReader innen = new StringReader("abc");
+BufferedReader aussen = new BufferedReader(innen);
+aussen.close();
+try {
+    System.out.println((char) innen.read());
+} catch (IOException e) {
+    System.out.println(e.getMessage());
+}
+```
+
+<details><summary>Auflösung</summary>
+
+`Stream closed` — `BufferedReader` ist ein Dekorierer (11.9) und reicht auch `close()` an den eingepackten `Reader` weiter. Nach `aussen.close()` ist `innen` ebenfalls zu, und `read()` wirft eine `IOException`. Deshalb reicht es, in try-with-resources nur das äußerste Objekt zu schliessen.
+
+</details>
+
 ## Selbstcheck
 
 Erst selbst antworten, dann vergleichen: Die Antworten stehen am Ende von
@@ -260,3 +314,4 @@ Erst selbst antworten, dann vergleichen: Die Antworten stehen am Ende von
 - Was passiert ohne expliziten Zeichensatz — und warum ist das heute weniger schlimm als früher?
 - Wozu das `-1` bei `split(";", -1)`?
 - Worauf bezieht sich ein relativer Pfad?
+- Warum ist `BufferedReader` ein Dekorierer, `InputStreamReader` aber eher ein Adapter?

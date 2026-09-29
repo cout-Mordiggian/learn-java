@@ -110,6 +110,42 @@ Synchronisierung — es gibt nichts zu schützen.
 Deshalb ist alles, was du in Kapitel 5, 9 und 10 über Unveränderlichkeit
 gelernt hast, hier die eigentliche Pointe.
 
+### Ein Singleton für viele Threads
+
+Einen Singleton (5.10, 10.9) benutzen viele Stellen im Programm, also oft auch
+viele Threads. Zwei Dinge können dabei schiefgehen.
+
+**Das Erzeugen.** Die "faule" Variante erzeugt die Instanz erst beim ersten
+Aufruf:
+
+```java
+private static Konfiguration instanz;           // FALSCH bei mehreren Threads
+
+public static Konfiguration instanz() {
+    if (instanz == null) {                      // zwei Threads pruefen gleichzeitig ...
+        instanz = new Konfiguration();          // ... und beide erzeugen eine
+    }
+    return instanz;
+}
+```
+
+Das ist dasselbe Muster wie `zaehler++`: prüfen, dann handeln (*check-then-act*),
+und dazwischen kann ein anderer Thread drankommen. Zwei Threads sehen `null`,
+beide erzeugen ein Objekt, und es gibt zwei "einzige" Instanzen. Sicher ist
+dagegen die Variante mit `private static final ... = new ...()` aus 5.10: Die
+JVM lädt jede Klasse genau einmal und sichert das selbst mit einer Sperre ab.
+Die Instanz entsteht beim ersten Zugriff auf die Klasse ("Was gibt das aus?"
+Nr. 4). Ebenso sicher ist das `enum` aus 10.9. Faulheit lohnt sich fast nie, das
+Objekt ist klein. Wer sie trotzdem braucht, macht `instanz()` `synchronized`.
+(Die berühmte Variante *double-checked locking* ist nur mit `volatile` korrekt
+und ein Klassiker für subtile Fehler.)
+
+**Der Zustand.** "Genau eine Instanz" heisst nicht "thread-sicher". Ändern alle
+Threads dasselbe Feld des Singletons, gilt alles aus 12.2: Ein `long zaehler`
+mit `zaehler++` verliert Erhöhungen, eine `HashMap` darin kann kaputtgehen.
+Abhilfe wie oben: `AtomicLong`, `synchronized` oder eine `ConcurrentHashMap`
+(12.6). Genau das ist die Aufgabe `IdGenerator`.
+
 ## 12.4 `ExecutorService`
 
 ```java
@@ -126,6 +162,10 @@ laufen die Pool-Threads weiter und dein Programm endet nie.
 - `submit(Callable<T>)` -> `Future<T>` — mit Ergebnis
 - `invokeAll(liste)` -> `List<Future<T>>` — alle starten, auf alle warten;
   **die Reihenfolge der Ergebnisse entspricht der Eingabe**
+
+Nebenbei ein Entwurfsmuster: Ein `Runnable` oder `Callable` ist eine Aktion als
+Objekt, die ein anderer Thread später ausführt. Das ist ein **Befehl** (14.10),
+nur ohne Rückgängig.
 
 `future.get()` blockiert und wirft `ExecutionException`, wenn die Aufgabe eine
 Exception geworfen hat — das Original steckt in `getCause()`.
@@ -338,7 +378,7 @@ Wenn dieses Kapitel sitzt, hast du die Sprache. Danach kommt das Ökosystem:
 > Hängst du fest? Gestufte Hinweise zu jeder Aufgabe stehen in
 > [`TIPPS.md`](TIPPS.md) — erst Tipp 1, dann wieder selbst probieren.
 
-Zwei Dateien in [`src/`](src/) — prüfen mit `./lerne.sh 12`.
+Drei Dateien in [`src/`](src/) — prüfen mit `./lerne.sh 12`.
 `Demo.java` ist fertig und zeigt die Race Condition live:
 `./lerne.sh 12 -r Demo`.
 
@@ -372,6 +412,19 @@ den `ExecutorService` schliesst — beides sieht man dem Ergebnis nicht an.
 4. **`laengenParallel(List<String>)`** -> `List<Integer>`.
    Jede Länge in einer eigenen Aufgabe berechnen, **Reihenfolge erhalten**.
    Tipp: `invokeAll` garantiert genau das.
+
+### `IdGenerator.java` — ein Singleton für viele Threads
+
+Das Singleton selbst steht schon: ein `enum` mit der einen Konstante `INSTANZ`
+(10.9). Du schreibst `naechsteId()`: Sie liefert 1, 2, 3, ..., und keine Zahl
+darf doppelt vergeben werden, auch wenn vier Threads gleichzeitig IDs holen.
+
+Ehrlicher Hinweis, wie beim `Zaehler`: Die Tests starten vier Threads
+gleichzeitig und prüfen, ob eine ID doppelt vorkommt. Ein ungeschütztes
+`++zaehler` fliegt dabei fast immer auf, garantiert ist das aber nicht. Und noch
+etwas zeigt dir diese Aufgabe: Der Zähler eines Singletons läuft über **alle**
+Prüfungen weiter. Kein Test bekommt je wieder eine frische 1. Warum das Tests
+schwer macht, steht in 13.8.
 
 ## Was gibt das aus?
 
@@ -427,6 +480,27 @@ try (ExecutorService pool = Executors.newFixedThreadPool(2)) {
 
 </details>
 
+**4.**
+
+```java
+class Teuer {
+    static final Teuer INSTANZ = new Teuer();
+    private Teuer() { System.out.print("gebaut "); }
+    static void hallo() { System.out.print("hallo "); }
+}
+
+System.out.print("start ");
+Teuer.hallo();
+Teuer.hallo();
+System.out.println(Teuer.INSTANZ == Teuer.INSTANZ);
+```
+
+<details><summary>Auflösung</summary>
+
+`start gebaut hallo hallo true` — Die JVM lädt und initialisiert eine Klasse erst, wenn sie zum ersten Mal gebraucht wird, hier beim ersten `hallo()`. Dabei laufen die `static`-Initialisierungen, also entsteht `INSTANZ` genau dann, und zwar genau einmal. Diese Initialisierung sichert die JVM selbst gegen gleichzeitige Threads ab. Deshalb braucht der Singleton mit `static final`-Feld kein `synchronized`.
+
+</details>
+
 ## Selbstcheck
 
 Erst selbst antworten, dann vergleichen: Die Antworten stehen am Ende von
@@ -437,3 +511,4 @@ Erst selbst antworten, dann vergleichen: Die Antworten stehen am Ende von
 - Wann `AtomicInteger`, wann `synchronized`?
 - Was garantiert `invokeAll` bezüglich der Reihenfolge?
 - Warum ist Unveränderlichkeit die beste Nebenläufigkeitsstrategie?
+- Warum ist ein Singleton mit `static final`-Feld ohne `synchronized` thread-sicher, die faule Variante mit `if (instanz == null)` aber nicht?

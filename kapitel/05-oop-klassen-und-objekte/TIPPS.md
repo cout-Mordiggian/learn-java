@@ -327,6 +327,98 @@ public int hashCode() {
 
 </details>
 
+## Punkt.java: Fabrikmethoden `ursprung` und `polar`
+
+<details><summary>Tipp 1 — Richtung</summary>
+
+Abschnitt 5.10, "Die statische Fabrikmethode". Beide Methoden sind `static`,
+es gibt also kein `this`, sie liefern einen Punkt. Frag dich bei `ursprung`: Wie
+bekommst du **dasselbe** Objekt bei jedem Aufruf, obwohl `new` jedes Mal ein
+neues erzeugt? Und bei `polar`: Was muss vor `Math.cos` mit dem Winkel passieren?
+
+</details>
+
+<details><summary>Tipp 2 — Ansatz</summary>
+
+- `ursprung`: eine Konstante `private static final Punkt URSPRUNG = new Punkt(0, 0);`
+  (5.4, Konstanten). Die Methode gibt nur noch `URSPRUNG` zurück. Das ist nur
+  möglich, weil `Punkt` unveränderlich ist: Niemand kann den geteilten
+  Ursprung verschieben. Bei einem veränderlichen Objekt wäre das gefährlich.
+- `polar`: `Math.cos` und `Math.sin` erwarten den Winkel im **Bogenmass**
+  (ein Vollkreis ist 2 * Pi statt 360). `Math.toRadians(winkelGrad)` rechnet um.
+  Dann `new Punkt(radius * Math.cos(w), radius * Math.sin(w))`.
+- Kleine Rundungsfehler sind normal: `Math.cos(Math.toRadians(90))` ist nicht
+  genau 0, sondern etwa `6.1E-17`. Die Tests vergleichen deshalb mit Toleranz
+  (`fastGleich`).
+- Gern auch in `abstandZumUrsprung`: `abstand(ursprung())` spart ein Objekt.
+
+</details>
+
+<details><summary>Tipp 3 — Gerüst</summary>
+
+```java
+private static final Punkt URSPRUNG = ...;
+
+public static Punkt ursprung() {
+    return ...;
+}
+
+public static Punkt polar(double radius, double winkelGrad) {
+    double w = Math.toRadians(...);
+    return new Punkt(..., ...);
+}
+```
+
+</details>
+
+## Konfiguration.java: Singleton
+
+<details><summary>Tipp 1 — Richtung</summary>
+
+Abschnitt 5.10, "Der Singleton", der Codeblock. Drei Dinge sind im Gerüst
+falsch: Es gibt kein Feld für die eine Instanz, der Konstruktor ist `public`,
+und `instanz()` erzeugt bei jedem Aufruf ein neues Objekt. Frag dich: Wer darf
+nach deiner Änderung noch `new Konfiguration()` schreiben?
+
+</details>
+
+<details><summary>Tipp 2 — Ansatz</summary>
+
+- Ein `private static final Konfiguration INSTANZ = new Konfiguration();` direkt
+  in der Klasse. Innerhalb der Klasse darf der private Konstruktor aufgerufen
+  werden, genau das tut diese Zeile.
+- Den Konstruktor auf `private` setzen. **Nicht** löschen: Ohne eigenen
+  Konstruktor erzeugt der Compiler einen öffentlichen (5.2).
+- `instanz()` gibt nur noch `INSTANZ` zurück.
+- `setSprache`: dieselbe Prüfung wie beim Inhaber von `Konto`, erst `null`,
+  dann `isBlank()`, und erst danach zuweisen.
+
+Wenn du willst, schreib testweise in `Punkt` irgendwo `new Konfiguration();`:
+Der Compiler meldet jetzt *has private access*. Genau das soll er. (Danach
+wieder löschen.)
+
+</details>
+
+<details><summary>Tipp 3 — Gerüst</summary>
+
+```java
+public final class Konfiguration {
+    private static final Konfiguration INSTANZ = ...;
+
+    private String sprache = "de";
+    private boolean farbig = false;
+
+    private Konfiguration() { }
+
+    public static Konfiguration instanz() {
+        return ...;
+    }
+    ...
+}
+```
+
+</details>
+
 ---
 
 ## Selbstcheck — Antworten
@@ -383,5 +475,32 @@ Objekt, also funktionieren `liste.add(...)` und `liste.remove(...)` weiterhin.
 Nur `liste = new ArrayList<>();` ist ein Compilerfehler. Willst du auch den
 Inhalt einfrieren, brauchst du eine unveränderliche Liste, z. B. `List.copyOf(...)`
 (Kapitel 8).
+
+</details>
+
+<details><summary>Nenne zwei Dinge, die eine statische Fabrikmethode kann, ein Konstruktor aber nicht.</summary>
+
+1. **Einen sprechenden Namen haben.** `Punkt.polar(2, 90)` und `new Punkt(2, 90)`
+   haben dieselbe Parameterliste `(double, double)`. Zwei Konstruktoren damit
+   erlaubt der Compiler nicht, zwei Methoden mit verschiedenen Namen schon. Der
+   Name sagt ausserdem, was die Zahlen bedeuten.
+2. **Ein vorhandenes Objekt zurückgeben.** `Punkt.ursprung()` liefert immer
+   dieselbe Konstante, `Integer.valueOf(5)` ein Objekt aus einem
+   Zwischenspeicher. `new` erzeugt dagegen garantiert jedes Mal ein neues.
+
+Dazu kommt drittens: Sie darf ein Objekt einer Unterklasse liefern und die
+tatsächliche Klasse verstecken (Kapitel 6 und 9.8).
+
+</details>
+
+<details><summary>Warum braucht ein Singleton einen <code>private</code>-Konstruktor, und was passiert, wenn du gar keinen schreibst?</summary>
+
+Der Sinn des Singletons ist, dass es nur **ein** Objekt gibt. Kann irgendwer
+`new Konfiguration()` schreiben, gibt es beliebig viele, und das statische Feld
+ist nur noch eine unter vielen. Der private Konstruktor lässt genau einen
+Aufrufer zu: die Klasse selbst, in der Zeile mit `INSTANZ`. Schreibst du gar
+keinen Konstruktor, erzeugt der Compiler automatisch einen öffentlichen
+parameterlosen (5.2), und jeder kann wieder Objekte anlegen. Deshalb steht in
+jedem Singleton ein leerer `private Konfiguration() { }`.
 
 </details>

@@ -430,6 +430,116 @@ return sb.toString();
 
 </details>
 
+## Aufgabe 9: `Stapel` als `Iterable`
+
+<details><summary>Tipp 1 — Richtung</summary>
+
+Abschnitt 14.9 und das Bild mit dem Zeiger `aktuell`. Der Iterator ist eine
+Art Lesezeichen in der Kette. Frag dich: Wo steht das Lesezeichen am Anfang,
+woran erkennst du, dass es hinter dem letzten Knoten steht, und was muss
+`next()` ausser "Wert liefern" noch tun?
+
+</details>
+
+<details><summary>Tipp 2 — Ansatz</summary>
+
+`iterator()` ist schon fertig. In `StapelIterator` fehlt ein Feld
+`private Knoten<E> aktuell = oben;`. Das darf direkt `oben` lesen, weil die
+Klasse **nicht** `static` ist.
+
+- `hasNext()`: Gibt es noch einen Knoten? Also `aktuell != null`. Nicht
+  `aktuell.naechster != null`, dann fehlt immer das unterste Element.
+- `next()`: Ist `aktuell` `null`, eine `NoSuchElementException` werfen. Sonst den
+  Wert merken, `aktuell` einen Knoten weiterrücken, den Wert zurückgeben.
+
+Nicht `pop()` benutzen! Der Iterator soll nur lesen, der Test prüft, dass der
+Stapel nach der Schleife noch voll ist. Und die Position gehört in den
+Iterator, nicht in den Stapel, sonst stören sich zwei Schleifen gegenseitig.
+
+</details>
+
+<details><summary>Tipp 3 — Gerüst</summary>
+
+```java
+private class StapelIterator implements Iterator<E> {
+    private Knoten<E> aktuell = oben;
+
+    @Override
+    public boolean hasNext() {
+        return ...;
+    }
+
+    @Override
+    public E next() {
+        if (...) {
+            throw new NoSuchElementException("Keine weiteren Elemente");
+        }
+        E wert = ...;
+        aktuell = ...;
+        return wert;
+    }
+}
+```
+
+</details>
+
+## Aufgabe 10: Befehle und Verlauf
+
+<details><summary>Tipp 1 — Richtung</summary>
+
+Abschnitt 14.10 und das Bild mit den zwei Stapeln. Erst die beiden Befehle, dann
+den Verlauf. Frag dich bei jedem Befehl: Welche Angaben brauche ich, um die
+Aktion **rückgängig** zu machen, und wann kenne ich sie?
+
+</details>
+
+<details><summary>Tipp 2 — Ansatz</summary>
+
+- `EinfuegenBefehl`: Die drei Konstruktorparameter in `final`-Felder.
+  `ausfuehren`: `puffer.einfuegen(pos, text)`. `rueckgaengig`: dasselbe Stück
+  wieder löschen, also `puffer.loeschen(pos, text.length())`.
+- `LoeschenBefehl`: `puffer`, `von`, `laenge` in Felder, dazu ein Feld
+  `String geloescht` **ohne** `final`. `ausfuehren` merkt sich den Rückgabewert
+  von `puffer.loeschen(von, laenge)`. `rueckgaengig` fügt ihn bei `von` wieder
+  ein. Merkst du dir den Text im Konstruktor, fällt der Test "merkt sich beim
+  Ausführen" durch, denn dort ändert sich der Puffer zwischen Erzeugen und
+  Ausführen.
+- `Verlauf`: zwei `Deque<Befehl>` als `ArrayDeque`.
+  - `ausfuehren(b)`: `b.ausfuehren()`, auf den Rückgängig-Stapel pushen,
+    Wiederholen-Stapel leeren (`clear()`).
+  - `rueckgaengig()`: leer -> `false`. Sonst poppen, `rueckgaengig()` aufrufen,
+    auf den Wiederholen-Stapel pushen, `true`.
+  - `wiederholen()`: spiegelbildlich. Aber **nicht** `ausfuehren(b)` des
+    Verlaufs benutzen, das würde den Wiederholen-Stapel leeren! Direkt
+    `b.ausfuehren()` und auf den Rückgängig-Stapel pushen.
+
+</details>
+
+<details><summary>Tipp 3 — Gerüst</summary>
+
+```java
+private final Deque<Befehl> rueckgaengigStapel = new ArrayDeque<>();
+private final Deque<Befehl> wiederholenStapel = new ArrayDeque<>();
+
+public void ausfuehren(Befehl befehl) {
+    befehl.ausfuehren();
+    rueckgaengigStapel.push(befehl);
+    ...
+}
+
+public boolean rueckgaengig() {
+    if (rueckgaengigStapel.isEmpty()) {
+        return false;
+    }
+    Befehl b = rueckgaengigStapel.pop();
+    b.......();
+    wiederholenStapel.push(b);
+    return true;
+}
+```
+
+</details>
+
 ## Selbstcheck — Antworten
 
 <details><summary>Warum ist O(n^2) bei einer Million Elementen ein Problem, O(n log n) aber nicht?</summary>
@@ -489,5 +599,31 @@ geschlossen werden, also wird immer das jüngste Element gebraucht.
 Druckaufträge: **Warteschlange** (FIFO). Wer zuerst kommt, wird zuerst gedruckt,
 also wird immer das älteste Element gebraucht. In Java nimmst du für beides
 `ArrayDeque`: `push`/`pop` für den Stapel, `offer`/`poll` für die Schlange.
+
+</details>
+
+<details><summary>Warum ist <code>Knoten</code> eine <code>static</code> innere Klasse, <code>StapelIterator</code> aber nicht?</summary>
+
+Eine innere Klasse ohne `static` trägt einen versteckten Verweis auf das
+äußere Objekt, das sie erzeugt hat, und darf dessen Felder direkt benutzen.
+Das lohnt sich nur, wenn sie dieses Objekt wirklich braucht. Ein Knoten braucht
+keinen Stapel: Er hält nur einen Wert und den nächsten Knoten. Ohne `static`
+trüge jeder der vielleicht Millionen Knoten einen überflüssigen Verweis mit
+sich. Der Iterator dagegen gehört zu genau einem Stapel und startet bei dessen
+`oben`, hier ist der Verweis genau richtig. Deshalb gilt die Faustregel aus
+14.6: `static`, ausser man braucht das äußere Objekt.
+
+</details>
+
+<details><summary>Warum muss sich <code>LoeschenBefehl</code> den gelöschten Text beim Ausführen merken und nicht im Konstruktor?</summary>
+
+Zwischen Erzeugen und Ausführen kann Zeit vergehen, und der Text kann sich
+ändern, etwa durch andere Befehle oder weil der Befehl erst beim Wiederholen
+erneut läuft. Rückgängig muss genau das wiederherstellen, was beim Ausführen
+**tatsächlich** gelöscht wurde. Das weiss man erst in diesem Moment:
+`Textpuffer.loeschen` liefert es als Rückgabewert. Beim Einfügen gibt es das
+Problem nicht, denn der eingefügte Text steht schon im Befehl. Allgemein:
+Ein Befehl muss sich den Zustand merken, den er zerstört, und zwar dann, wenn er
+ihn zerstört.
 
 </details>

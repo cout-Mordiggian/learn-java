@@ -340,3 +340,17 @@ dem das Programm gestartet wurde. Nicht auf den Ort der `.java`- oder
 zeigt `Path.of("").toAbsolutePath()`.
 
 </details>
+
+<details><summary>Warum ist <code>BufferedReader</code> ein Dekorierer, <code>InputStreamReader</code> aber eher ein Adapter?</summary>
+
+`BufferedReader` ist ein `Reader` und packt einen `Reader` ein. Die Schnittstelle
+bleibt gleich, er reicht die Aufrufe weiter und fügt einen Puffer (und
+`readLine()`) hinzu. Man kann ihn um jeden beliebigen `Reader` legen, auch um
+einen anderen Dekorierer. Das ist ein Dekorierer. `InputStreamReader` packt
+dagegen einen `InputStream` ein, der Bytes liefert, und ist selbst ein `Reader`,
+der Zeichen liefert. Er übersetzt eine Schnittstelle in eine andere, das ist die
+Aufgabe eines Adapters. Dass er dabei dekodiert und damit auch Verhalten
+hinzufügt, ist der Grund für den Streit, ob er nicht doch beides ist.
+Faustregel: gleicher Typ aussen wie innen, Dekorierer, anderer Typ, Adapter.
+
+</details>

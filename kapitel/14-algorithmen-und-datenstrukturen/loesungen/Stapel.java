@@ -1,9 +1,10 @@
+import java.util.Iterator;
 import java.util.NoSuchElementException;
 
 /**
  * Kapitel 14 - Musterloesung: ein Stapel (LIFO) als verkettete Liste.
  */
-public class Stapel<E> {
+public class Stapel<E> implements Iterable<E> {
 
     // private: gehoert zur Implementierung, niemand ausserhalb braucht sie.
     // static: ein Knoten braucht kein Stapel-Objekt und traegt deshalb keinen
@@ -60,5 +61,43 @@ public class Stapel<E> {
     public int groesse() {
         // Mitgezaehlt statt jedes Mal die Kette abzulaufen: O(1) statt O(n).
         return anzahl;
+    }
+
+    // ------------------------------------------------------------ Aufgabe 9
+
+    @Override
+    public Iterator<E> iterator() {
+        // Jeder Aufruf liefert einen NEUEN Iterator mit eigener Position.
+        // Deshalb koennen zwei for-each-Schleifen unabhaengig (auch
+        // verschachtelt) ueber denselben Stapel laufen.
+        return new StapelIterator();
+    }
+
+    // Nicht static: Eine innere Klasse ohne static haelt einen versteckten
+    // Verweis auf das Stapel-Objekt, das sie erzeugt hat. Genau den braucht
+    // der Iterator: "oben" im Feld aktuell ist eigentlich Stapel.this.oben. Knoten
+    // dagegen braucht keinen Stapel und ist deshalb static.
+    // Weil die Klasse nicht static ist, sieht sie auch das E von Stapel und
+    // braucht kein eigenes.
+    private class StapelIterator implements Iterator<E> {
+
+        private Knoten<E> aktuell = oben;   // der Knoten, den next() als naechstes liefert
+
+        @Override
+        public boolean hasNext() {
+            return aktuell != null;
+        }
+
+        @Override
+        public E next() {
+            if (aktuell == null) {
+                // So verlangt es der Vertrag von Iterator: Wer ueber das Ende
+                // hinaus fragt, bekommt eine Exception, kein stilles null.
+                throw new NoSuchElementException("Keine weiteren Elemente");
+            }
+            E wert = aktuell.wert;
+            aktuell = aktuell.naechster;    // nur der Iterator rueckt weiter, der Stapel bleibt
+            return wert;
+        }
     }
 }

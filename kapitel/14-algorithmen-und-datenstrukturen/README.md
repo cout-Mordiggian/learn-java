@@ -2,7 +2,9 @@
 
 **Ziel:** Du schätzt ab, wie der Aufwand eines Programms mit der Datenmenge
 wächst, baust Such- und Sortierverfahren selbst und weisst, was in
-`ArrayList`, `ArrayDeque` und `HashMap` wirklich passiert.
+`ArrayList`, `ArrayDeque` und `HashMap` wirklich passiert. Zum Schluss
+machst du deinen Stapel for-each-fähig und baust mit zwei Stapeln Rückgängig:
+zwei Entwurfsmuster, Iterator und Befehl.
 
 Binäre Suche und Rekursion kennst du aus Kapitel 4, O(1)/O(n)/O(log n) aus 8.1.
 
@@ -279,6 +281,116 @@ Durchlaufen (8.5) ist einfach die Reihenfolge der Eimer.
 | `HashSet` / `HashMap` | enthalten? bzw. Wert zum Schlüssel: O(1) im Mittel | keine Ordnung |
 | `TreeSet` / `TreeMap` | sortiert, kleinstes/größtes: O(log n) | langsamer als Hash |
 
+## 14.9 Iterator: for-each für eigene Klassen
+
+Wie läuft man über eine Sammlung, ohne zu wissen, ob innen ein Array, eine
+Kette oder ein Baum steckt? Die Antwort ist eines der klassischen
+**Entwurfsmuster** (5.10), der **Iterator**: ein eigenes Objekt, das sich die
+Position merkt und nur zwei Fragen beantwortet, "gibt es noch eins?" und "gib
+mir das nächste". In Java steckt das Muster in der Sprache. Die for-each-
+Schleife funktioniert für alles, was `Iterable` implementiert, und der Compiler
+macht daraus:
+
+```java
+for (String x : sammlung) { ... }
+
+// wird zu:
+Iterator<String> it = sammlung.iterator();
+while (it.hasNext()) {
+    String x = it.next();
+    ...
+}
+```
+
+Eine eigene Klasse wird for-each-fähig, sobald sie `Iterable<E>` implementiert,
+also eine Methode `iterator()` hat, die ein `Iterator<E>` liefert. Der Iterator
+hat `hasNext()` und `next()`. Ist nichts mehr da, wirft `next()` laut Vertrag
+eine `NoSuchElementException`.
+
+Für den Stapel aus 14.6 läuft der Iterator die Kette von oben nach unten ab,
+mit einem eigenen Zeiger. Der Stapel selbst bleibt unverändert:
+
+```
+oben --> [3|o]--> [2|o]--> [1|null]
+          ^
+       aktuell       next() liefert 3, aktuell rueckt einen Knoten weiter
+```
+
+```java
+public class Stapel<E> implements Iterable<E> {
+    ...
+    @Override
+    public Iterator<E> iterator() {
+        return new StapelIterator();           // jedes Mal ein neuer, mit eigener Position
+    }
+
+    private class StapelIterator implements Iterator<E> {    // OHNE static!
+        private Knoten<E> aktuell = oben;       // "oben" des Stapels, der ihn erzeugt hat
+        ...
+    }
+}
+```
+
+**Diesmal ohne `static`.** In 14.6 hiess die Faustregel: innere Klassen
+`static` machen, ausser man braucht das äußere Objekt. Hier braucht man es:
+Ein Iterator gehört zu genau einem Stapel und startet bei dessen oberstem
+Knoten. Eine innere Klasse ohne `static` trägt einen versteckten Verweis auf
+das Objekt, das sie erzeugt hat, deshalb darf sie `oben` einfach lesen
+(ausgeschrieben `Stapel.this.oben`). Sie sieht auch das `E` von `Stapel` und
+braucht kein eigenes. Ein Knoten dagegen weiss nichts von "seinem" Stapel und
+bleibt `static`.
+
+Weil jeder Aufruf von `iterator()` einen neuen Iterator liefert, können zwei
+Schleifen unabhängig, sogar verschachtelt, über denselben Stapel laufen. Die
+`ConcurrentModificationException` aus 8.6 ist übrigens die Notbremse der
+Iteratoren von `ArrayList` und Co.: Sie merken, dass die Sammlung unter ihnen
+strukturell verändert wurde, und brechen ab, statt falsche Elemente zu liefern.
+Ganz zuverlässig ist diese Notbremse aber nicht ("Was gibt das aus?" Nr. 4).
+Kompakter geht der Iterator später mit einer anonymen Klasse (9.9).
+
+## 14.10 Anwendung: Rückgängig mit dem Befehl-Muster
+
+Ein Editor soll Rückgängig und Wiederholen können. Dafür muss er sich
+merken, **was** getan wurde, und es umkehren können. Ein Methodenaufruf ist
+aber vorbei, sobald er fertig ist. Das Entwurfsmuster **Befehl** (*command*)
+macht deshalb aus jeder Aktion ein Objekt, das sich selbst ausführen und
+zurücknehmen kann:
+
+```java
+public interface Befehl {
+    void ausfuehren();
+    void rueckgaengig();
+}
+```
+
+Objekte kann man speichern, also auch auf einen Stapel legen. Der **Verlauf**
+führt zwei Stapel (14.6), jeweils mit dem jüngsten Befehl oben. Rückgängig
+braucht immer den zuletzt ausgeführten Befehl, das ist LIFO:
+
+```
+                             rueckgaengig-Stapel     wiederholen-Stapel
+ausfuehren(A), (B), (C)      [C B A]                 []
+rueckgaengig()   C zurueck   [B A]                   [C]
+rueckgaengig()   B zurueck   [A]                     [B C]
+wiederholen()    B nochmal   [B A]                   [C]
+ausfuehren(D)                [D B A]                 []      <- C verfaellt
+```
+
+Ein neuer Befehl leert den Wiederholen-Stapel, denn C passt nicht mehr zum
+veränderten Text. So verhält sich jeder Editor. Die Aufteilung der Arbeit:
+Der `Textpuffer` (der **Empfänger**) kann einfügen und löschen, weiss aber
+nichts von Rückgängig. Jeder Befehl weiss, wie er sich selbst umkehrt. Der
+Verlauf weiss nur, in welcher Reihenfolge, und ruft die Befehle blind auf.
+
+Manche Befehle müssen sich dafür etwas **merken**: "Füge `" Welt"` bei 5 ein"
+kehrt man um, indem man 5 Zeichen ab 5 löscht. Aber "lösche 5 Zeichen ab
+Position 3" lässt sich nur zurücknehmen, wenn man weiss, **welche** 5 Zeichen
+es waren, und zwar die beim **Ausführen**, nicht die beim Erzeugen des Befehls.
+
+Befehle ohne Rückgängig begegnen dir in 12.4 wieder: Ein `Runnable`, das du
+einem `ExecutorService` übergibst, ist eine Aktion als Objekt, die ein anderer
+Thread später ausführt.
+
 ---
 
 ## Aufgaben
@@ -286,8 +398,8 @@ Durchlaufen (8.5) ist einfach die Reihenfolge der Eimer.
 > Hängst du fest? Gestufte Hinweise zu jeder Aufgabe stehen in
 > [`TIPPS.md`](TIPPS.md). Erst Tipp 1 lesen, dann wieder selbst probieren.
 
-Fünf Dateien in [`src/`](src/), prüfen mit `./lerne.sh 14` (`Messung.java` ist
-fertig). Wirft dein Code eine Exception, melden die Tests sie als FEHL mit Datei
+Die Dateien in [`src/`](src/), prüfen mit `./lerne.sh 14` (`Messung.java`,
+`Befehl.java` und `Textpuffer.java` sind fertig). Wirft dein Code eine Exception, melden die Tests sie als FEHL mit Datei
 und Zeile und laufen weiter. Die Sortier-Tests nutzen Randfälle (leer, ein
 Element, sortiert, umgekehrt, Duplikate, negativ) und Zufallsdaten gegen `Arrays.sort`.
 
@@ -306,6 +418,13 @@ Element, sortiert, umgekehrt, Duplikate, negativ) und Zufallsdaten gegen `Arrays
    werfen bei leerem Stapel `NoSuchElementException`. Die Knotenklasse ist fertig.
 8. **`Anwendungen.klammernKorrekt`** für `()[]{}` und **`Anwendungen.umkehren`**,
    beide mit **deinem** Stapel. Zählen reicht nicht: `"([)]"` ist falsch.
+9. **`Stapel` wird `Iterable`** (14.9): `iterator()` und die innere Klasse
+   `StapelIterator` in `Stapel.java`. for-each läuft von oben nach unten und
+   entfernt nichts. `next()` ohne weiteres Element: `NoSuchElementException`.
+10. **Rückgängig** (14.10): `EinfuegenBefehl` und `LoeschenBefehl` mit
+    `ausfuehren` und `rueckgaengig`, dann `Verlauf` mit `rueckgaengig()` und
+    `wiederholen()` (beide `false`, wenn es nichts zu tun gibt) auf zwei
+    `ArrayDeque`s. Ein neuer Befehl verwirft das Wiederholbare.
 
 ## Was gibt das aus?
 
@@ -355,6 +474,22 @@ System.out.println(d.pop() + " " + d.pollLast() + " " + d);
 
 </details>
 
+**4.**
+
+```java
+List<String> l = new ArrayList<>(List.of("a", "b", "c"));
+for (String s : l) {
+    if (s.equals("b")) l.remove(s);
+}
+System.out.println(l);
+```
+
+<details><summary>Auflösung</summary>
+
+`[a, c]`, und **keine** `ConcurrentModificationException`, obwohl 8.6 genau das verspricht. Nach `next()` für `"b"` steht der Iterator an Position 2. `remove` macht die Liste zwei lang, und `hasNext()` prüft nur "Position ungleich Größe", 2 gegen 2: fertig. Die Schleife endet still, und die Prüfung auf Veränderung, die erst in `next()` stattfindet, kommt nie zum Zug. Mit `"a"` statt `"b"` gäbe es die Exception. Die Notbremse ist also nur ein Versuch, keine Garantie. Die Regel aus 8.6 gilt deshalb immer: während for-each nicht verändern, sondern `removeIf` oder `it.remove()` nehmen.
+
+</details>
+
 ## Selbstcheck
 
 Erst selbst antworten, dann vergleichen: Die Antworten stehen am Ende von
@@ -365,6 +500,8 @@ Erst selbst antworten, dann vergleichen: Die Antworten stehen am Ende von
 - Warum ist `add` am Ende einer `ArrayList` amortisiert O(1), obwohl das Wachsen O(n) kostet?
 - Was bedeutet "stabil" beim Sortieren, und wann spielt es eine Rolle?
 - Stapel oder Warteschlange: Was passt zur Klammerprüfung, was zu Druckaufträgen, und warum?
+- Warum ist `Knoten` eine `static` innere Klasse, `StapelIterator` aber nicht?
+- Warum muss sich `LoeschenBefehl` den gelöschten Text beim Ausführen merken und nicht im Konstruktor?
 
 ---
 
