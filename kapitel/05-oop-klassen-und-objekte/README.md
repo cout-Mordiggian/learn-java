@@ -1,4 +1,4 @@
-# Kapitel 05 — OOP I: Klassen und Objekte
+# Kapitel 05: OOP I: Klassen und Objekte
 
 **Ziel:** Du entwirfst eigene Typen: mit Feldern, Konstruktoren, Kapselung und
 den drei Methoden, die jedes Objekt von `Object` erbt.
@@ -40,7 +40,7 @@ Beachte: Auch das Feld `name` enthält nur einen Pfeil auf ein `String`-Objekt.
 `new` tut drei Dinge: Speicher auf dem **Heap** reservieren, Felder mit
 Standardwerten füllen (`0`, `false`, `null`), den Konstruktor ausführen.
 Die (lokale) Variable `rex` liegt dagegen auf dem **Stack** und enthält nur
-die Referenz — sozusagen die Adresse des Objekts, nicht das Objekt selbst.
+die Referenz, sozusagen die Adresse des Objekts, nicht das Objekt selbst.
 
 ## 5.2 Konstruktoren
 
@@ -61,13 +61,13 @@ public class Hund {
 ```
 
 > *Seit Java 25* dürfen vor `this(...)` bzw. `super(...)` einfache Anweisungen
-> stehen, die das Objekt noch nicht benutzen — etwa eine Prüfung der
+> stehen, die das Objekt noch nicht benutzen, etwa eine Prüfung der
 > Parameter. In Java 21 ist `this(...)` zwingend die erste Anweisung.
 
 Merkmale: heisst wie die Klasse, hat **keinen** Rückgabetyp (auch nicht `void`).
 
 `this` ist die Referenz auf das aktuelle Objekt. Man braucht es, wenn Parameter
-und Feld gleich heissen (was guter Stil ist — der Name ist ja derselbe Begriff).
+und Feld gleich heissen (was guter Stil ist, der Name ist ja derselbe Begriff).
 
 **Der Standardkonstruktor:** Schreibst du gar keinen Konstruktor, erzeugt der
 Compiler einen parameterlosen. Sobald du **einen** eigenen schreibst,
@@ -88,7 +88,7 @@ public Konto(String inhaber, long startguthaben) {
 }
 ```
 
-Wenn der Konstruktor durchläuft, ist das Objekt gültig — diese Zusage nennt
+Wenn der Konstruktor durchläuft, ist das Objekt gültig, diese Zusage nennt
 man **Invariante**. Sie ist der eigentliche Zweck von Kapselung.
 
 (Die `throw`-Syntax lernst du in Kapitel 7 richtig. Für jetzt reicht: Diese
@@ -130,7 +130,7 @@ Kapselung nur dem Namen nach.
 
 **Faustregel:** Felder `private`, Methoden so eng wie möglich.
 
-## 5.4 `static` — geteilt von allen Instanzen
+## 5.4 `static`, geteilt von allen Instanzen
 
 ```java
 public class Konto {
@@ -151,7 +151,7 @@ Konto.getAnzahlKonten();   // an der Klasse, nicht am Objekt
 ```
 
 Eine `static`-Methode hat **kein** `this` und kann deshalb nicht auf
-Instanzfelder zugreifen — ein häufiger Compilerfehler:
+Instanzfelder zugreifen, ein häufiger Compilerfehler:
 `non-static variable x cannot be referenced from a static context`.
 
 **Konstanten:**
@@ -181,7 +181,7 @@ erinnert dich dann daran, welcher Zustand sich wirklich ändert.
 
 Jede Klasse in Java erbt automatisch von `Object` und damit u. a. diese drei.
 
-### `toString()` — lesbare Darstellung
+### `toString()`, lesbare Darstellung
 
 ```java
 @Override
@@ -197,7 +197,7 @@ und String-Verkettung rufen `toString()` automatisch auf.
 Der Compiler prüft dann, ob du wirklich etwas überschreibst. Ein Tippfehler
 (`toStrng`) fällt so sofort auf statt erst im Betrieb.
 
-### `equals(Object)` — inhaltliche Gleichheit
+### `equals(Object)`, inhaltliche Gleichheit
 
 ```java
 @Override
@@ -212,18 +212,18 @@ public boolean equals(Object o) {
 Warum `Double.compare` statt `==`? Bei `double` hat `==` zwei Ecken:
 `Double.NaN == Double.NaN` ist `false` (zwei Punkte mit `NaN` wären nie gleich),
 und `0.0 == -0.0` ist `true`, obwohl `Objects.hash` für beide verschiedene
-Hashwerte liefert — damit wäre der `hashCode`-Vertrag (unten) gebrochen.
+Hashwerte liefert, damit wäre der `hashCode`-Vertrag (unten) gebrochen.
 Für `int`, `long`, `char`, `boolean` ist `==` völlig in Ordnung; für
 Objekt-Felder nimmst du `Objects.equals(a, b)` (null-sicher).
 
-Der Parametertyp ist `Object` — nicht `Punkt`. Schreibst du
+Der Parametertyp ist `Object`, nicht `Punkt`. Schreibst du
 `public boolean equals(Punkt p)`, hast du **überladen** statt überschrieben,
 und Collections nutzen weiter die falsche Methode. Genau davor schützt `@Override`.
 
 Das `instanceof Punkt p` mit Variablenname ist *Pattern Matching* (Java 16+):
 prüfen und casten in einem Schritt.
 
-### `hashCode()` — und der Vertrag
+### `hashCode()`, und der Vertrag
 
 ```java
 @Override
@@ -233,7 +233,7 @@ public int hashCode() {
 ```
 
 **Der Vertrag:** Sind zwei Objekte `equals`, **müssen** sie denselben
-`hashCode` haben. (Umgekehrt nicht — Kollisionen sind erlaubt.)
+`hashCode` haben. (Umgekehrt nicht, Kollisionen sind erlaubt.)
 
 Wer `equals` überschreibt und `hashCode` vergisst, baut einen Fehler, der
 erst in Kapitel 8 sichtbar wird: Das Objekt verschwindet in einer `HashMap`
@@ -248,7 +248,7 @@ Exception in thread "main" java.lang.NullPointerException:
     Cannot invoke "String.length()" because "name" is null
 ```
 
-Seit Java 14 sagen die Meldungen sehr genau, *welche* Referenz `null` war —
+Seit Java 14 sagen die Meldungen sehr genau, *welche* Referenz `null` war,
 lies sie, sie ersparen dir das Raten. (Steht dort `"<local1>"` statt eines
 Namens, wurde ohne Debug-Infos kompiliert; `javac -g` behebt das. `lerne.sh`
 macht das bereits für dich.)
@@ -284,7 +284,7 @@ In Kapitel 10 siehst du, dass `record` genau diese Klasse in einer Zeile schreib
 
 Objekte werden mit `new` erzeugt und vom **Garbage Collector** wieder
 eingesammelt, sobald keine Referenz mehr auf sie zeigt. Du gibst nichts
-manuell frei. `finalize()` ist veraltet — nicht benutzen. Für Ressourcen
+manuell frei. `finalize()` ist veraltet, nicht benutzen. Für Ressourcen
 (Dateien, Verbindungen) gibt es try-with-resources (Kapitel 7).
 
 ## 5.10 Erste Entwurfsmuster: statische Fabrikmethode und Singleton
@@ -342,7 +342,7 @@ Objekt über die Fabrikmethoden. Weil sie in der Dokumentation weniger auffallen
 als Konstruktoren, gibt es feste Namen: `of`, `from`, `valueOf`, `parse`,
 `getInstance`, oder sprechende wie `ausCelsius`.
 
-### Der Singleton — genau eine Instanz
+### Der Singleton, genau eine Instanz
 
 **Problem:** Von einer Klasse soll es im ganzen Programm genau ein Objekt geben,
 und jeder soll es finden, etwa eine Konfiguration.
@@ -378,13 +378,13 @@ Singleton ist eine globale Variable mit schönerem Namen. Setz es sparsam ein.
 ## Aufgaben
 
 > Hängst du fest? Gestufte Hinweise zu jeder Aufgabe stehen in
-> [`TIPPS.md`](TIPPS.md) — erst Tipp 1, dann wieder selbst probieren.
+> [`TIPPS.md`](TIPPS.md): erst Tipp 1, dann wieder selbst probieren.
 
-Drei Klassen, alle in [`src/`](src/) — prüfen mit `./lerne.sh 05`.
+Drei Klassen, alle in [`src/`](src/), prüfen mit `./lerne.sh 05`.
 
-### `Konto.java` — Kapselung und Invarianten
+### `Konto.java`: Kapselung und Invarianten
 
-Ein Bankkonto. **Beträge werden in Cent als `long` geführt** — nie in `double`
+Ein Bankkonto. **Beträge werden in Cent als `long` geführt**, nie in `double`
 (Kapitel 1: Kommazahlen sind ungenau, und Geld verträgt keine Rundungsfehler).
 
 Zu bauen:
@@ -395,12 +395,12 @@ Zu bauen:
   leere oder nur aus Leerzeichen bestehende Inhaber (`isBlank()`) und negatives
   Startguthaben mit `IllegalArgumentException` ablehnt. Ein abgelehnter Aufruf
   verbraucht **keine** Kontonummer.
-- Getter für alle drei Felder — aber **keinen** Setter für `guthaben`
-- `einzahlen(long betrag)` — nur positive Beträge, sonst `IllegalArgumentException`
-- `abheben(long betrag)` — gibt `boolean` zurück: `false` bei zu wenig Deckung,
+- Getter für alle drei Felder, aber **keinen** Setter für `guthaben`
+- `einzahlen(long betrag)`: nur positive Beträge, sonst `IllegalArgumentException`
+- `abheben(long betrag)`: gibt `boolean` zurück: `false` bei zu wenig Deckung,
   `IllegalArgumentException` bei nicht-positivem Betrag. Das komplette Guthaben
   abzuheben ist erlaubt.
-- `ueberweiseAn(Konto ziel, long betrag)` — `boolean`; nur wenn das Abheben klappt
+- `ueberweiseAn(Konto ziel, long betrag)`: `boolean`; nur wenn das Abheben klappt
 - `toString()` -> `Konto[1, Anna, 5000 Cent]`
 - `static int getAnzahlKonten()`
 
@@ -409,26 +409,26 @@ negativer Betrag eine Exception wirft? Weil "kein Geld da" ein normaler
 Geschäftsfall ist, "minus 5 Euro abheben" aber ein Programmierfehler.
 Diese Unterscheidung vertiefst du in Kapitel 7.
 
-### `Punkt.java` — Unveränderlichkeit und Objektidentität
+### `Punkt.java`: Unveränderlichkeit und Objektidentität
 
 - `final class Punkt` mit `private final double x, y`
 - Konstruktor, `getX()`, `getY()`
-- `abstand(Punkt anderer)` — euklidisch, `Math.hypot` oder `Math.sqrt`
+- `abstand(Punkt anderer)`: euklidisch, `Math.hypot` oder `Math.sqrt`
 - `abstandZumUrsprung()`
-- `verschoben(double dx, double dy)` — gibt einen **neuen** Punkt zurück
+- `verschoben(double dx, double dy)`: gibt einen **neuen** Punkt zurück
 - `toString()` -> `Punkt(1.0, 2.0)`
-- `equals` und `hashCode` — vollständig und vertragstreu. Die Tests prüfen
+- `equals` und `hashCode`, vollständig und vertragstreu. Die Tests prüfen
   auch die Ecken `0.0`/`-0.0` und `NaN` (siehe 5.6: `Double.compare` statt `==`).
 - Zwei **statische Fabrikmethoden** (5.10):
-  - `static Punkt ursprung()` — der Punkt (0, 0), und zwar bei **jedem** Aufruf
+  - `static Punkt ursprung()`: der Punkt (0, 0), und zwar bei **jedem** Aufruf
     **dasselbe** Objekt. Tipp: eine Konstante.
-  - `static Punkt polar(double radius, double winkelGrad)` — ein Punkt aus Abstand
+  - `static Punkt polar(double radius, double winkelGrad)`: ein Punkt aus Abstand
     und Winkel: `x = radius * cos(w)`, `y = radius * sin(w)`, wobei `w` der Winkel
     im Bogenmass ist. Umrechnen mit `Math.toRadians(winkelGrad)`, dann
     `Math.cos` und `Math.sin`. Beispiel: `polar(2, 90)` ist (0, 2).
     Als Konstruktor ginge das nicht: `Punkt(double, double)` gibt es schon.
 
-### `Konfiguration.java` — Singleton
+### `Konfiguration.java`: Singleton
 
 Die Einstellungen des Programms: `getSprache()`/`setSprache(String)` (Standard
 `"de"`, `null` oder leer -> `IllegalArgumentException`) und
@@ -467,7 +467,7 @@ System.out.println(Z.s + " " + a.i);
 
 <details><summary>Auflösung</summary>
 
-`2 1` — `s` gibt es nur **einmal** für die Klasse, beide Konstruktoraufrufe erhöhen dasselbe Feld. `i` hat jedes Objekt für sich.
+`2 1`: `s` gibt es nur **einmal** für die Klasse, beide Konstruktoraufrufe erhöhen dasselbe Feld. `i` hat jedes Objekt für sich.
 
 </details>
 
@@ -484,7 +484,7 @@ System.out.println(new P(1).equals(new P(1)));
 
 <details><summary>Auflösung</summary>
 
-`false` — Ohne überschriebenes `equals` gilt das geerbte aus `Object`, und das vergleicht nur die Referenz, also dasselbe wie `==`. Zwei `new` sind zwei Objekte.
+`false`: Ohne überschriebenes `equals` gilt das geerbte aus `Object`, und das vergleicht nur die Referenz, also dasselbe wie `==`. Zwei `new` sind zwei Objekte.
 
 </details>
 
@@ -499,7 +499,7 @@ System.out.println(l.size());
 
 <details><summary>Auflösung</summary>
 
-`2` — `final` verbietet nur, `l` auf eine andere Liste zeigen zu lassen. Die Liste selbst bleibt veränderbar (Abschnitt 5.5).
+`2`: `final` verbietet nur, `l` auf eine andere Liste zeigen zu lassen. Die Liste selbst bleibt veränderbar (Abschnitt 5.5).
 
 </details>
 
@@ -513,7 +513,7 @@ System.out.println((a == b) + " " + (c == d) + " " + c.equals(d));
 
 <details><summary>Auflösung</summary>
 
-`true false true` — `Integer.valueOf` ist eine statische Fabrikmethode mit Zwischenspeicher (5.10). Für -128 bis 127 liefert sie immer **dasselbe** Objekt, `==` ist deshalb `true`. 128 liegt ausserhalb, jeder Aufruf erzeugt ein neues Objekt, und `==` vergleicht Referenzen. Ein Konstruktor könnte das nicht, `new` liefert immer ein neues Objekt. Die Lehre aus Kapitel 3 gilt weiter: Objekte mit `equals` vergleichen, dann ist der Zwischenspeicher egal. Auch Autoboxing (`Integer x = 127;`) benutzt intern `valueOf`.
+`true false true`: `Integer.valueOf` ist eine statische Fabrikmethode mit Zwischenspeicher (5.10). Für -128 bis 127 liefert sie immer **dasselbe** Objekt, `==` ist deshalb `true`. 128 liegt ausserhalb, jeder Aufruf erzeugt ein neues Objekt, und `==` vergleicht Referenzen. Ein Konstruktor könnte das nicht, `new` liefert immer ein neues Objekt. Die Lehre aus Kapitel 3 gilt weiter: Objekte mit `equals` vergleichen, dann ist der Zwischenspeicher egal. Auch Autoboxing (`Integer x = 127;`) benutzt intern `valueOf`.
 
 </details>
 

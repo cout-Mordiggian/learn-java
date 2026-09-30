@@ -1,4 +1,4 @@
-# Kapitel 08 — Collections und Generics
+# Kapitel 08: Collections und Generics
 
 **Ziel:** Du wählst die passende Datenstruktur bewusst aus, kennst den
 Zusammenhang zwischen `hashCode` und `HashMap` und schreibst eigene
@@ -44,7 +44,7 @@ Elementen ca. 20 Schritte).
 
 `ArrayList` ist in über 90 % der Fälle richtig. `LinkedList` wirkt in der
 Theorie oft besser, ist in der Praxis wegen schlechter Cache-Nutzung fast immer
-langsamer — nimm sie nur, wenn du wirklich ständig vorn einfügst.
+langsamer, nimm sie nur, wenn du wirklich ständig vorn einfügst.
 
 ## 8.2 Gegen Interfaces programmieren
 
@@ -93,7 +93,7 @@ for (String n : namen) { ... }
 > ```
 >
 > Genau wie beim String-Pool: Es funktioniert im kleinen Test und versagt mit
-> echten Daten. `Integer` immer mit `equals` vergleichen — oder vorher in ein
+> echten Daten. `Integer` immer mit `equals` vergleichen, oder vorher in ein
 > `int` auspacken (`int x = liste.get(0);`).
 
 ### Unveränderliche Listen
@@ -109,9 +109,9 @@ Achtung: `List.of` erlaubt **kein** `null`. Ebenso gibt es `Set.of(...)` und
 Liste bekommst du mit `List.copyOf(liste)`.
 
 Der alte Weg `Arrays.asList(...)` liefert etwas Halbgares: feste Größe, aber
-`set` erlaubt — und die Liste ist an das ursprüngliche Array gekoppelt.
+`set` erlaubt, und die Liste ist an das ursprüngliche Array gekoppelt.
 
-## 8.4 `Set` — und warum `hashCode` jetzt zählt
+## 8.4 `Set`, und warum `hashCode` jetzt zählt
 
 ```java
 Set<String> tags = new HashSet<>();
@@ -141,7 +141,7 @@ s.size();                                 // 2 - der Bug
 ```
 
 Noch heimtückischer: Änderst du ein Feld, nachdem das Objekt in der Menge
-liegt, ändert sich sein `hashCode` — und das Objekt ist nicht mehr auffindbar,
+liegt, ändert sich sein `hashCode`, und das Objekt ist nicht mehr auffindbar,
 obwohl es drinsteckt. **Nimm unveränderliche Objekte als Schlüssel.**
 
 ## 8.5 `Map`
@@ -173,11 +173,11 @@ for (int v : alter.values()) { ... }
 ```
 
 `merge` und `computeIfAbsent` ersetzen die klassische
-"erst prüfen, dann einfügen"-Sequenz durch eine Zeile — und du wirst sie in
+"erst prüfen, dann einfügen"-Sequenz durch eine Zeile, und du wirst sie in
 diesem Kapitel brauchen.
 
 Die Reihenfolge beim Durchlaufen einer `HashMap` ist **nicht festgelegt** und
-kann sich zwischen Java-Versionen ändern. Verlass dich nie darauf — brauchst
+kann sich zwischen Java-Versionen ändern. Verlass dich nie darauf, brauchst
 du eine Ordnung, nimm `TreeMap` (sortiert) oder `LinkedHashMap` (Einfügereihenfolge).
 
 ### Seit Java 21: erstes und letztes Element
@@ -215,7 +215,7 @@ for (String n : new ArrayList<>(namen)) { ... }  // ueber eine Kopie laufen
 
 ## 8.7 Sortieren: `Comparable` und `Comparator`
 
-**`Comparable`** — die *natürliche* Ordnung, in der Klasse selbst:
+**`Comparable`**: die *natürliche* Ordnung, in der Klasse selbst:
 
 ```java
 public class Person implements Comparable<Person> {
@@ -228,10 +228,10 @@ Collections.sort(personen);      // oder personen.sort(null)
 ```
 
 Der Rückgabewert: **negativ** wenn `this` kleiner, **0** bei Gleichheit,
-**positiv** wenn größer. Nicht `-1/0/1` selbst basteln — nimm
+**positiv** wenn größer. Nicht `-1/0/1` selbst basteln, nimm
 `Integer.compare(a, b)`. (`a - b` kann überlaufen!)
 
-**`Comparator`** — beliebig viele alternative Ordnungen, ausserhalb der Klasse:
+**`Comparator`**: beliebig viele alternative Ordnungen, ausserhalb der Klasse:
 
 ```java
 personen.sort(Comparator.comparing(Person::getName));
@@ -247,7 +247,7 @@ schwankst, welche Ordnung "die richtige" ist, ist es ein `Comparator`.
 
 Sinnvoll: `compareTo` sollte mit `equals` konsistent sein
 (`a.compareTo(b) == 0` genau dann, wenn `a.equals(b)`). `TreeSet` benutzt
-nämlich `compareTo` statt `equals` — bei Inkonsistenz verschwinden Elemente.
+nämlich `compareTo` statt `equals`, bei Inkonsistenz verschwinden Elemente.
 
 ## 8.8 Generics
 
@@ -299,7 +299,7 @@ void fuelle(List<? super Integer> ziel)       // schreiben: Consumer Super
 
 **PECS: Producer `extends`, Consumer `super`.**
 
-Der Grund: `List<Integer>` ist **kein** `List<Number>` — sonst könnte man
+Der Grund: `List<Integer>` ist **kein** `List<Number>`, sonst könnte man
 über die `Number`-Sicht ein `Double` in die `Integer`-Liste legen. Mit
 `? extends Number` darfst du lesen (alles ist eine `Number`), aber nichts
 hineinlegen.
@@ -343,11 +343,11 @@ Objects.toString(x, "-");
 ## Aufgaben
 
 > Hängst du fest? Gestufte Hinweise zu jeder Aufgabe stehen in
-> [`TIPPS.md`](TIPPS.md) — erst Tipp 1, dann wieder selbst probieren.
+> [`TIPPS.md`](TIPPS.md): erst Tipp 1, dann wieder selbst probieren.
 
-Drei Dateien in [`src/`](src/) — prüfen mit `./lerne.sh 08`.
+Drei Dateien in [`src/`](src/), prüfen mit `./lerne.sh 08`.
 
-### `Paar.java` — eine eigene generische Klasse
+### `Paar.java`, eine eigene generische Klasse
 
 `Paar<A, B>` mit `getErstes()`, `getZweites()`, `toString()` -> `(a, b)`,
 `equals`/`hashCode` und:
@@ -357,7 +357,7 @@ public Paar<B, A> getauscht()          // Typen tauschen!
 public static <A, B> Paar<A, B> von(A a, B b)   // statische Fabrikmethode
 ```
 
-Die statische Fabrikmethode braucht eigene Typparameter — die der Klasse
+Die statische Fabrikmethode braucht eigene Typparameter, die der Klasse
 gelten nur für Instanzmethoden. Das ist der Klassiker, an dem Generics
 "klick" machen.
 
@@ -372,14 +372,14 @@ plus `equals`/`hashCode`/`toString` -> `Anna(34)`.
    Kleinschreibung mit `toLowerCase(Locale.ROOT)`, an Whitespace trennen
    (auch führender Whitespace darf kein leeres Wort erzeugen), leerer Text ->
    leere Map. Tipp: `merge(wort, 1, Integer::sum)`.
-2. **`deduplizieren(List<String>)`** — Duplikate raus, **Reihenfolge erhalten**.
+2. **`deduplizieren(List<String>)`**: Duplikate raus, **Reihenfolge erhalten**.
    Welche `Set`-Implementierung kann das?
 3. **`haeufigsteWoerter(Map<String,Integer>, int n)`** -> `List<String>`.
    Absteigend nach Anzahl; bei Gleichstand alphabetisch aufsteigend.
-4. **`groesstes(List<T>)`** — generische Methode mit Schranke,
+4. **`groesstes(List<T>)`**: generische Methode mit Schranke,
    `null` bei leerer Liste.
 5. **`summe(List<? extends Number>)`** -> `double`. Wildcard.
-6. **`nachAlterDannName(List<Person>)`** — **neue** sortierte Liste,
+6. **`nachAlterDannName(List<Person>)`**: **neue** sortierte Liste,
    aufsteigend nach Alter, bei Gleichstand nach Name.
    Nutze `Comparator.comparingInt(...).thenComparing(...)`.
 7. **`gruppiereNachAnfangsbuchstabe(List<String>)`** ->
@@ -402,7 +402,7 @@ System.out.println(l);
 
 <details><summary>Auflösung</summary>
 
-`[10, 30]` — `remove(1)` mit einem `int` ist `remove(int index)`, nicht `remove(Object)`. Entfernt wird das Element an **Index** 1, nicht die Zahl 1.
+`[10, 30]`: `remove(1)` mit einem `int` ist `remove(int index)`, nicht `remove(Object)`. Entfernt wird das Element an **Index** 1, nicht die Zahl 1.
 
 </details>
 
@@ -415,7 +415,7 @@ System.out.println(s);
 
 <details><summary>Auflösung</summary>
 
-`[C, a, b]` — `TreeSet` sortiert nach `String.compareTo`, und das vergleicht Unicode-Werte: Grossbuchstaben (`C` = 67) kommen vor Kleinbuchstaben (`a` = 97). Für eine "menschliche" Ordnung: `new TreeSet<>(String.CASE_INSENSITIVE_ORDER)`.
+`[C, a, b]`: `TreeSet` sortiert nach `String.compareTo`, und das vergleicht Unicode-Werte: Grossbuchstaben (`C` = 67) kommen vor Kleinbuchstaben (`a` = 97). Für eine "menschliche" Ordnung: `new TreeSet<>(String.CASE_INSENSITIVE_ORDER)`.
 
 </details>
 
@@ -430,7 +430,7 @@ System.out.println(m.size() + " " + m.get("a") + " " + m.get("b"));
 
 <details><summary>Auflösung</summary>
 
-`1 2 null` — Ein Schlüssel kommt höchstens einmal vor, das zweite `put` **ersetzt** den Wert. Ein fehlender Schlüssel liefert `null`, keine Exception und keine `0`.
+`1 2 null`: Ein Schlüssel kommt höchstens einmal vor, das zweite `put` **ersetzt** den Wert. Ein fehlender Schlüssel liefert `null`, keine Exception und keine `0`.
 
 </details>
 
@@ -442,10 +442,10 @@ Erst selbst antworten, dann vergleichen: Die Antworten stehen am Ende von
 - Wann `ArrayList`, wann `HashSet`, wann `TreeMap`?
 - Was passiert, wenn du `equals` überschreibst und `hashCode` vergisst?
 - Warum wirft `liste.remove(x)` in einer for-each-Schleife?
-- `Comparable` oder `Comparator` — woran machst du das fest?
+- `Comparable` oder `Comparator`, woran machst du das fest?
 - Warum ist `List<Integer>` kein `List<Number>`?
 
 ---
 
-**Wie geht es weiter?** Empfohlen ist jetzt [Kapitel 14 — Algorithmen und Datenstrukturen](../14-algorithmen-und-datenstrukturen/README.md):
+**Wie geht es weiter?** Empfohlen ist jetzt [Kapitel 14: Algorithmen und Datenstrukturen](../14-algorithmen-und-datenstrukturen/README.md):
 Dort baust du `ArrayList` und einen Stapel selbst nach und siehst, warum die Auswahlregel aus 8.1 stimmt. Danach geht es mit Kapitel 9 weiter.

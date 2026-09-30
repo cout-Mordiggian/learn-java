@@ -1,20 +1,20 @@
-# Kapitel 09 — Tipps und Antworten
+# Kapitel 09: Tipps und Antworten
 
-> Erst selbst probieren. Klappe immer nur die **nächste** Stufe auf — jede verrät mehr.
+> Erst selbst probieren. Klappe immer nur die **nächste** Stufe auf, jede verrät mehr.
 > Die Tests in `tests/Tests.java` zeigen dir ausserdem genau, welche Eingabe welches Ergebnis erwartet.
 
 ## Aufgabe 1: `geradeQuadrate`
 
-<details><summary>Tipp 1 — Richtung</summary>
+<details><summary>Tipp 1: Richtung</summary>
 
 Abschnitt 9.5 (Streams, Zwischenoperationen). Die Aufgabe hat zwei Schritte:
 erst *auswählen*, dann *umwandeln*. Frag dich: Welche Zwischenoperation
-wählt aus, welche wandelt um — und welche Terminaloperation macht daraus
+wählt aus, welche wandelt um, und welche Terminaloperation macht daraus
 wieder eine `List`?
 
 </details>
 
-<details><summary>Tipp 2 — Ansatz</summary>
+<details><summary>Tipp 2: Ansatz</summary>
 
 `filter` bekommt ein `Predicate<Integer>`, `map` eine `Function<Integer, Integer>`,
 am Ende `toList()`. "Gerade" prüfst du mit dem Rest-Operator `%`.
@@ -25,7 +25,7 @@ gerade, denn `-1 % 2` ist in Java `-1`, nicht `1`.
 
 </details>
 
-<details><summary>Tipp 3 — Gerüst</summary>
+<details><summary>Tipp 3: Gerüst</summary>
 
 ```java
 return zahlen.stream()
@@ -38,16 +38,16 @@ return zahlen.stream()
 
 ## Aufgabe 2: `laengstesWort`
 
-<details><summary>Tipp 1 — Richtung</summary>
+<details><summary>Tipp 1: Richtung</summary>
 
 Abschnitt 9.5 (Terminaloperationen `min`/`max`) und 9.6 (`Optional`).
-`max` liefert schon ein `Optional` — genau den Rückgabetyp, den du brauchst.
+`max` liefert schon ein `Optional`, genau den Rückgabetyp, den du brauchst.
 Die eigentliche Frage: *Wonach* wird verglichen, und welches Element gewinnt
 bei Gleichstand?
 
 </details>
 
-<details><summary>Tipp 2 — Ansatz</summary>
+<details><summary>Tipp 2: Ansatz</summary>
 
 `max` braucht einen `Comparator<String>`. Den baust du dir mit
 `Comparator.comparingInt(...)` aus einer Funktion, die jedem Wort eine Zahl
@@ -67,7 +67,7 @@ Leere Liste und Ein-Wort-Liste erledigt `max` von selbst.
 
 </details>
 
-<details><summary>Tipp 3 — Gerüst</summary>
+<details><summary>Tipp 3: Gerüst</summary>
 
 ```java
 return woerter.stream()
@@ -85,7 +85,7 @@ return woerter.stream()
 
 ## Aufgabe 3: `grossgeschriebenSortiert`
 
-<details><summary>Tipp 1 — Richtung</summary>
+<details><summary>Tipp 1: Richtung</summary>
 
 Abschnitt 9.3 (Methodenreferenzen) und 9.5 (`map`, `sorted`). Du brauchst aus
 jeder `Person` nur den Namen. Frag dich: In welcher Reihenfolge müssen
@@ -94,11 +94,11 @@ werden?
 
 </details>
 
-<details><summary>Tipp 2 — Ansatz</summary>
+<details><summary>Tipp 2: Ansatz</summary>
 
 Erst `map(Person::getName)`, dann in Grossbuchstaben umwandeln, **dann**
 `sorted()`. `toUpperCase(Locale.ROOT)` passt nicht als einfache
-Methodenreferenz, weil es ein Argument braucht — nimm dort ein Lambda.
+Methodenreferenz, weil es ein Argument braucht, nimm dort ein Lambda.
 
 Denkfalle: Sortierst du *vor* dem Grossschreiben, gilt die natürliche
 String-Ordnung, und da stehen alle Grossbuchstaben vor allen Kleinbuchstaben:
@@ -107,7 +107,7 @@ String-Ordnung, und da stehen alle Grossbuchstaben vor allen Kleinbuchstaben:
 
 </details>
 
-<details><summary>Tipp 3 — Gerüst</summary>
+<details><summary>Tipp 3: Gerüst</summary>
 
 ```java
 return personen.stream()
@@ -121,39 +121,39 @@ return personen.stream()
 
 ## Aufgabe 4: `alsListe`
 
-<details><summary>Tipp 1 — Richtung</summary>
+<details><summary>Tipp 1: Richtung</summary>
 
 Abschnitt 9.5, Collectors. Suche den Collector, der Strings zu *einem* String
-verbindet — und der ausser dem Trenner auch noch Anfang und Ende kennt.
+verbindet, und der ausser dem Trenner auch noch Anfang und Ende kennt.
 
 </details>
 
-<details><summary>Tipp 2 — Ansatz</summary>
+<details><summary>Tipp 2: Ansatz</summary>
 
 `Collectors.joining` gibt es mit einem, zwei oder drei Argumenten. Du brauchst
 die Variante mit drei: Trenner, Präfix, Suffix. Achte auf das Leerzeichen im
 Trenner (`"a, b"`, nicht `"a,b"`).
 
 Randfall leere Liste: Der Test erwartet `"[]"`. Präfix und Suffix bleiben bei
-`joining` auch dann stehen, wenn gar kein Element kommt — du brauchst also
+`joining` auch dann stehen, wenn gar kein Element kommt, du brauchst also
 keinen Sonderfall.
 
 </details>
 
 ## Aufgabe 5: `durchschnittsalter`
 
-<details><summary>Tipp 1 — Richtung</summary>
+<details><summary>Tipp 1: Richtung</summary>
 
 Abschnitt 9.5 (`mapToInt`, `average()`) und 9.6 (`Optional`). Frag dich: Was
-ist der Durchschnitt von *keinen* Werten — und wie sagt Java dir das im Typ?
+ist der Durchschnitt von *keinen* Werten, und wie sagt Java dir das im Typ?
 
 </details>
 
-<details><summary>Tipp 2 — Ansatz</summary>
+<details><summary>Tipp 2: Ansatz</summary>
 
 `mapToInt(Person::getAlter)` macht aus dem `Stream<Person>` einen `IntStream`.
 Dessen `average()` liefert ein `OptionalDouble`, das bei leerem Stream leer ist.
-Aus einem `OptionalDouble` holst du den Wert mit einem Standardwert heraus —
+Aus einem `OptionalDouble` holst du den Wert mit einem Standardwert heraus,
 dieselbe Idee wie `orElse` bei `Optional`.
 
 Nicht selbst `summe / anzahl` rechnen: Bei leerer Liste ist das `0 / 0`, und bei
@@ -161,7 +161,7 @@ Nicht selbst `summe / anzahl` rechnen: Bei leerer Liste ist das `0 / 0`, und bei
 
 </details>
 
-<details><summary>Tipp 3 — Gerüst</summary>
+<details><summary>Tipp 3: Gerüst</summary>
 
 ```java
 return personen.stream()
@@ -174,29 +174,29 @@ return personen.stream()
 
 ## Aufgabe 6: `nachStadt`
 
-<details><summary>Tipp 1 — Richtung</summary>
+<details><summary>Tipp 1: Richtung</summary>
 
 Abschnitt 9.5, Collectors, besonders `groupingBy` mit Downstream-Collector.
-Frag dich: Wonach wird gruppiert — und was soll *pro Gruppe* in der Liste
+Frag dich: Wonach wird gruppiert, und was soll *pro Gruppe* in der Liste
 stehen: die ganze `Person` oder nur ihr Name?
 
 </details>
 
-<details><summary>Tipp 2 — Ansatz</summary>
+<details><summary>Tipp 2: Ansatz</summary>
 
-`groupingBy(Person::getStadt)` allein liefert `Map<String, List<Person>>` —
+`groupingBy(Person::getStadt)` allein liefert `Map<String, List<Person>>`,
 der Compiler meckert dann über den Rückgabetyp. Das zweite Argument
 (Downstream) bestimmt, was mit den Elementen einer Gruppe passiert:
 `Collectors.mapping(umwandlung, sammler)` wandelt jedes Element um und sammelt
 es dann.
 
-Die Tests erwarten `["Anna", "Cem"]` in genau dieser Reihenfolge — die
+Die Tests erwarten `["Anna", "Cem"]` in genau dieser Reihenfolge, die
 Reihenfolge innerhalb einer Gruppe entspricht der Eingabe, das passt von
 selbst. Leere Liste ergibt eine leere Map, auch das ohne Sonderfall.
 
 </details>
 
-<details><summary>Tipp 3 — Gerüst</summary>
+<details><summary>Tipp 3: Gerüst</summary>
 
 ```java
 return personen.stream()
@@ -209,7 +209,7 @@ return personen.stream()
 
 ## Aufgabe 7: `volljaehrigkeit`
 
-<details><summary>Tipp 1 — Richtung</summary>
+<details><summary>Tipp 1: Richtung</summary>
 
 Abschnitt 9.5, Collectors: `partitioningBy`. Eine Aufteilung in genau zwei
 Hälften nach einer Ja/Nein-Frage. Frag dich: Welches `Predicate<Person>`
@@ -217,19 +217,19 @@ beschreibt "volljährig"?
 
 </details>
 
-<details><summary>Tipp 2 — Ansatz</summary>
+<details><summary>Tipp 2: Ansatz</summary>
 
 `Collectors.partitioningBy(praedikat)` liefert `Map<Boolean, List<Person>>`.
 Zwei Randfälle aus den Tests:
 
-- Eva ist **genau 18** und gilt als volljährig — also `>=`, nicht `>`.
+- Eva ist **genau 18** und gilt als volljährig, also `>=`, nicht `>`.
 - Bei leerer Eingabe müssen trotzdem beide Schlüssel `true` und `false` da
   sein. Genau das garantiert `partitioningBy`; `groupingBy` mit demselben
   Prädikat liefert dagegen eine leere Map, und der Test scheitert.
 
 </details>
 
-<details><summary>Tipp 3 — Gerüst</summary>
+<details><summary>Tipp 3: Gerüst</summary>
 
 ```java
 return personen.stream()
@@ -240,16 +240,16 @@ return personen.stream()
 
 ## Aufgabe 8: `namenLaengen`
 
-<details><summary>Tipp 1 — Richtung</summary>
+<details><summary>Tipp 1: Richtung</summary>
 
 Abschnitt 9.5, Collectors: `toMap`. Pro Person entsteht genau ein Eintrag.
 Frag dich: Welche Funktion liefert den **Schlüssel**, welche den **Wert**?
 
 </details>
 
-<details><summary>Tipp 2 — Ansatz</summary>
+<details><summary>Tipp 2: Ansatz</summary>
 
-`Collectors.toMap(schluesselFunktion, wertFunktion)` — beide sind
+`Collectors.toMap(schluesselFunktion, wertFunktion)`: beide sind
 `Function<Person, ...>`. Der Schlüssel geht als Methodenreferenz, für den
 Wert brauchst du ein kleines Lambda, weil zwei Aufrufe hintereinander nötig
 sind (erst der Name, dann dessen Länge).
@@ -259,7 +259,7 @@ Bei doppelten Schlüsseln wirft `toMap` eine `IllegalStateException`.
 
 </details>
 
-<details><summary>Tipp 3 — Gerüst</summary>
+<details><summary>Tipp 3: Gerüst</summary>
 
 ```java
 return personen.stream()
@@ -270,16 +270,16 @@ return personen.stream()
 
 ## Aufgabe 9: `Transformation.dann`
 
-<details><summary>Tipp 1 — Richtung</summary>
+<details><summary>Tipp 1: Richtung</summary>
 
 Abschnitt 9.1 (Lambdas, eigenes funktionales Interface). `dann` führt noch
 nichts aus, sondern **liefert eine neue** `Transformation`. Frag dich: Was soll
-diese neue Transformation mit ihrer Eingabe tun — und wer wird zuerst
+diese neue Transformation mit ihrer Eingabe tun, und wer wird zuerst
 angewendet, `this` oder `naechste`?
 
 </details>
 
-<details><summary>Tipp 2 — Ansatz</summary>
+<details><summary>Tipp 2: Ansatz</summary>
 
 Du gibst ein Lambda `eingabe -> ...` zurück. Darin rufst du zuerst
 `this.anwenden(...)` auf und steckst dessen Ergebnis in `naechste.anwenden(...)`.
@@ -290,12 +290,12 @@ ergeben, nicht `"cba!"`. Und `gross.dann(ausrufen).dann(umgedreht)` zeigt,
 dass das Ergebnis von `dann` selbst wieder `dann` kann.
 
 Typischer Fehler: `this.anwenden(...)` sofort in `dann` aufrufen. Dort gibt es
-aber noch gar keine Eingabe — die kommt erst, wenn jemand die neue
+aber noch gar keine Eingabe, die kommt erst, wenn jemand die neue
 Transformation anwendet.
 
 </details>
 
-<details><summary>Tipp 3 — Gerüst</summary>
+<details><summary>Tipp 3: Gerüst</summary>
 
 ```java
 default Transformation dann(Transformation naechste) {
@@ -307,16 +307,16 @@ default Transformation dann(Transformation naechste) {
 
 ## Aufgabe 10: `alleAnwenden`
 
-<details><summary>Tipp 1 — Richtung</summary>
+<details><summary>Tipp 1: Richtung</summary>
 
-Abschnitt 9.5 (`reduce`) — oder einfach eine Schleife (Abschnitt 9.7 sagt
+Abschnitt 9.5 (`reduce`), oder einfach eine Schleife (Abschnitt 9.7 sagt
 selbst, dass die manchmal klarer ist). Frag dich: Was soll bei einer **leeren**
 Liste herauskommen, und wie kommst du bei der Schleife von einem Schritt zum
 nächsten?
 
 </details>
 
-<details><summary>Tipp 2 — Ansatz</summary>
+<details><summary>Tipp 2: Ansatz</summary>
 
 **Weg A, Schleife:** Eine Variable mit der Eingabe starten, jede
 `Transformation` darauf anwenden und das Ergebnis wieder in dieselbe Variable
@@ -325,7 +325,7 @@ zurück.
 
 **Weg B, `reduce`:** Mit `dann` aus Aufgabe 9 alle Schritte zu *einer*
 Transformation verketten und diese einmal anwenden. `reduce(startwert, verknuepfung)`
-braucht dafür ein neutrales Element — eine Transformation, die nichts verändert.
+braucht dafür ein neutrales Element, eine Transformation, die nichts verändert.
 Die Verknüpfung ist genau `dann` (als Methodenreferenz).
 
 Vorsicht bei der Variante `reduce(eingabe, (text, t) -> t.anwenden(text), ...)`:
@@ -334,7 +334,7 @@ schreiben ist. Nimm lieber Weg A oder B.
 
 </details>
 
-<details><summary>Tipp 3 — Gerüst</summary>
+<details><summary>Tipp 3: Gerüst</summary>
 
 Weg A:
 
@@ -358,7 +358,7 @@ return schritte.stream()
 
 ## Aufgabe 11: Rabatt-Strategien
 
-<details><summary>Tipp 1 — Richtung</summary>
+<details><summary>Tipp 1: Richtung</summary>
 
 Abschnitt 9.8 und 9.1. `Rabatt` hat genau eine Methode
 `long anwenden(long betragCent)`, also ist jedes Lambda `betrag -> ...` ein
@@ -368,7 +368,7 @@ rechnet das Lambda **selbst**?
 
 </details>
 
-<details><summary>Tipp 2 — Ansatz</summary>
+<details><summary>Tipp 2: Ansatz</summary>
 
 - `keiner`: `betrag -> betrag`. "Immer dieselbe Instanz" bekommst du sicher mit
   einer Konstanten: `private static final Rabatt KEINER = betrag -> betrag;` und
@@ -393,7 +393,7 @@ neues Objekt.
 
 </details>
 
-<details><summary>Tipp 3 — Gerüst</summary>
+<details><summary>Tipp 3: Gerüst</summary>
 
 ```java
 private static final Rabatt KEINER = ...;
@@ -415,7 +415,7 @@ public static Rabatt abMindestwert(long mindestCent, Rabatt rabatt) {
 
 ## Aufgabe 12: `Rabatte.ausCode`
 
-<details><summary>Tipp 1 — Richtung</summary>
+<details><summary>Tipp 1: Richtung</summary>
 
 Abschnitt 9.8, "Die Fabrik wählt die Strategie". Erst den Code vereinheitlichen, dann anhand des
 Anfangs entscheiden, welche deiner Methoden aus Aufgabe 11 zuständig ist. Frag
@@ -424,7 +424,7 @@ dich: Wie viele der ungültigen Fälle aus dem Test behandeln `prozent` und
 
 </details>
 
-<details><summary>Tipp 2 — Ansatz</summary>
+<details><summary>Tipp 2: Ansatz</summary>
 
 `code.strip().toUpperCase(Locale.ROOT)` macht aus `"  prozent15 "` ein
 `"PROZENT15"`. Ist `code` `null`, wirft schon `strip()` die verlangte
@@ -448,7 +448,7 @@ passt nicht mehr zu `"MINUS"`.
 
 </details>
 
-<details><summary>Tipp 3 — Gerüst</summary>
+<details><summary>Tipp 3: Gerüst</summary>
 
 ```java
 public static Rabatt ausCode(String code) {
@@ -471,7 +471,7 @@ public static Rabatt ausCode(String code) {
 
 ## Aufgabe 13: `Lager`
 
-<details><summary>Tipp 1 — Richtung</summary>
+<details><summary>Tipp 1: Richtung</summary>
 
 Abschnitt 9.9. Zuerst nur die Bestände (`einlagern`, `entnehmen`, `bestand`),
 bis der erste Testblock grün ist. Dann `anmelden`/`abmelden` und die Meldung.
@@ -480,7 +480,7 @@ nur das Unterschreiten meldet und nicht jede Entnahme darunter?
 
 </details>
 
-<details><summary>Tipp 2 — Ansatz</summary>
+<details><summary>Tipp 2: Ansatz</summary>
 
 - `bestand`: `bestaende.getOrDefault(artikel, 0)`.
 - `einlagern`: `menge <= 0` -> `IllegalArgumentException`, sonst
@@ -499,7 +499,7 @@ nur das Unterschreiten meldet und nicht jede Entnahme darunter?
 
 </details>
 
-<details><summary>Tipp 3 — Gerüst</summary>
+<details><summary>Tipp 3: Gerüst</summary>
 
 ```java
 public void entnehmen(String artikel, int menge) {
@@ -522,12 +522,12 @@ public void entnehmen(String artikel, int menge) {
 
 ---
 
-## Selbstcheck — Antworten
+## Selbstcheck: Antworten
 
 <details><summary>Was macht ein Interface "funktional"?</summary>
 
 Es hat **genau eine abstrakte Methode**. `default`- und `static`-Methoden zählen
-nicht mit — deshalb darf `Transformation` neben `anwenden` auch `dann` haben.
+nicht mit, deshalb darf `Transformation` neben `anwenden` auch `dann` haben.
 Nur für solche Interfaces kann der Compiler ein Lambda einsetzen: Er weiss
 dann, welche Methode das Lambda implementiert. `@FunctionalInterface` ist
 optional, lässt den Compiler aber prüfen, dass es bei einer abstrakten
@@ -540,7 +540,7 @@ Methode bleibt.
 Ein Lambda kann länger leben als die Methode, in der es entsteht (z. B. `dann`
 gibt eines zurück). Die lokale Variable liegt aber auf dem Stack und ist nach
 dem Methodenende weg. Java **kopiert** deshalb ihren Wert ins Lambda. Wäre die
-Variable danach noch änderbar, gäbe es zwei verschiedene Werte — das Original
+Variable danach noch änderbar, gäbe es zwei verschiedene Werte, das Original
 und die Kopie. Die Regel "effektiv final" verhindert diese Verwirrung (und
 nebenbei Datenrennen, wenn das Lambda in einem anderen Thread läuft,
 Kapitel 12).
@@ -564,7 +564,7 @@ Stream.of("a", "b").peek(System.out::println).toList();                   // gib
 <details><summary>Wann `orElse`, wann `orElseGet`?</summary>
 
 Das Argument von `orElse(wert)` wird **immer** ausgewertet, bevor die Methode
-aufgerufen wird — auch wenn das `Optional` einen Wert hat. `orElseGet(supplier)`
+aufgerufen wird, auch wenn das `Optional` einen Wert hat. `orElseGet(supplier)`
 ruft den `Supplier` nur auf, wenn das `Optional` leer ist. Also: `orElse` für
 fertige, billige Werte (`orElse(0.0)`, `orElse("")`), `orElseGet`, wenn der
 Standardwert teuer ist oder Seiteneffekte hat (`orElseGet(() -> ladeAusDatenbank())`).
@@ -574,14 +574,14 @@ Standardwert teuer ist oder Seiteneffekte hat (`orElseGet(() -> ladeAusDatenbank
 <details><summary>Nenne zwei Fälle, in denen eine Schleife besser ist als ein Stream.</summary>
 
 1. Wenn du **Indizes** brauchst oder mehrere Sammlungen gleichzeitig
-   durchläufst — z. B. `a[i]` mit `b[i]` vergleichen.
+   durchläufst, z. B. `a[i]` mit `b[i]` vergleichen.
 2. Wenn es eigentlich nur um einen **Seiteneffekt** geht (ausgeben,
-   in eine bestehende Liste schreiben) — `for (String n : namen)` ist dann
+   in eine bestehende Liste schreiben), `for (String n : namen)` ist dann
    klarer als `namen.stream().forEach(...)`.
 
 Weitere: Zustand, der über mehrere Elemente mitgeführt wird (Kapitel 11.5),
 frühes Abbrechen mit komplizierter Bedingung, oder checked Exceptions im
-Schleifenrumpf — die lassen sich in Lambdas nicht einfach weiterwerfen.
+Schleifenrumpf, die lassen sich in Lambdas nicht einfach weiterwerfen.
 
 </details>
 

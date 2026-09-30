@@ -1,7 +1,7 @@
-# Kapitel 09 — Lambdas und Streams
+# Kapitel 09: Lambdas und Streams
 
 **Ziel:** Du schreibst Verhalten als Wert, baust Stream-Pipelines und weisst,
-wann sie das Programm klarer machen — und wann nicht.
+wann sie das Programm klarer machen, und wann nicht.
 
 ---
 
@@ -37,7 +37,7 @@ x -> {                          // Block: return ist dann Pflicht
 }
 ```
 
-Ein Lambda ist **kein** Objekt-Ersatz für beliebige Interfaces — es
+Ein Lambda ist **kein** Objekt-Ersatz für beliebige Interfaces, es
 funktioniert nur bei **funktionalen Interfaces**: Interfaces mit **genau einer**
 abstrakten Methode.
 
@@ -81,7 +81,7 @@ p -> p.getName()             ->   Person::getName
 ```
 
 Vier Formen: statische Methode, Methode eines bestimmten Objekts, Methode des
-Parameters, Konstruktor. Lesbarer — aber nur, wenn der Name für sich spricht.
+Parameters, Konstruktor. Lesbarer, aber nur, wenn der Name für sich spricht.
 
 ## 9.4 Effektiv final
 
@@ -96,12 +96,12 @@ lambda expression must be final or effectively final`), auch wenn die
 eigentliche Ursache die spätere Zuweisung ist. Nimm die Zeile `faktor = 4;`
 weg, und alles kompiliert.
 
-Ein Lambda darf lokale Variablen nur lesen, wenn sie **effektiv final** sind —
+Ein Lambda darf lokale Variablen nur lesen, wenn sie **effektiv final** sind,
 also nach der Initialisierung nicht mehr verändert werden. Grund: Das Lambda
 kann das Ende der Methode überleben; Java kopiert den Wert, statt eine
 Referenz auf den Stack-Slot zu halten.
 
-Instanzfelder dürfen sich dagegen ändern — die sind über `this` erreichbar.
+Instanzfelder dürfen sich dagegen ändern, die sind über `this` erreichbar.
 
 ## 9.5 Streams
 
@@ -180,7 +180,7 @@ import static java.util.stream.Collectors.*;
 ```
 
 `groupingBy` mit einem zweiten Collector ("Downstream") ist das
-mächtigste Werkzeug der ganzen API — damit baust du Auswertungen, die
+mächtigste Werkzeug der ganzen API, damit baust du Auswertungen, die
 sonst zwanzig Zeilen kosten. `mapping(f, toList())` wandelt dabei jedes Element
 einer Gruppe um, bevor es gesammelt wird.
 
@@ -212,15 +212,15 @@ gefunden.ifPresentOrElse(p -> ..., () -> ...);
 
 **Regeln:**
 
-- `Optional` als **Rückgabetyp** — nicht als Feld, nicht als Parameter
+- `Optional` als **Rückgabetyp**, nicht als Feld, nicht als Parameter
 - Nie `optional.get()` ohne vorherige Prüfung; nimm `orElseThrow()`
-- Nie `Optional<List<T>>` — eine leere Liste sagt dasselbe einfacher
-- Nie `null` in ein `Optional` — dafür gibt es `Optional.ofNullable(x)`
+- Nie `Optional<List<T>>`, eine leere Liste sagt dasselbe einfacher
+- Nie `null` in ein `Optional`, dafür gibt es `Optional.ofNullable(x)`
 
 Die Kette `map(...).filter(...).orElse(...)` ist der eigentliche Gewinn: Sie
 ersetzt verschachtelte `null`-Prüfungen durch einen linearen Ausdruck.
 
-## 9.7 Wann Streams — und wann nicht
+## 9.7 Wann Streams, und wann nicht
 
 **Gut:** Filtern, Umwandeln, Gruppieren, Aggregieren; Datenflüsse, die sich
 als Kette lesen lassen.
@@ -239,7 +239,7 @@ namen.stream().filter(...).forEach(ergebnis::add);    // -> .filter(...).toList(
 ```
 
 Und `.parallelStream()`: fast nie. Es lohnt erst bei sehr grossen Datenmengen
-und teuren, unabhängigen Operationen — und bringt alle Probleme der
+und teuren, unabhängigen Operationen, und bringt alle Probleme der
 Nebenläufigkeit mit (Kapitel 12). Miss nach, statt zu raten.
 
 ## 9.8 Strategie und Fabrik mit Lambdas
@@ -413,18 +413,18 @@ dasselbe wie in der umgebenden Methode.
 ## Aufgaben
 
 > Hängst du fest? Gestufte Hinweise zu jeder Aufgabe stehen in
-> [`TIPPS.md`](TIPPS.md) — erst Tipp 1, dann wieder selbst probieren.
+> [`TIPPS.md`](TIPPS.md): erst Tipp 1, dann wieder selbst probieren.
 
 Prüfen mit `./lerne.sh 09`. `Person.java` ist bereits fertig, für die
-Aufgaben 1–10 arbeitest du in `Aufgaben.java` und `Transformation.java`, für
-11–13 in `Rabatte.java` und `Lager.java`. Die Interfaces `Rabatt` und
+Aufgaben 1 bis 10 arbeitest du in `Aufgaben.java` und `Transformation.java`, für
+11 bis 13 in `Rabatte.java` und `Lager.java`. Die Interfaces `Rabatt` und
 `LagerBeobachter` sowie die `Kasse` sind fertig. Lies sie trotzdem, sie gehören
 zum Muster.
 
-1. **`geradeQuadrate(List<Integer>)`** — gerade Zahlen filtern, quadrieren.
+1. **`geradeQuadrate(List<Integer>)`**: gerade Zahlen filtern, quadrieren.
 2. **`laengstesWort(List<String>)`** -> `Optional<String>`.
    Bei Gleichstand das **erste**. *Denkfalle:* Was macht `max` bei Gleichstand
-   überhaupt? Die Javadoc sagt es nicht deutlich — schreib dir zwei Zeilen
+   überhaupt? Die Javadoc sagt es nicht deutlich, schreib dir zwei Zeilen
    und probier es aus, bevor du dich auf eine Annahme verlässt.
 3. **`grossgeschriebenSortiert(List<Person>)`** -> `List<String>`,
    Namen in Grossbuchstaben (`toUpperCase(Locale.ROOT)`), alphabetisch.
@@ -437,25 +437,25 @@ zum Muster.
 7. **`volljaehrigkeit(List<Person>)`** -> `Map<Boolean, List<Person>>`
    mit `partitioningBy`. Volljährig heisst `alter >= 18`.
 8. **`namenLaengen(List<Person>)`** -> `Map<String, Integer>` mit `toMap`.
-   Du darfst annehmen, dass die Namen eindeutig sind — eine Merge-Funktion
+   Du darfst annehmen, dass die Namen eindeutig sind, eine Merge-Funktion
    für doppelte Schlüssel ist nicht nötig.
-9. **`Transformation.dann(...)`** — eine `default`-Methode, die zwei
+9. **`Transformation.dann(...)`**: eine `default`-Methode, die zwei
    Transformationen hintereinanderschaltet (Komposition).
    `gross.dann(umgedreht).anwenden("abc")` -> `"CBA"`.
-10. **`alleAnwenden(List<Transformation>, String)`** — alle der Reihe nach
-    anwenden. Tipp: `reduce` — oder eine schlichte Schleife.
-11. **`Rabatte`: Strategien** (9.8) — `keiner()`, `prozent(p)`, `festbetrag(cent)`,
+10. **`alleAnwenden(List<Transformation>, String)`**: alle der Reihe nach
+    anwenden. Tipp: `reduce`, oder eine schlichte Schleife.
+11. **`Rabatte`: Strategien** (9.8): `keiner()`, `prozent(p)`, `festbetrag(cent)`,
     `abMindestwert(mindest, rabatt)`. Jede liefert einen `Rabatt`, am besten als
     Lambda. Ungültige Werte scheitern **sofort**, nicht erst beim Anwenden.
     `keiner()` liefert bei jedem Aufruf dieselbe Instanz.
-12. **`Rabatte.ausCode`: Fabrik** (9.8) — aus `"KEIN"`, `"PROZENT15"`, `"MINUS500"`
+12. **`Rabatte.ausCode`: Fabrik** (9.8): aus `"KEIN"`, `"PROZENT15"`, `"MINUS500"`
     die passende Strategie, Gross-/Kleinschreibung und Leerzeichen am Rand egal.
     Benutze deine Methoden aus Aufgabe 11, statt die Rechnungen zu wiederholen.
-13. **`Lager`: Beobachter** (9.9) — Bestände verwalten, Beobachter an- und
+13. **`Lager`: Beobachter** (9.9): Bestände verwalten, Beobachter an- und
     abmelden, benachrichtigen, wenn ein Artikel **unter** den Meldebestand fällt.
     Ein Beobachter darf sich während der Meldung selbst abmelden.
 
-Wirft dein Code in den Aufgaben 11–13 eine Exception, melden die Tests sie als FEHL
+Wirft dein Code in den Aufgaben 11 bis 13 eine Exception, melden die Tests sie als FEHL
 mit Datei und Zeile und laufen weiter. Ehrlicher Hinweis: `keiner()` besteht den
 Test "dieselbe Instanz" auch ohne Konstante. Warum, steht in `TIPPS.md`.
 
@@ -475,7 +475,7 @@ System.out.println("fertig");
 
 <details><summary>Auflösung</summary>
 
-`fertig` — Ohne Terminaloperation passiert gar nichts, auch das `peek` nicht. Der Stream ist nur ein Bauplan.
+`fertig`: Ohne Terminaloperation passiert gar nichts, auch das `peek` nicht. Der Stream ist nur ein Bauplan.
 
 </details>
 
@@ -491,7 +491,7 @@ Stream.of("a", "b", "c")
 
 <details><summary>Auflösung</summary>
 
-`aAbcC` — Streams arbeiten **Element für Element** die ganze Kette ab, nicht Stufe für Stufe. `a` läuft komplett durch (`a`, dann `A`), `b` bleibt im Filter hängen, dann folgt `c`.
+`aAbcC`: Streams arbeiten **Element für Element** die ganze Kette ab, nicht Stufe für Stufe. `a` läuft komplett durch (`a`, dann `A`), `b` bleibt im Filter hängen, dann folgt `c`.
 
 </details>
 
@@ -505,7 +505,7 @@ System.out.println(Stream.of(1, 2, 3, 4)
 
 <details><summary>Auflösung</summary>
 
-`Optional.empty` — `findFirst` gibt kein `null` und keine Exception zurück, sondern ein leeres `Optional`. Deshalb der Rückgabetyp.
+`Optional.empty`: `findFirst` gibt kein `null` und keine Exception zurück, sondern ein leeres `Optional`. Deshalb der Rückgabetyp.
 
 </details>
 
@@ -522,7 +522,7 @@ for (Rabatt r : rabatte) System.out.print(r.anwenden(1000) + " ");
 
 <details><summary>Auflösung</summary>
 
-`900 800 700 ` — Jedes Lambda fängt **seine** Kopie von `satz` ein (9.4), deshalb merkt sich jede Strategie ihren eigenen Satz, obwohl alle an derselben Stelle entstehen. `satz` ist in jedem Durchlauf eine neue Variable und effektiv final. `p` selbst dagegen dürfte das Lambda nicht benutzen, `p += 10` ändert es: Compilerfehler. Genau so arbeitet `Rabatte.prozent` in Aufgabe 11.
+`900 800 700 `: Jedes Lambda fängt **seine** Kopie von `satz` ein (9.4), deshalb merkt sich jede Strategie ihren eigenen Satz, obwohl alle an derselben Stelle entstehen. `satz` ist in jedem Durchlauf eine neue Variable und effektiv final. `p` selbst dagegen dürfte das Lambda nicht benutzen, `p += 10` ändert es: Compilerfehler. Genau so arbeitet `Rabatte.prozent` in Aufgabe 11.
 
 </details>
 

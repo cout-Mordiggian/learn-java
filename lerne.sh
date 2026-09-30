@@ -17,7 +17,7 @@ uebersicht() {
   echo "  ======================================"
   for d in "$BASE"/kapitel/*/; do
     name="$(basename "$d")"
-    titel="$(sed -n '1s/^#\s*//p' "$d/README.md" 2>/dev/null | sed 's/^Kapitel [0-9]* — //')"
+    titel="$(sed -n '1s/^#\s*//p' "$d/README.md" 2>/dev/null | sed 's/^Kapitel [0-9]*: //')"
     printf "   %s  %s\n" "${name%%-*}" "${titel:-$name}"
   done
   echo

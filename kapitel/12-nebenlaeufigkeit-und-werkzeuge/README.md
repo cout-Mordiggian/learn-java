@@ -1,7 +1,7 @@
-# Kapitel 12 — Nebenläufigkeit und Werkzeuge
+# Kapitel 12: Nebenläufigkeit und Werkzeuge
 
 **Ziel:** Du weisst, warum `zaehler++` aus zwei Threads falsch zählt, nutzt
-`ExecutorService` statt roher Threads — und findest dich in einem echten
+`ExecutorService` statt roher Threads, und findest dich in einem echten
 Java-Projekt mit Maven, Gradle und JUnit zurecht.
 
 ---
@@ -18,7 +18,7 @@ t.join();       // warten, bis er fertig ist
 
 Rohe Threads sind teuer (jeder reserviert rund 1 MB Stack) und unbequem:
 Ergebnisse zurückzubekommen ist mühsam, und eine Exception im Thread landet
-nur als Stacktrace auf der Konsole — der startende Thread erfährt nichts davon.
+nur als Stacktrace auf der Konsole, der startende Thread erfährt nichts davon.
 In echtem Code nimmt man den `ExecutorService`.
 
 `join()` (und später `Future.get()`) können eine checked
@@ -45,7 +45,7 @@ public void erhoehen() {
 ```
 
 Das nennt man **Race Condition**. Sie tritt nicht immer auf, sondern
-gelegentlich — und darum ist sie so schwer zu finden. Zwei Threads, die je
+gelegentlich, und darum ist sie so schwer zu finden. Zwei Threads, die je
 100.000-mal erhöhen, kommen statt auf 200.000 auf irgendetwas dazwischen.
 
 Sieh es dir selbst an:
@@ -57,7 +57,7 @@ Sieh es dir selbst an:
 Zusätzlich gibt es das **Sichtbarkeitsproblem**: Ohne Synchronisierung darf
 die JVM Werte in Registern oder CPU-Caches halten und Lesezugriffe aus
 Schleifen herausziehen. Thread B sieht dann womöglich **nie**, was Thread A
-geschrieben hat — auch nach Minuten nicht.
+geschrieben hat, auch nach Minuten nicht.
 
 ```java
 private boolean stopp = false;            // ohne volatile: Schleife endet evtl. nie
@@ -78,7 +78,7 @@ public synchronized int wert()      { return zaehler; }
 ```
 
 Nur ein Thread hält zur Zeit den Monitor des Objekts. Wichtig: Auch das
-**Lesen** muss synchronisiert sein — sonst ist zwar das Schreiben korrekt, aber
+**Lesen** muss synchronisiert sein, sonst ist zwar das Schreiben korrekt, aber
 die Sichtbarkeit nicht garantiert.
 
 Feiner steuerbar mit einem eigenen Sperrobjekt:
@@ -98,14 +98,14 @@ zaehler.addAndGet(5);
 zaehler.get();
 ```
 
-Nutzt CPU-Befehle (Compare-and-Swap) statt Sperren — schneller und ohne
+Nutzt CPU-Befehle (Compare-and-Swap) statt Sperren, schneller und ohne
 Deadlock-Gefahr. **Für einzelne Zähler und Flags immer die erste Wahl.**
 
 ### Gar keinen gemeinsamen Zustand
 
 Die mit Abstand beste Lösung. Unveränderliche Objekte (Kapitel 5), lokale
 Variablen und Ergebnisse, die am Ende zusammengeführt werden, brauchen keine
-Synchronisierung — es gibt nichts zu schützen.
+Synchronisierung, es gibt nichts zu schützen.
 
 Deshalb ist alles, was du in Kapitel 5, 9 und 10 über Unveränderlichkeit
 gelernt hast, hier die eigentliche Pointe.
@@ -155,12 +155,12 @@ try (ExecutorService pool = Executors.newFixedThreadPool(4)) {   // seit Java 19
 }   // close() wartet, bis alle Aufgaben fertig sind, und beendet den Pool
 ```
 
-Ohne try-with-resources musst du selbst `pool.shutdown()` aufrufen — sonst
+Ohne try-with-resources musst du selbst `pool.shutdown()` aufrufen, sonst
 laufen die Pool-Threads weiter und dein Programm endet nie.
 
-- `execute(Runnable)` — feuern und vergessen
-- `submit(Callable<T>)` -> `Future<T>` — mit Ergebnis
-- `invokeAll(liste)` -> `List<Future<T>>` — alle starten, auf alle warten;
+- `execute(Runnable)`: feuern und vergessen
+- `submit(Callable<T>)` -> `Future<T>`, mit Ergebnis
+- `invokeAll(liste)` -> `List<Future<T>>`, alle starten, auf alle warten;
   **die Reihenfolge der Ergebnisse entspricht der Eingabe**
 
 Nebenbei ein Entwurfsmuster: Ein `Runnable` oder `Callable` ist eine Aktion als
@@ -168,7 +168,7 @@ Objekt, die ein anderer Thread später ausführt. Das ist ein **Befehl** (14.10)
 nur ohne Rückgängig.
 
 `future.get()` blockiert und wirft `ExecutionException`, wenn die Aufgabe eine
-Exception geworfen hat — das Original steckt in `getCause()`.
+Exception geworfen hat, das Original steckt in `getCause()`.
 
 Fabriken: `newFixedThreadPool(n)`, `newCachedThreadPool()`,
 `newSingleThreadExecutor()`, `newVirtualThreadPerTaskExecutor()` (Java 21).
@@ -189,7 +189,7 @@ try (var pool = Executors.newVirtualThreadPerTaskExecutor()) {
 
 Virtuelle Threads werden von der JVM verwaltet, nicht vom Betriebssystem. Sie
 kosten wenige hundert Byte statt einem Megabyte. Damit wird der einfache
-Stil — ein Thread pro Anfrage, blockierender Code — wieder tragfähig, ohne
+Stil, ein Thread pro Anfrage, blockierender Code, wieder tragfähig, ohne
 auf asynchrone Callback-Ketten auszuweichen.
 
 **Aber:** Sie lösen keine Race Conditions. Alles aus 12.2 gilt unverändert.
@@ -203,10 +203,10 @@ BlockingQueue<Auftrag> q = new LinkedBlockingQueue<>();  // Erzeuger/Verbraucher
 ```
 
 Eine normale `HashMap` aus mehreren Threads zu beschreiben kann sie in einen
-kaputten Zustand versetzen — in älteren Java-Versionen sogar in eine
+kaputten Zustand versetzen, in älteren Java-Versionen sogar in eine
 Endlosschleife.
 
-`Collections.synchronizedMap(...)` synchronisiert jede Methode einzeln — das
+`Collections.synchronizedMap(...)` synchronisiert jede Methode einzeln, das
 schützt **nicht** vor zusammengesetzten Operationen:
 
 ```java
@@ -252,7 +252,7 @@ mein-projekt/
     └── test/resources/
 ```
 
-Diese Struktur ist Konvention — jedes Werkzeug und jede IDE erwartet sie.
+Diese Struktur ist Konvention, jedes Werkzeug und jede IDE erwartet sie.
 
 ### Pakete
 
@@ -264,12 +264,12 @@ import de.firma.app.util.Helfer;
 ```
 
 Der Paketname spiegelt den Ordnerpfad. Konvention: umgekehrte Domain.
-Pakete sind Javas eigentliche Modularisierung — package-private (kein
+Pakete sind Javas eigentliche Modularisierung, package-private (kein
 Modifier) ist die Sichtbarkeit "nur innerhalb dieses Pakets".
 
 ## 12.10 Maven
 
-`pom.xml` — Beispiel in [`werkzeuge/pom.xml`](werkzeuge/pom.xml).
+`pom.xml`: Beispiel in [`werkzeuge/pom.xml`](werkzeuge/pom.xml).
 
 ```bash
 mvn compile           # uebersetzen
@@ -283,7 +283,7 @@ kommen aus Maven Central und landen in `~/.m2/repository`.
 
 ## 12.11 Gradle
 
-`build.gradle.kts` — Beispiel in [`werkzeuge/build.gradle.kts`](werkzeuge/build.gradle.kts).
+`build.gradle.kts`: Beispiel in [`werkzeuge/build.gradle.kts`](werkzeuge/build.gradle.kts).
 
 ```bash
 ./gradlew build
@@ -331,7 +331,7 @@ class KontoTest {
 }
 ```
 
-Das `Pruef`-Framework dieses Kurses ist eine Miniaturausgabe davon —
+Das `Pruef`-Framework dieses Kurses ist eine Miniaturausgabe davon,
 `Pruef.gleich` ist `assertEquals`, `Pruef.wirft` ist `assertThrows`.
 
 Testnamen als **ganze Sätze**: Ein Testname soll beschreiben, was gelten
@@ -376,9 +376,9 @@ Wenn dieses Kapitel sitzt, hast du die Sprache. Danach kommt das Ökosystem:
 ## Aufgaben
 
 > Hängst du fest? Gestufte Hinweise zu jeder Aufgabe stehen in
-> [`TIPPS.md`](TIPPS.md) — erst Tipp 1, dann wieder selbst probieren.
+> [`TIPPS.md`](TIPPS.md): erst Tipp 1, dann wieder selbst probieren.
 
-Drei Dateien in [`src/`](src/) — prüfen mit `./lerne.sh 12`.
+Drei Dateien in [`src/`](src/), prüfen mit `./lerne.sh 12`.
 `Demo.java` ist fertig und zeigt die Race Condition live:
 `./lerne.sh 12 -r Demo`.
 
@@ -388,21 +388,21 @@ Ein thread-sicherer Zähler mit `synchronized`. `erhoehen()`, `wert()`,
 `erhoeheUm(int)`. Denk daran: **auch das Lesen** muss synchronisiert sein.
 
 Ehrlicher Hinweis: Die Tests prüfen `erhoehen()` und `erhoeheUm()` mit vielen
-gleichzeitigen Threads — fehlt dort `synchronized`, gehen Erhöhungen verloren
+gleichzeitigen Threads, fehlt dort `synchronized`, gehen Erhöhungen verloren
 und der Test wird rot. Ob `wert()` synchronisiert ist, kann dagegen **kein
 Test zuverlässig feststellen**: Die Tests lesen erst nach `join()`, und
 `join()` sorgt schon selbst für Sichtbarkeit. Ein Sichtbarkeitsfehler tritt
 nur unter bestimmten Bedingungen auf, und dann meist erst in Produktion.
 Hier musst du dich auf das Verständnis verlassen, nicht auf grüne Haken.
 Dasselbe gilt dafür, ob deine Threads wirklich *parallel* laufen und ob du
-den `ExecutorService` schliesst — beides sieht man dem Ergebnis nicht an.
+den `ExecutorService` schliesst, beides sieht man dem Ergebnis nicht an.
 
 ### `Aufgaben.java`
 
 1. **`zaehleMitZaehler(int threads, int proThread)`** -> `int`.
    Starte die Threads, lass jeden `proThread`-mal erhöhen, warte auf alle,
    gib den Endstand zurück. Muss **exakt** `threads * proThread` sein.
-2. **`zaehleMitAtomic(int threads, int proThread)`** — dasselbe mit
+2. **`zaehleMitAtomic(int threads, int proThread)`**: dasselbe mit
    `AtomicInteger` statt `synchronized`.
 3. **`summeParallel(long bis, int threads)`** -> `long`.
    Summe von 1 bis `bis` (einschliesslich), aufgeteilt auf höchstens
@@ -413,7 +413,7 @@ den `ExecutorService` schliesst — beides sieht man dem Ergebnis nicht an.
    Jede Länge in einer eigenen Aufgabe berechnen, **Reihenfolge erhalten**.
    Tipp: `invokeAll` garantiert genau das.
 
-### `IdGenerator.java` — ein Singleton für viele Threads
+### `IdGenerator.java`, ein Singleton für viele Threads
 
 Das Singleton selbst steht schon: ein `enum` mit der einen Konstante `INSTANZ`
 (10.9). Du schreibst `naechsteId()`: Sie liefert 1, 2, 3, ..., und keine Zahl
@@ -444,7 +444,7 @@ t.join();
 
 <details><summary>Auflösung</summary>
 
-`main neu` — `run()` ist ein ganz normaler Methodenaufruf im **aktuellen** Thread. Erst `start()` erzeugt wirklich einen neuen. Der klassische Fehler aus 12.1.
+`main neu`: `run()` ist ein ganz normaler Methodenaufruf im **aktuellen** Thread. Erst `start()` erzeugt wirklich einen neuen. Der klassische Fehler aus 12.1.
 
 </details>
 
@@ -457,7 +457,7 @@ System.out.println(z.incrementAndGet() + " " + z.getAndIncrement() + " " + z.get
 
 <details><summary>Auflösung</summary>
 
-`6 6 7` — `incrementAndGet` erhöht und liefert den neuen Wert (wie `++z`), `getAndIncrement` liefert den alten und erhöht danach (wie `z++`).
+`6 6 7`: `incrementAndGet` erhöht und liefert den neuen Wert (wie `++z`), `getAndIncrement` liefert den alten und erhöht danach (wie `z++`).
 
 </details>
 
@@ -476,7 +476,7 @@ try (ExecutorService pool = Executors.newFixedThreadPool(2)) {
 
 <details><summary>Auflösung</summary>
 
-`ArithmeticException` — Die Exception entsteht im Pool-Thread und wird dort aufbewahrt. `get()` wirft sie verpackt als `ExecutionException` wieder, das Original steckt in `getCause()`. Ohne `get()` hättest du von dem Fehler nie etwas erfahren.
+`ArithmeticException`: Die Exception entsteht im Pool-Thread und wird dort aufbewahrt. `get()` wirft sie verpackt als `ExecutionException` wieder, das Original steckt in `getCause()`. Ohne `get()` hättest du von dem Fehler nie etwas erfahren.
 
 </details>
 
@@ -497,7 +497,7 @@ System.out.println(Teuer.INSTANZ == Teuer.INSTANZ);
 
 <details><summary>Auflösung</summary>
 
-`start gebaut hallo hallo true` — Die JVM lädt und initialisiert eine Klasse erst, wenn sie zum ersten Mal gebraucht wird, hier beim ersten `hallo()`. Dabei laufen die `static`-Initialisierungen, also entsteht `INSTANZ` genau dann, und zwar genau einmal. Diese Initialisierung sichert die JVM selbst gegen gleichzeitige Threads ab. Deshalb braucht der Singleton mit `static final`-Feld kein `synchronized`.
+`start gebaut hallo hallo true`: Die JVM lädt und initialisiert eine Klasse erst, wenn sie zum ersten Mal gebraucht wird, hier beim ersten `hallo()`. Dabei laufen die `static`-Initialisierungen, also entsteht `INSTANZ` genau dann, und zwar genau einmal. Diese Initialisierung sichert die JVM selbst gegen gleichzeitige Threads ab. Deshalb braucht der Singleton mit `static final`-Feld kein `synchronized`.
 
 </details>
 

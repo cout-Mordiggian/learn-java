@@ -1,4 +1,4 @@
-# Kapitel 07 — Exceptions
+# Kapitel 07: Exceptions
 
 **Ziel:** Du unterscheidest Programmierfehler von erwartbaren Ausnahmefällen,
 behandelst sie an der richtigen Stelle und gibst Ressourcen zuverlässig frei.
@@ -34,7 +34,7 @@ Die Einrückung ist wichtig: `catch (IllegalArgumentException e)` fängt auch
 jede `NumberFormatException`, `catch (IOException e)` auch jede
 `FileNotFoundException`. Ein `catch` fängt immer den Typ **und alle Untertypen**.
 
-## 7.2 Checked gegen unchecked — die zentrale Unterscheidung
+## 7.2 Checked gegen unchecked, die zentrale Unterscheidung
 
 **Checked** (alles unter `Exception`, ausser `RuntimeException`):
 Der Compiler zwingt dich, sie zu behandeln oder weiterzureichen.
@@ -59,8 +59,8 @@ Sie dürfen überall auftreten.
 | Objekt im falschen Zustand | unchecked | `IllegalStateException` bei geschlossener Verbindung |
 | Aussenwelt kann fehlschlagen, Aufrufer kann sinnvoll reagieren | checked | Datei fehlt, Netzwerk weg |
 
-Die Faustregel: **Kann der Aufrufer den Fehler sinnvoll behandeln — checked.
-Ist es ein Bug — unchecked.**
+Die Faustregel: **Kann der Aufrufer den Fehler sinnvoll behandeln, checked.
+Ist es ein Bug, unchecked.**
 
 Java ist die einzige Mainstream-Sprache mit checked Exceptions, und das ist
 umstritten. In der Praxis: Sparsam einsetzen. Zu viele erzeugen genau die
@@ -82,7 +82,7 @@ try {
 ```
 
 Reihenfolge der `catch`-Blöcke: **spezifisch vor allgemein**. Steht
-`catch (Exception e)` zuerst, ist alles danach unerreichbar — Compilerfehler.
+`catch (Exception e)` zuerst, ist alles danach unerreichbar, Compilerfehler.
 
 `finally` läuft **immer**: nach normalem Ende, nach gefangener Exception, sogar
 nach einem `return` im `try`-Block. (Die einzige praktische Ausnahme:
@@ -162,7 +162,7 @@ try {
 }
 ```
 
-Ohne das `e` verlierst du den ursprünglichen Stacktrace — und damit die
+Ohne das `e` verlierst du den ursprünglichen Stacktrace, und damit die
 Information, wo es wirklich schiefging. Im Log erscheint dann:
 
 ```
@@ -196,7 +196,7 @@ Alles, was `AutoCloseable` implementiert, funktioniert hier. Mehrere Ressourcen
 werden mit `;` getrennt und in **umgekehrter** Reihenfolge geschlossen.
 
 Wirft sowohl der Block als auch `close()`, gewinnt die Exception aus dem Block;
-die aus `close()` wird als *suppressed* angehängt (`e.getSuppressed()`) — statt
+die aus `close()` wird als *suppressed* angehängt (`e.getSuppressed()`), statt
 sie, wie beim alten Muster, zu verlieren.
 
 **Nimm try-with-resources für alles, was geschlossen werden muss.**
@@ -235,7 +235,7 @@ Caused by: ...
 ```
 
 Lies **von oben**: Die erste Zeile ist der Ort des Fehlers, darunter der Weg
-dorthin. Suche die oberste Zeile, die zu **deinem** Code gehört — dort
+dorthin. Suche die oberste Zeile, die zu **deinem** Code gehört, dort
 fängst du an.
 
 ---
@@ -243,28 +243,28 @@ fängst du an.
 ## Aufgaben
 
 > Hängst du fest? Gestufte Hinweise zu jeder Aufgabe stehen in
-> [`TIPPS.md`](TIPPS.md) — erst Tipp 1, dann wieder selbst probieren.
+> [`TIPPS.md`](TIPPS.md): erst Tipp 1, dann wieder selbst probieren.
 
-Drei Dateien in [`src/`](src/) — prüfen mit `./lerne.sh 07`.
+Drei Dateien in [`src/`](src/), prüfen mit `./lerne.sh 07`.
 
 ### `Aufgaben.java`
 
-1. **`sicherTeilen(int a, int b)`** — `a / b`, aber `0` statt einer
+1. **`sicherTeilen(int a, int b)`**: `a / b`, aber `0` statt einer
    `ArithmeticException`. Löse es mit `try`/`catch`, nicht mit `if`
-   (auch wenn `if` hier die bessere Praxis wäre — der Punkt ist die Übung).
-2. **`parseOderStandard(String text, int standard)`** — `Integer.parseInt`,
+   (auch wenn `if` hier die bessere Praxis wäre, der Punkt ist die Übung).
+2. **`parseOderStandard(String text, int standard)`**: `Integer.parseInt`,
    bei `null` oder Unsinn den Standardwert.
-3. **`auswerten(String[] werte, int index)`** — Element als Zahl liefern,
+3. **`auswerten(String[] werte, int index)`**: Element als Zahl liefern,
    `-1` bei ungültigem Index **oder** unparsbarem Text. **Multi-Catch.**
-4. **`konfigWert(String text)`** — parst; bei Fehler eine
+4. **`konfigWert(String text)`**: parst; bei Fehler eine
    `IllegalStateException("Ungueltiger Konfigurationswert: abc")`
    **mit der ursprünglichen Exception als `cause`**.
-5. **`ablauf(boolean fehlerWerfen)`** — gibt `"start|ok|ende"` bzw.
+5. **`ablauf(boolean fehlerWerfen)`**: gibt `"start|ok|ende"` bzw.
    `"start|fehler|ende"` zurück. Zeigt, dass `finally` immer läuft.
-6. **`abheben(long guthaben, long betrag)`** — gibt das neue Guthaben zurück,
+6. **`abheben(long guthaben, long betrag)`**: gibt das neue Guthaben zurück,
    wirft bei zu wenig Deckung eine `UnzureichendeDeckungException` mit dem
    Fehlbetrag, bei `betrag <= 0` eine `IllegalArgumentException`.
-7. **`protokoll(boolean fehlerWerfen)`** — nutzt `Tresor` in einem
+7. **`protokoll(boolean fehlerWerfen)`**: nutzt `Tresor` in einem
    **try-with-resources** und liefert das Protokoll. Auch im Fehlerfall muss
    `geschlossen` im Protokoll stehen.
 
@@ -302,7 +302,7 @@ System.out.println(f());
 
 <details><summary>Auflösung</summary>
 
-`finally try` — Der Rückgabewert `"try"` steht schon fest, trotzdem läuft `finally` noch, **bevor** die Methode wirklich zurückkehrt. Erst danach druckt `println` das Ergebnis.
+`finally try`: Der Rückgabewert `"try"` steht schon fest, trotzdem läuft `finally` noch, **bevor** die Methode wirklich zurückkehrt. Erst danach druckt `println` das Ergebnis.
 
 </details>
 
@@ -324,7 +324,7 @@ try {
 
 <details><summary>Auflösung</summary>
 
-`CD` — `a[2]` wirft eine `ArrayIndexOutOfBoundsException`. Die ist keine `ArithmeticException`, aber (über `IndexOutOfBoundsException`) eine `RuntimeException`. Es greift der erste passende `catch`, danach `finally`. `A` wird nie erreicht.
+`CD`: `a[2]` wirft eine `ArrayIndexOutOfBoundsException`. Die ist keine `ArithmeticException`, aber (über `IndexOutOfBoundsException`) eine `RuntimeException`. Es greift der erste passende `catch`, danach `finally`. `A` wird nie erreicht.
 
 </details>
 
@@ -344,7 +344,7 @@ try (R a = new R("1"); R b = new R("2")) {
 
 <details><summary>Auflösung</summary>
 
-`auf1 auf2 rumpf zu2 zu1` — Geöffnet wird in der angegebenen Reihenfolge, geschlossen in der **umgekehrten**. Das ist wichtig, wenn `b` von `a` abhängt (etwa ein Reader auf einer Datei).
+`auf1 auf2 rumpf zu2 zu1`: Geöffnet wird in der angegebenen Reihenfolge, geschlossen in der **umgekehrten**. Das ist wichtig, wenn `b` von `a` abhängt (etwa ein Reader auf einer Datei).
 
 </details>
 
@@ -361,5 +361,5 @@ Erst selbst antworten, dann vergleichen: Die Antworten stehen am Ende von
 
 ---
 
-**Wie geht es weiter?** Empfohlen ist jetzt [Kapitel 13 — Testen und Fehlersuche](../13-testen-und-fehlersuche/README.md):
+**Wie geht es weiter?** Empfohlen ist jetzt [Kapitel 13: Testen und Fehlersuche](../13-testen-und-fehlersuche/README.md):
 Du kannst jetzt genug, um deine eigenen Tests zu schreiben. Danach geht es mit Kapitel 8 weiter.

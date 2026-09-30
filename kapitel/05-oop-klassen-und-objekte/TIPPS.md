@@ -1,11 +1,11 @@
-# Kapitel 05 — Tipps und Antworten
+# Kapitel 05: Tipps und Antworten
 
-> Erst selbst probieren. Klappe immer nur die **nächste** Stufe auf — jede verrät mehr.
+> Erst selbst probieren. Klappe immer nur die **nächste** Stufe auf, jede verrät mehr.
 > Die Tests in `tests/Tests.java` zeigen dir ausserdem genau, welche Eingabe welches Ergebnis erwartet.
 
 ## Konto.java: Felder, Zähler und Konstruktor
 
-<details><summary>Tipp 1 — Richtung</summary>
+<details><summary>Tipp 1: Richtung</summary>
 
 Du brauchst drei Bausteine aus dem README: Felder und `final` (Abschnitt 5.5),
 einen `static`-Zähler (Abschnitt 5.4) und einen Konstruktor, der nur gültige
@@ -18,12 +18,12 @@ Zählen und Zuweisen passieren?
 
 </details>
 
-<details><summary>Tipp 2 — Ansatz</summary>
+<details><summary>Tipp 2: Ansatz</summary>
 
 - `nummer` und `inhaber` sind `private final`, `guthaben` ist `private long`
-  (nicht `final` — es ändert sich ja).
+  (nicht `final`, es ändert sich ja).
 - Der Zähler ist `private static int anzahlKonten`. Jedes Konto bekommt den
-  Zählerstand **nach** dem Hochzählen als Nummer — so beginnt die erste bei 1.
+  Zählerstand **nach** dem Hochzählen als Nummer, so beginnt die erste bei 1.
 - Prüfung des Inhabers: erst `null`, dann `isBlank()`. Die Reihenfolge ist
   wichtig: `inhaber.isBlank()` auf `null` wirft eine `NullPointerException`
   statt der erwarteten `IllegalArgumentException`. Mit `||` wird der zweite
@@ -34,7 +34,7 @@ Zählen und Zuweisen passieren?
 
 </details>
 
-<details><summary>Tipp 3 — Gerüst</summary>
+<details><summary>Tipp 3: Gerüst</summary>
 
 ```java
 private static int anzahlKonten = 0;
@@ -62,7 +62,7 @@ public Konto(String inhaber, long startguthaben) {
 
 ## Konto.java: Getter und `einzahlen`
 
-<details><summary>Tipp 1 — Richtung</summary>
+<details><summary>Tipp 1: Richtung</summary>
 
 Abschnitt 5.3 (Kapselung) zeigt genau dieses Muster: ein lesender Getter und
 eine schreibende Fachmethode, die Regeln prüft. Frag dich: Welcher Betrag ist
@@ -70,21 +70,21 @@ fachlich keine Einzahlung?
 
 </details>
 
-<details><summary>Tipp 2 — Ansatz</summary>
+<details><summary>Tipp 2: Ansatz</summary>
 
 Die Getter geben nur das jeweilige Feld zurück. Einen `setGuthaben` gibt es
-**nicht** — das ist Absicht.
+**nicht**: das ist Absicht.
 
 `einzahlen` lehnt jeden Betrag ab, der nicht **positiv** ist. Die Tests prüfen
 beide Grenzfälle: `0` **und** negative Beträge. Eine Prüfung auf `< 0` lässt
-die `0` durch — du brauchst `<= 0`. Erst wenn die Prüfung bestanden ist, wird
+die `0` durch, du brauchst `<= 0`. Erst wenn die Prüfung bestanden ist, wird
 das Guthaben erhöht.
 
 </details>
 
 ## Konto.java: `abheben`
 
-<details><summary>Tipp 1 — Richtung</summary>
+<details><summary>Tipp 1: Richtung</summary>
 
 Lies die *Entwurfsfrage* direkt unter der Aufgabe im README: Es gibt hier zwei
 verschiedene Arten von "geht nicht". Frag dich für jeden Fall: Ist das ein
@@ -92,21 +92,21 @@ Programmierfehler (Exception) oder ein normaler Geschäftsfall (`false`)?
 
 </details>
 
-<details><summary>Tipp 2 — Ansatz</summary>
+<details><summary>Tipp 2: Ansatz</summary>
 
 - Nicht-positiver Betrag -> `IllegalArgumentException` (wie bei `einzahlen`).
 - Zu wenig Deckung -> `return false`, **ohne** das Guthaben anzufassen.
 - Sonst abziehen und `true` zurückgeben.
 
 **Die Falle der Tests:** "Das komplette Guthaben abzuheben ist erlaubt." Emil hat
-300 Cent und hebt 300 ab — das muss `true` liefern. Die Deckung fehlt also erst,
+300 Cent und hebt 300 ab, das muss `true` liefern. Die Deckung fehlt also erst,
 wenn der Betrag **größer** als das Guthaben ist, nicht schon bei Gleichheit.
 Achte ausserdem auf die Reihenfolge: Die Betragsprüfung kommt zuerst, sonst
 liefert `abheben(-5)` womöglich `true` und *erhöht* das Guthaben.
 
 </details>
 
-<details><summary>Tipp 3 — Gerüst</summary>
+<details><summary>Tipp 3: Gerüst</summary>
 
 ```java
 public boolean abheben(long betrag) {
@@ -125,29 +125,29 @@ public boolean abheben(long betrag) {
 
 ## Konto.java: `ueberweiseAn`
 
-<details><summary>Tipp 1 — Richtung</summary>
+<details><summary>Tipp 1: Richtung</summary>
 
 Du hast `abheben` und `einzahlen` schon gebaut, und beide prüfen ihre Regeln.
-Frag dich: Musst du hier irgendetwas neu prüfen — oder kannst du die beiden
+Frag dich: Musst du hier irgendetwas neu prüfen, oder kannst du die beiden
 Methoden einfach **wiederverwenden**? Und: Was darf auf keinen Fall passieren,
 wenn das Abheben scheitert?
 
 </details>
 
-<details><summary>Tipp 2 — Ansatz</summary>
+<details><summary>Tipp 2: Ansatz</summary>
 
 Rufe `abheben(betrag)` auf dem eigenen Konto auf und werte den `boolean` aus.
 Nur bei `true` zahlst du beim Ziel ein. Sonst wäre Geld aus dem Nichts
-entstanden — genau das prüft der Test "Empfänger bei Misserfolg unverändert".
+entstanden, genau das prüft der Test "Empfänger bei Misserfolg unverändert".
 
 Der Javadoc verlangt eine `NullPointerException`, wenn `ziel` `null` ist. Prüfe
 das **vor** dem Abheben, am besten mit `Objects.requireNonNull(ziel, "ziel")`
 (Abschnitt 5.7). Prüfst du erst danach bzw. gar nicht, ist das Geld beim
-Sender schon abgebucht, wenn `ziel.einzahlen(...)` knallt — es wäre verschwunden.
+Sender schon abgebucht, wenn `ziel.einzahlen(...)` knallt, es wäre verschwunden.
 
 </details>
 
-<details><summary>Tipp 3 — Gerüst</summary>
+<details><summary>Tipp 3: Gerüst</summary>
 
 ```java
 public boolean ueberweiseAn(Konto ziel, long betrag) {
@@ -160,14 +160,14 @@ public boolean ueberweiseAn(Konto ziel, long betrag) {
 }
 ```
 
-`Objects` liegt in `java.util` — denk an `import java.util.Objects;` ganz oben
+`Objects` liegt in `java.util`, denk an `import java.util.Objects;` ganz oben
 in der Datei.
 
 </details>
 
 ## Konto.java: `toString` und `getAnzahlKonten`
 
-<details><summary>Tipp 1 — Richtung</summary>
+<details><summary>Tipp 1: Richtung</summary>
 
 `toString` steht in Abschnitt 5.6, `static`-Methoden in Abschnitt 5.4. Frag
 dich bei `getAnzahlKonten`: Warum kann diese Methode `static` sein, und auf
@@ -175,13 +175,13 @@ welche Felder darf sie deshalb zugreifen?
 
 </details>
 
-<details><summary>Tipp 2 — Ansatz</summary>
+<details><summary>Tipp 2: Ansatz</summary>
 
-`getAnzahlKonten` gibt nur den statischen Zähler zurück — auf `nummer` oder
+`getAnzahlKonten` gibt nur den statischen Zähler zurück, auf `nummer` oder
 `guthaben` kann sie gar nicht zugreifen (kein `this`).
 
 `toString` baut den String per Verkettung mit `+`. Das Format muss **zeichengenau**
-stimmen: `Konto[1, Anna, 5000 Cent]` — eckige Klammern, Komma **plus Leerzeichen**
+stimmen: `Konto[1, Anna, 5000 Cent]`, eckige Klammern, Komma **plus Leerzeichen**
 als Trenner, und das Wort `Cent` mit Leerzeichen davor. Vergleiche deine Ausgabe
 Zeichen für Zeichen mit der Erwartung, wenn der Test rot ist.
 
@@ -189,7 +189,7 @@ Zeichen für Zeichen mit der Erwartung, wenn der Test rot ist.
 
 ## Punkt.java: Felder, Konstruktor und Getter
 
-<details><summary>Tipp 1 — Richtung</summary>
+<details><summary>Tipp 1: Richtung</summary>
 
 Abschnitt 5.8 (Unveränderliche Objekte) zeigt fast genau diese Klasse. Frag
 dich: Was macht `final` bei einem Feld, und warum braucht der Konstruktor
@@ -197,11 +197,11 @@ deshalb `this.x = x`?
 
 </details>
 
-<details><summary>Tipp 2 — Ansatz</summary>
+<details><summary>Tipp 2: Ansatz</summary>
 
 Zwei Felder `private final double x` und `y`, im Konstruktor gesetzt, die Getter
 geben sie zurück. Wenn du ein `final`-Feld im Konstruktor vergisst, meldet der
-Compiler `variable x might not have been initialized` — das ist der Compiler,
+Compiler `variable x might not have been initialized`, das ist der Compiler,
 der dich an deine Invariante erinnert. Die Tests rufen `new Punkt(3, 4)` mit
 `int`-Werten auf; die werden automatisch zu `double` erweitert.
 
@@ -209,16 +209,16 @@ der dich an deine Invariante erinnert. Die Tests rufen `new Punkt(3, 4)` mit
 
 ## Punkt.java: `abstand` und `abstandZumUrsprung`
 
-<details><summary>Tipp 1 — Richtung</summary>
+<details><summary>Tipp 1: Richtung</summary>
 
 Der euklidische Abstand ist Pythagoras: die Differenzen in x und in y bilden
 die Katheten, der Abstand ist die Hypotenuse. Frag dich bei
-`abstandZumUrsprung`: Welcher Punkt ist der Ursprung — und hast du nicht
+`abstandZumUrsprung`: Welcher Punkt ist der Ursprung, und hast du nicht
 gerade eine Methode geschrieben, die den Abstand zu einem Punkt berechnet?
 
 </details>
 
-<details><summary>Tipp 2 — Ansatz</summary>
+<details><summary>Tipp 2: Ansatz</summary>
 
 `Math.hypot(dx, dy)` berechnet `sqrt(dx*dx + dy*dy)` und ist robuster gegen
 Überlauf; `Math.sqrt` geht aber genauso. Das Vorzeichen der Differenzen ist
@@ -227,12 +227,12 @@ egal, weil quadriert wird.
 Du darfst auf `anderer.x` direkt zugreifen, obwohl `x` `private` ist:
 `private` gilt pro **Klasse**, nicht pro Objekt.
 
-`abstandZumUrsprung` braucht keine zweite Formel — ein Aufruf von `abstand` mit
+`abstandZumUrsprung` braucht keine zweite Formel, ein Aufruf von `abstand` mit
 dem passenden Punkt reicht. Eine Stelle, die stimmen muss, statt zwei.
 
 </details>
 
-<details><summary>Tipp 3 — Gerüst</summary>
+<details><summary>Tipp 3: Gerüst</summary>
 
 ```java
 public double abstand(Punkt anderer) {
@@ -250,23 +250,23 @@ public double abstandZumUrsprung() {
 
 ## Punkt.java: `verschoben` und `toString`
 
-<details><summary>Tipp 1 — Richtung</summary>
+<details><summary>Tipp 1: Richtung</summary>
 
-Abschnitt 5.8: Ein unveränderliches Objekt ändert sich nie — "ändernde"
+Abschnitt 5.8: Ein unveränderliches Objekt ändert sich nie, "ändernde"
 Methoden liefern stattdessen ein **neues** Objekt. Frag dich: Wie kannst du
 einen Punkt "verschieben", ohne `x` und `y` anzufassen?
 
 </details>
 
-<details><summary>Tipp 2 — Ansatz</summary>
+<details><summary>Tipp 2: Ansatz</summary>
 
 `verschoben` erzeugt mit `new Punkt(...)` einen neuen Punkt aus den alten
 Koordinaten plus `dx` bzw. `dy`. `this.x += dx` würde bei einem `final`-Feld
-gar nicht kompilieren — gut so. Der Test prüft ausdrücklich, dass das
+gar nicht kompilieren, gut so. Der Test prüft ausdrücklich, dass das
 Original unverändert bleibt und `p == q` falsch ist.
 
 `toString` liefert `Punkt(3.0, 4.0)`. Ein `double` in einer String-Verkettung
-erscheint automatisch als `3.0` — du brauchst **kein** `String.format`.
+erscheint automatisch als `3.0`, du brauchst **kein** `String.format`.
 (`String.format("%.1f", x)` wäre sogar gefährlich: Auf einem deutschen System
 käme `3,0` heraus.)
 
@@ -274,32 +274,32 @@ käme `3,0` heraus.)
 
 ## Punkt.java: `equals` und `hashCode`
 
-<details><summary>Tipp 1 — Richtung</summary>
+<details><summary>Tipp 1: Richtung</summary>
 
 Das ist der Kern des Kapitels: Abschnitt 5.6, Unterabschnitte "`equals(Object)`"
-und "`hashCode()` — und der Vertrag". Frag dich: Welche Fälle muss `equals`
+und "`hashCode()`, und der Vertrag". Frag dich: Welche Fälle muss `equals`
 abfangen, bevor es überhaupt Felder vergleichen kann? Und welche Felder muss
 `hashCode` dann benutzen?
 
 </details>
 
-<details><summary>Tipp 2 — Ansatz</summary>
+<details><summary>Tipp 2: Ansatz</summary>
 
 Drei Schritte in `equals`:
 
 1. Gleiche Referenz? Dann sofort `true`.
-2. `instanceof Punkt p` mit Pattern Matching — das erledigt `null` **und** den
+2. `instanceof Punkt p` mit Pattern Matching, das erledigt `null` **und** den
    falschen Typ in einem Schritt (`null instanceof Punkt` ist `false`).
 3. Die Felder mit `Double.compare(a, b) == 0` vergleichen, nicht mit `==`.
 
 **Die Falle der Tests:** Mit `==` scheitern zwei Prüfungen. `Double.NaN == Double.NaN`
-ist `false` — der Test "zwei NaN-Punkte sind equals" wird rot. Und `0.0 == -0.0`
+ist `false`, der Test "zwei NaN-Punkte sind equals" wird rot. Und `0.0 == -0.0`
 ist `true`, aber `Objects.hash(0.0, 0.0)` und `Objects.hash(-0.0, 0.0)` sind
-verschieden — damit wären zwei `equals`-gleiche Punkte in verschiedenen
+verschieden, damit wären zwei `equals`-gleiche Punkte in verschiedenen
 Hash-Eimern. `Double.compare` behandelt beide Ecken genau so wie
 `Double.hashCode`, deshalb passt alles zusammen.
 
-Der Parameter muss `Object` sein, nicht `Punkt` — sonst überlädst du nur, und
+Der Parameter muss `Object` sein, nicht `Punkt`, sonst überlädst du nur, und
 `HashSet` benutzt weiter die alte Methode. `@Override` steht schon da und passt
 auf dich auf.
 
@@ -308,7 +308,7 @@ auf dich auf.
 
 </details>
 
-<details><summary>Tipp 3 — Gerüst</summary>
+<details><summary>Tipp 3: Gerüst</summary>
 
 ```java
 @Override
@@ -329,7 +329,7 @@ public int hashCode() {
 
 ## Punkt.java: Fabrikmethoden `ursprung` und `polar`
 
-<details><summary>Tipp 1 — Richtung</summary>
+<details><summary>Tipp 1: Richtung</summary>
 
 Abschnitt 5.10, "Die statische Fabrikmethode". Beide Methoden sind `static`,
 es gibt also kein `this`, sie liefern einen Punkt. Frag dich bei `ursprung`: Wie
@@ -338,7 +338,7 @@ neues erzeugt? Und bei `polar`: Was muss vor `Math.cos` mit dem Winkel passieren
 
 </details>
 
-<details><summary>Tipp 2 — Ansatz</summary>
+<details><summary>Tipp 2: Ansatz</summary>
 
 - `ursprung`: eine Konstante `private static final Punkt URSPRUNG = new Punkt(0, 0);`
   (5.4, Konstanten). Die Methode gibt nur noch `URSPRUNG` zurück. Das ist nur
@@ -354,7 +354,7 @@ neues erzeugt? Und bei `polar`: Was muss vor `Math.cos` mit dem Winkel passieren
 
 </details>
 
-<details><summary>Tipp 3 — Gerüst</summary>
+<details><summary>Tipp 3: Gerüst</summary>
 
 ```java
 private static final Punkt URSPRUNG = ...;
@@ -373,7 +373,7 @@ public static Punkt polar(double radius, double winkelGrad) {
 
 ## Konfiguration.java: Singleton
 
-<details><summary>Tipp 1 — Richtung</summary>
+<details><summary>Tipp 1: Richtung</summary>
 
 Abschnitt 5.10, "Der Singleton", der Codeblock. Drei Dinge sind im Gerüst
 falsch: Es gibt kein Feld für die eine Instanz, der Konstruktor ist `public`,
@@ -382,7 +382,7 @@ nach deiner Änderung noch `new Konfiguration()` schreiben?
 
 </details>
 
-<details><summary>Tipp 2 — Ansatz</summary>
+<details><summary>Tipp 2: Ansatz</summary>
 
 - Ein `private static final Konfiguration INSTANZ = new Konfiguration();` direkt
   in der Klasse. Innerhalb der Klasse darf der private Konstruktor aufgerufen
@@ -399,7 +399,7 @@ wieder löschen.)
 
 </details>
 
-<details><summary>Tipp 3 — Gerüst</summary>
+<details><summary>Tipp 3: Gerüst</summary>
 
 ```java
 public final class Konfiguration {
@@ -421,14 +421,14 @@ public final class Konfiguration {
 
 ---
 
-## Selbstcheck — Antworten
+## Selbstcheck: Antworten
 
 <details><summary>Was passiert mit dem Standardkonstruktor, sobald du selbst einen schreibst?</summary>
 
 Er verschwindet. Der Compiler erzeugt den parameterlosen Standardkonstruktor
 nur, wenn die Klasse **gar keinen** Konstruktor hat. Sobald du z. B.
 `Konto(String, long)` schreibst, ist `new Konto()` ein Compilerfehler. Willst du
-beides, musst du den parameterlosen Konstruktor selbst hinschreiben — oft ist
+beides, musst du den parameterlosen Konstruktor selbst hinschreiben, oft ist
 es aber gerade gewollt, dass niemand ein Konto ohne Inhaber anlegen kann.
 
 </details>
@@ -437,7 +437,7 @@ es aber gerade gewollt, dass niemand ein Konto ohne Inhaber anlegen kann.
 
 `einzahlen` beschreibt einen **fachlichen Vorgang** mit Regeln: nur positive
 Beträge, das Guthaben wächst. Ein `setGuthaben` erlaubt jedem, einen beliebigen
-Wert hineinzuschreiben — auch `-5000` — und die Invariante des Kontos wäre
+Wert hineinzuschreiben, auch `-5000`, und die Invariante des Kontos wäre
 wertlos. Kapselung heisst Kontrolle darüber, **wie** sich der Zustand ändert,
 nicht nur, dass ein Feld `private` ist. Ein blinder Setter ist Kapselung nur dem
 Namen nach.
@@ -446,7 +446,7 @@ Namen nach.
 
 <details><summary>Warum darf eine <code>static</code>-Methode nicht auf Instanzfelder zugreifen?</summary>
 
-Eine `static`-Methode gehört der Klasse, nicht einem Objekt — sie wird z. B. als
+Eine `static`-Methode gehört der Klasse, nicht einem Objekt, sie wird z. B. als
 `Konto.getAnzahlKonten()` ohne jedes Objekt aufgerufen. Deshalb gibt es in ihr
 kein `this`. Instanzfelder wie `guthaben` existieren aber nur pro Objekt: Welches
 Konto sollte gemeint sein? Der Compiler meldet

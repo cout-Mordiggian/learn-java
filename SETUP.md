@@ -1,16 +1,21 @@
 # Setup und Werkzeuge
 
-## 1. Was ist auf diesem Rechner installiert?
+## 1. Welches Java ist installiert?
 
 ```bash
 java -version    # die Laufzeitumgebung (JVM) - fuehrt Bytecode aus
 javac -version   # der Compiler - macht aus .java Bytecode (.class)
 ```
 
-Bei dir (Stand September 2026): **Temurin OpenJDK 27**. Das ist ein *JDK*
-(Java Development Kit). Der Kurs verlangt mindestens Java 21 — alles Neuere
-funktioniert ebenso, denn Java bleibt rückwärtskompatibel.
-Ein *JRE* (nur Laufzeit) hätte kein `javac` — zum Entwickeln brauchst du das JDK.
+Beide Befehle sollten eine Versionsnummer von **21 oder höher** ausgeben.
+Der Kurs verlangt mindestens Java 21, alles Neuere funktioniert ebenso, denn
+Java bleibt rückwärtskompatibel. Ein *JRE* (nur Laufzeit) hätte kein `javac`,
+zum Entwickeln brauchst du ein *JDK* (Java Development Kit).
+
+Fehlt Java oder ist es zu alt, installiere ein aktuelles JDK, z. B.
+**Eclipse Temurin** von <https://adoptium.net>, oder über den Paketmanager
+deines Systems (`apt`, `dnf`, `pacman`, `brew`, `winget` …) bzw. mit
+[SDKMAN!](https://sdkman.io).
 
 | Begriff | Bedeutung |
 |---------|-----------|
@@ -44,7 +49,7 @@ Wichtige Regeln, die Anfänger oft stolpern lassen:
 - `-d ziel/` sagt dem Compiler, wohin die `.class`-Dateien sollen.
 - `-cp` (classpath) sagt der JVM, wo sie Klassen suchen soll.
 
-Seit Java 11 geht auch der Schnellstart für eine einzelne Datei — praktisch zum Ausprobieren:
+Seit Java 11 geht auch der Schnellstart für eine einzelne Datei, praktisch zum Ausprobieren:
 
 ```bash
 java Hallo.java      # kompiliert im Speicher und startet sofort
@@ -61,23 +66,23 @@ void main() {
 ```
 
 In diesem Kurs bleiben wir bei der klassischen Form, weil du sie in jedem
-existierenden Projekt antreffen wirst — und weil sie zeigt, was wirklich
+existierenden Projekt antreffen wirst, und weil sie zeigt, was wirklich
 passiert (Klasse, statische Methode, Parameter).
 
 ## 3. Editor
 
 Alles im Kurs funktioniert mit einem beliebigen Texteditor. Trotzdem lohnt sich
-Werkzeugunterstützung — Java ist statisch typisiert, ein guter Editor sagt dir
+Werkzeugunterstützung, Java ist statisch typisiert, ein guter Editor sagt dir
 Fehler *während* du tippst statt erst beim Kompilieren.
 
 - **VS Code** + Extension Pack for Java (leichtgewichtig, guter Einstieg)
 - **IntelliJ IDEA Community** (kostenlos, der De-facto-Standard in der Java-Welt)
 - **Neovim/Helix** + `jdtls` per LSP
 
-Für diesen Kurs: öffne den Kursordner (`~/dev/learn-java`) als Projektordner. Ohne Build-Datei
-erkennt die IDE das als "einfaches Java-Projekt" — das reicht.
+Für diesen Kurs: öffne den Kursordner (`learn-java`) als Projektordner. Ohne Build-Datei
+erkennt die IDE das als "einfaches Java-Projekt", das reicht.
 
-## 4. jshell — Java zum Ausprobieren
+## 4. jshell: Java zum Ausprobieren
 
 ```bash
 jshell
@@ -88,7 +93,7 @@ $2 ==> "al"
 jshell> /exit
 ```
 
-`jshell` führt einzelne Java-Ausdrücke sofort aus — ohne Klasse, ohne `main`,
+`jshell` führt einzelne Java-Ausdrücke sofort aus, ohne Klasse, ohne `main`,
 ohne Kompilieren. Ideal für Fragen wie "Was liefert `Math.round(-2.5)`?".
 Gewöhne es dir ab Kapitel 1 an: Jedes Code-Schnipsel aus den Kapiteln kannst
 du dort in Sekunden nachprüfen. `/help` zeigt die Befehle, Tab vervollständigt.
@@ -108,8 +113,8 @@ src/Aufgaben.java:12: error: cannot find symbol
 
 Lies sie von oben nach unten:
 
-1. **Datei und Zeile** — `src/Aufgaben.java:12`
-2. **Fehlerart** — `cannot find symbol` = ein Name, den der Compiler nicht kennt
+1. **Datei und Zeile**: `src/Aufgaben.java:12`
+2. **Fehlerart**: `cannot find symbol` = ein Name, den der Compiler nicht kennt
 3. **Das Zirkumflex `^`** zeigt exakt auf die Stelle
 4. **`symbol:`** sagt, *welcher* Name unbekannt ist
 

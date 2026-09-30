@@ -1,4 +1,4 @@
-# Kapitel 14 — Algorithmen und Datenstrukturen
+# Kapitel 14: Algorithmen und Datenstrukturen
 
 **Ziel:** Du schätzt ab, wie der Aufwand eines Programms mit der Datenmenge
 wächst, baust Such- und Sortierverfahren selbst und weisst, was in
@@ -506,4 +506,4 @@ Erst selbst antworten, dann vergleichen: Die Antworten stehen am Ende von
 ---
 
 **Wie geht es weiter?** Zurück in die Hauptreihe mit
-[Kapitel 9 — Lambdas und Streams](../09-lambdas-und-streams/README.md).
+[Kapitel 9: Lambdas und Streams](../09-lambdas-und-streams/README.md).

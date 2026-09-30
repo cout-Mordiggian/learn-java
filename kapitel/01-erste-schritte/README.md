@@ -1,4 +1,4 @@
-# Kapitel 01 — Erste Schritte
+# Kapitel 01: Erste Schritte
 
 **Ziel:** Du verstehst, was beim Kompilieren und Starten passiert, kennst Javas
 primitive Datentypen und weisst, warum `1/2` in Java `0` ergibt.
@@ -21,7 +21,7 @@ Jedes Wort hat eine Aufgabe:
 |------|-----------|
 | `public` | Sichtbar von überall (mehr dazu in Kapitel 6) |
 | `class Hallo` | Java kennt keinen Code ausserhalb von Klassen. Alles wohnt in einer Klasse. |
-| `static` | Gehört zur Klasse, nicht zu einem Objekt — die JVM kann sie aufrufen, ohne vorher ein `Hallo`-Objekt zu bauen. |
+| `static` | Gehört zur Klasse, nicht zu einem Objekt, die JVM kann sie aufrufen, ohne vorher ein `Hallo`-Objekt zu bauen. |
 | `void` | Der Rückgabetyp: "gibt nichts zurück". |
 | `main` | Der genaue Name, nach dem die JVM sucht. |
 | `String[] args` | Kommandozeilenargumente. `java Hallo abc` füllt `args[0] = "abc"`. |
@@ -39,7 +39,7 @@ Aufgaben.java   --javac-->   Aufgaben.class   --java-->   Ausgabe
 ```
 
 Der Bytecode ist plattformunabhängig. Dieselbe `.class`-Datei läuft auf Linux,
-Windows und macOS — die JVM übersetzt sie zur Laufzeit in Maschinencode
+Windows und macOS, die JVM übersetzt sie zur Laufzeit in Maschinencode
 (**JIT**, Just-in-Time-Compiler). Deshalb ist Java beim Start langsam und im
 Dauerbetrieb schnell.
 
@@ -68,14 +68,14 @@ Variable vom Typ `String`, endgültig. Der Compiler tippt nur weniger.
 | `float` | 32 Bit | ~7 Stellen genau | `3.14f` |
 | `double` | 64 Bit | ~15 Stellen genau | `3.14` |
 | `char` | 16 Bit | ein UTF-16-Zeichen (genauer: eine UTF-16-Codeeinheit) | `'A'` |
-| `boolean` | — | `true` / `false` | `true` |
+| `boolean` |    | `true` / `false` | `true` |
 
 **Merke:** `int` und `double` sind die Standardwahl. `long` erst, wenn `int`
 zu klein wird; `float` praktisch nie.
 
 Primitive Typen sind keine Objekte. Zu jedem gibt es eine **Wrapper-Klasse**
 (`Integer`, `Double`, `Boolean`, …), die man braucht, sobald ein Objekt
-verlangt wird — z. B. in Collections (Kapitel 8).
+verlangt wird, z. B. in Collections (Kapitel 8).
 
 ```java
 int primitiv = 5;
@@ -114,10 +114,10 @@ int gross = 2_000_000_000;
 System.out.println(gross + gross);   // -294967296  (!!)
 ```
 
-`int` läuft still über. Kein Fehler, kein Hinweis — nur ein falsches Ergebnis.
+`int` läuft still über. Kein Fehler, kein Hinweis, nur ein falsches Ergebnis.
 Lösung: `long` verwenden und beim Literal `L` anhängen. Willst du einen
 Überlauf lieber als Fehler sehen, gibt es `Math.addExact(a, b)` und
-`Math.multiplyExact(a, b)` — die werfen eine `ArithmeticException`, statt
+`Math.multiplyExact(a, b)`: die werfen eine `ArithmeticException`, statt
 still falsch zu rechnen. Die Grenzen stehen in `Integer.MAX_VALUE` und
 `Integer.MIN_VALUE`.
 
@@ -134,7 +134,7 @@ System.out.println(0.1 + 0.2);   // 0.30000000000000004
 ```
 
 Das ist kein Java-Bug, sondern der IEEE-754-Standard: `0.1` ist im Binärsystem
-periodisch. Für Geldbeträge deshalb **niemals** `double` — nimm `BigDecimal`
+periodisch. Für Geldbeträge deshalb **niemals** `double`, nimm `BigDecimal`
 oder rechne in Cent mit `long`.
 
 ## 1.5 Casting: Typen umwandeln
@@ -154,7 +154,7 @@ int abgeschnitten = (int) pi;   // 3  <- schneidet ab, rundet NICHT
 
 Achtung: `Math.round(double)` liefert einen `long`, keinen `int`.
 `int r = Math.round(3.99);` ist deshalb ein Compilerfehler
-(`possible lossy conversion from long to int`) — du brauchst
+(`possible lossy conversion from long to int`), du brauchst
 `int r = (int) Math.round(3.99);`.
 
 ## 1.6 Ausgabe formatieren
@@ -190,9 +190,9 @@ Wichtige Platzhalter: `%s` String, `%d` Ganzzahl, `%f` Kommazahl,
 ## Aufgaben
 
 > Hängst du fest? Gestufte Hinweise zu jeder Aufgabe stehen in
-> [`TIPPS.md`](TIPPS.md) — erst Tipp 1, dann wieder selbst probieren.
+> [`TIPPS.md`](TIPPS.md): erst Tipp 1, dann wieder selbst probieren.
 
-Datei: [`src/Aufgaben.java`](src/Aufgaben.java) — sechs Methoden mit `TODO`.
+Datei: [`src/Aufgaben.java`](src/Aufgaben.java), sechs Methoden mit `TODO`.
 
 Prüfen mit:
 
@@ -237,7 +237,7 @@ return "Hallo," + name + "!";
 ```
 
 Fast. Vergleiche Zeichen für Zeichen: Das Leerzeichen nach dem Komma fehlt.
-Solche Kleinigkeiten sind der häufigste Grund für rote Tests — die
+Solche Kleinigkeiten sind der häufigste Grund für rote Tests, die
 Anführungszeichen in der Ausgabe helfen dir, auch Leerzeichen am Rand zu sehen.
 
 **4. Korrigieren, prüfen, grün:**
@@ -259,25 +259,25 @@ kapitel/01-erste-schritte/src/Aufgaben.java:17: error: ';' expected
 Datei, Zeile, Art des Fehlers, und das `^` zeigt auf die Stelle. Details dazu
 stehen in [`SETUP.md`](../../SETUP.md), Abschnitt 5.
 
-Diesen Kreislauf — **prüfen, kleinsten Schritt schreiben, prüfen** — machst
+Diesen Kreislauf, **prüfen, kleinsten Schritt schreiben, prüfen**, machst
 du in jedem Kapitel. Nimm dir immer nur **eine** Aufgabe vor; die roten
 Meldungen der anderen darfst du so lange ignorieren. Hängst du fest, helfen
 die gestuften Hinweise in [`TIPPS.md`](TIPPS.md).
 
 ### Die Aufgaben
 
-1. **`begruessung`** — Baue aus einem Namen den Satz `Hallo, Anna!`.
+1. **`begruessung`**: Baue aus einem Namen den Satz `Hallo, Anna!`.
    Übung im String-Verketten mit `+`.
-2. **`celsiusZuFahrenheit`** — Formel: `F = C * 9/5 + 32`.
+2. **`celsiusZuFahrenheit`**: Formel: `F = C * 9/5 + 32`.
    Achtung: Wo lauert hier die Ganzzahldivision?
-3. **`kreisFlaeche`** — `A = pi * r^2`. Nutze `Math.PI`. Wie quadrierst du sauber?
-4. **`letzteZiffer`** — Die letzte Ziffer einer nicht-negativen Zahl (`0` ergibt `0`).
+3. **`kreisFlaeche`**: `A = pi * r^2`. Nutze `Math.PI`. Wie quadrierst du sauber?
+4. **`letzteZiffer`**: Die letzte Ziffer einer nicht-negativen Zahl (`0` ergibt `0`).
    Ein Operator genügt.
-5. **`zeitFormat`** — Aus `3661` Sekunden wird `"01:01:01"`. Die Eingabe liegt
+5. **`zeitFormat`**: Aus `3661` Sekunden wird `"01:01:01"`. Die Eingabe liegt
    immer zwischen `0` und `86399` (ein Tag minus eine Sekunde).
    Ganzzahldivision und Modulo im Zusammenspiel, dann `String.format` mit `%02d`.
-6. **`millisekundenProJahr`** — 365 Tage in Millisekunden.
-   Hier passt das Ergebnis nicht in einen `int`. Der Rückgabetyp ist `long` —
+6. **`millisekundenProJahr`**: 365 Tage in Millisekunden.
+   Hier passt das Ergebnis nicht in einen `int`. Der Rückgabetyp ist `long`,
    aber das allein reicht nicht. Überlege, wo die Rechnung schiefgeht.
 
 Zum Experimentieren gibt es [`src/Spielwiese.java`](src/Spielwiese.java):
@@ -300,7 +300,7 @@ System.out.println(7 / 2 * 2.0);
 
 <details><summary>Auflösung</summary>
 
-`6.0` — Von links nach rechts: `7 / 2` ist Ganzzahldivision und ergibt `3`, erst dann wird mit `2.0` multipliziert. Mit `7 / 2.0 * 2` käme `7.0` heraus.
+`6.0`: Von links nach rechts: `7 / 2` ist Ganzzahldivision und ergibt `3`, erst dann wird mit `2.0` multipliziert. Mit `7 / 2.0 * 2` käme `7.0` heraus.
 
 </details>
 
@@ -312,7 +312,7 @@ System.out.println((int) 3.99 + (int) -3.99);
 
 <details><summary>Auflösung</summary>
 
-`0` — `(int)` schneidet Richtung Null ab: `3 + (-3)`. Es rundet nie, auch nicht bei negativen Zahlen.
+`0`: `(int)` schneidet Richtung Null ab: `3 + (-3)`. Es rundet nie, auch nicht bei negativen Zahlen.
 
 </details>
 
@@ -325,7 +325,7 @@ System.out.println(x);
 
 <details><summary>Auflösung</summary>
 
-`1410065408` — Die Rechnung passiert komplett in `int` und läuft über, *bevor* das Ergebnis in den `long` kommt. Der Zieltyp links hilft nicht. Richtig: `1000L * 1000 * 1000 * 10`. Genau das ist die Falle in Aufgabe 6.
+`1410065408`: Die Rechnung passiert komplett in `int` und läuft über, *bevor* das Ergebnis in den `long` kommt. Der Zieltyp links hilft nicht. Richtig: `1000L * 1000 * 1000 * 10`. Genau das ist die Falle in Aufgabe 6.
 
 </details>
 

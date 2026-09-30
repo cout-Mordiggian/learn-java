@@ -1,4 +1,4 @@
-# Die häufigsten Fehlermeldungen — und was sie wirklich bedeuten
+# Die häufigsten Fehlermeldungen, und was sie wirklich bedeuten
 
 ## Compilerfehler (das Programm startet gar nicht)
 
@@ -24,7 +24,7 @@ Nicht jeder Pfad durch die Methode endet mit `return`. Meist fehlt der
 `else`-Zweig oder ein `return` nach einer Schleife.
 
 ### `variable x might not have been initialized`
-Lokale Variablen haben — anders als Felder — keinen Standardwert.
+Lokale Variablen haben, anders als Felder, keinen Standardwert.
 
 ### `unreported exception IOException; must be caught or declared to be thrown`
 Eine checked Exception (Kapitel 7). Entweder `try`/`catch` oder
@@ -44,7 +44,7 @@ Dateiname und Name der `public`-Klasse müssen übereinstimmen.
 
 ### `method does not override or implement a method from a supertype`
 `@Override` steht über einer Methode, die nichts überschreibt. Fast immer
-ein Tippfehler oder eine falsche Parameterliste — genau dafür ist die
+ein Tippfehler oder eine falsche Parameterliste, genau dafür ist die
 Annotation da.
 
 ### `unreachable statement`
@@ -56,20 +56,20 @@ Das Lambda benutzt eine lokale Variable, die sich später noch ändert.
 Kopiere sie vorher in eine neue Variable.
 
 ### `';' expected` / `class, interface, enum, or record expected`
-Ein Semikolon fehlt — der Compiler meldet das oft erst in der **nächsten**
+Ein Semikolon fehlt, der Compiler meldet das oft erst in der **nächsten**
 Zeile. Bei `class ... expected` ist meist eine `}` zu viel (oder zu wenig)
 und Code steht ausserhalb der Klasse. Die Einrückung deines Editors verrät,
 wo die Klammern nicht mehr stimmen.
 
 ### `the switch expression does not cover all possible input values`
 Ein `switch`-Ausdruck über ein Enum oder einen `sealed`-Typ vergisst einen
-Fall. Fall ergänzen — genau diese Meldung ist der Sinn von `sealed`.
+Fall. Fall ergänzen, genau diese Meldung ist der Sinn von `sealed`.
 
 ## Laufzeitfehler (das Programm läuft und bricht ab)
 
 ### `NullPointerException: Cannot invoke "String.length()" because "name" is null`
 Methodenaufruf auf `null`. Seit Java 14 nennt die Meldung die genaue
-Referenz — lies sie, sie sagt dir direkt, welche Variable leer war.
+Referenz, lies sie, sie sagt dir direkt, welche Variable leer war.
 (Steht dort `"<local1>"`, wurde ohne `javac -g` kompiliert.)
 
 ### `Error: Could not find or load main class Aufgaben`
@@ -86,7 +86,7 @@ Dasselbe bei `charAt` oder `substring`. Beachte: `substring(von, bis)` hat
 `bis` **exklusiv**.
 
 ### `NumberFormatException: For input string: "abc"`
-`Integer.parseInt` auf etwas, das keine Zahl ist. Auch Leerzeichen zählen —
+`Integer.parseInt` auf etwas, das keine Zahl ist. Auch Leerzeichen zählen,
 `strip()` hilft.
 
 ### `ArithmeticException: / by zero`
@@ -110,7 +110,7 @@ Zu viele Objekte gleichzeitig im Speicher. Bei Dateien: `Files.lines` statt
 
 ### `UnsupportedOperationException`
 Änderung an einer unveränderlichen Collection (`List.of(...)`,
-`stream.toList()`, `Collections.unmodifiableList(...)`) — oder `add`/`remove`
+`stream.toList()`, `Collections.unmodifiableList(...)`), oder `add`/`remove`
 auf einer `Arrays.asList(...)`-Liste (die hat feste Größe).
 Kopiere sie: `new ArrayList<>(liste)`.
 
@@ -122,7 +122,7 @@ Kopiere sie: `new ArrayList<>(liste)`.
 Ein Stream wurde zweimal verwendet. Erzeuge einen neuen.
 
 ### `MalformedInputException: Input length = 1`
-Die Datei ist nicht UTF-8 kodiert — oft `ISO-8859-1`.
+Die Datei ist nicht UTF-8 kodiert, oft `ISO-8859-1`.
 
 ## Wenn gar nichts geht
 

@@ -1,11 +1,11 @@
-# Kapitel 14 — Tipps und Antworten
+# Kapitel 14: Tipps und Antworten
 
-> Erst selbst probieren. Klappe immer nur die **nächste** Stufe auf — jede verrät mehr.
+> Erst selbst probieren. Klappe immer nur die **nächste** Stufe auf, jede verrät mehr.
 > Die Tests in `tests/Tests.java` zeigen dir ausserdem genau, welche Eingabe welches Ergebnis erwartet.
 
 ## Aufgabe 1: `insertionSort`
 
-<details><summary>Tipp 1 — Richtung</summary>
+<details><summary>Tipp 1: Richtung</summary>
 
 Abschnitt 14.4, das Kartenbild. Spiel es mit `{5, 3, 8, 1, 4}` auf Papier durch.
 Frag dich: Welche Aussage gilt für den Teil links vom Strich vor jedem Schritt,
@@ -13,7 +13,7 @@ und was muss ein Schritt tun, damit sie danach auch für einen Platz mehr gilt?
 
 </details>
 
-<details><summary>Tipp 2 — Ansatz</summary>
+<details><summary>Tipp 2: Ansatz</summary>
 
 Aussen eine Schleife `i` von 1 bis `a.length - 1`. Merk dir `a[i]` in einer
 Variablen, denn der Platz wird gleich überschrieben. Innen läuft ein zweiter
@@ -30,7 +30,7 @@ gegeben hat. `a = ...` in der Methode hätte nach aussen keine Wirkung (4.2).
 
 </details>
 
-<details><summary>Tipp 3 — Gerüst</summary>
+<details><summary>Tipp 3: Gerüst</summary>
 
 ```java
 for (int i = 1; i < a.length; i++) {
@@ -48,7 +48,7 @@ for (int i = 1; i < a.length; i++) {
 
 ## Aufgabe 2: `mergeSort` und `merge`
 
-<details><summary>Tipp 1 — Richtung</summary>
+<details><summary>Tipp 1: Richtung</summary>
 
 Abschnitt 14.4, das Merge-Sort-Bild, und Kapitel 4.4 (Basisfall plus Schritt,
 der kleiner wird). Löse zuerst nur `merge` und teste sie gedanklich mit
@@ -57,7 +57,7 @@ während des Mischens merken?
 
 </details>
 
-<details><summary>Tipp 2 — Ansatz</summary>
+<details><summary>Tipp 2: Ansatz</summary>
 
 `mergeSort`: Ist `a.length <= 1`, gib `a.clone()` zurück, nicht `a` selbst (der
 Test prüft, dass ein **neues** Array kommt). Sonst `mitte = a.length / 2` und die
@@ -74,7 +74,7 @@ statt `<` beim Vergleich wird es stabil.
 
 </details>
 
-<details><summary>Tipp 3 — Gerüst</summary>
+<details><summary>Tipp 3: Gerüst</summary>
 
 ```java
 public static int[] mergeSort(int[] a) {
@@ -102,7 +102,7 @@ private static int[] merge(int[] links, int[] rechts) {
 
 ## Aufgabe 3: `istSortiert`
 
-<details><summary>Tipp 1 — Richtung</summary>
+<details><summary>Tipp 1: Richtung</summary>
 
 Was muss für **jedes** Paar direkter Nachbarn gelten, damit ein Array
 aufsteigend sortiert ist? Und wie viele solche Paare hat ein Array mit 0 oder 1
@@ -110,7 +110,7 @@ Element?
 
 </details>
 
-<details><summary>Tipp 2 — Ansatz</summary>
+<details><summary>Tipp 2: Ansatz</summary>
 
 Eine Schleife über die Paare `(a[i - 1], a[i])` für `i` ab **1**. Ist das linke
 Element größer als das rechte, steht fest: nicht sortiert, sofort `false`. Erst
@@ -120,7 +120,7 @@ Grenzen müssen also stimmen.
 
 </details>
 
-<details><summary>Tipp 3 — Gerüst</summary>
+<details><summary>Tipp 3: Gerüst</summary>
 
 ```java
 for (int i = 1; i < ...; i++) {
@@ -133,7 +133,7 @@ return true;
 
 ## Aufgabe 4: `ersteGroesserGleich`
 
-<details><summary>Tipp 1 — Richtung</summary>
+<details><summary>Tipp 1: Richtung</summary>
 
 Abschnitt 14.3, der Absatz über die Grenze und die Invariante. Frag dich: Wenn
 `sortiert[mitte] < wert` ist, kann `mitte` dann die Antwort sein? Und wenn
@@ -142,7 +142,7 @@ eine Stelle weiter links noch eine bessere geben?
 
 </details>
 
-<details><summary>Tipp 2 — Ansatz</summary>
+<details><summary>Tipp 2: Ansatz</summary>
 
 Halboffener Bereich: `von = 0`, `bis = sortiert.length`. Invariante: Links von
 `von` ist alles `< wert`, ab `bis` alles `>= wert`. Solange `von < bis`:
@@ -156,7 +156,7 @@ und das ist das Ergebnis, auch für das leere Array und "nichts ist gross genug"
 
 </details>
 
-<details><summary>Tipp 3 — Gerüst</summary>
+<details><summary>Tipp 3: Gerüst</summary>
 
 ```java
 int von = 0;
@@ -176,7 +176,7 @@ return ...;
 
 ## Aufgabe 5: `zaehleVorkommen`
 
-<details><summary>Tipp 1 — Richtung</summary>
+<details><summary>Tipp 1: Richtung</summary>
 
 In einem sortierten Array stehen alle Kopien eines Werts direkt hintereinander.
 Frag dich: Wenn du weisst, wo der Block **beginnt** und wo der nächstgrößere
@@ -184,7 +184,7 @@ Wert beginnt, wie gross ist dann der Block?
 
 </details>
 
-<details><summary>Tipp 2 — Ansatz</summary>
+<details><summary>Tipp 2: Ansatz</summary>
 
 `ersteGroesserGleich(sortiert, wert)` liefert den Anfang des Blocks.
 `ersteGroesserGleich(sortiert, wert + 1)` liefert die erste Stelle **hinter** dem
@@ -197,7 +197,7 @@ Wo endet der Block dann?
 
 </details>
 
-<details><summary>Tipp 3 — Gerüst</summary>
+<details><summary>Tipp 3: Gerüst</summary>
 
 ```java
 int anfang = ersteGroesserGleich(sortiert, wert);
@@ -207,9 +207,9 @@ return ...;
 
 </details>
 
-## Aufgabe 6: `MeineListe` — `add`, `get`, `size`, `toString`, Wachstum
+## Aufgabe 6: `MeineListe`: `add`, `get`, `size`, `toString`, Wachstum
 
-<details><summary>Tipp 1 — Richtung</summary>
+<details><summary>Tipp 1: Richtung</summary>
 
 Abschnitt 14.5, das Bild mit `elemente` und `groesse`. Die zwei Felder sind schon
 da. Frag dich für jede Methode: Was muss mit `groesse` passieren, und welche
@@ -217,7 +217,7 @@ Plätze des Arrays sind gerade gültig?
 
 </details>
 
-<details><summary>Tipp 2 — Ansatz</summary>
+<details><summary>Tipp 2: Ansatz</summary>
 
 - `size()` gibt `groesse` zurück, **nicht** `elemente.length`.
 - `add`: Ist `groesse == elemente.length`, erst wachsen: ein neues Array der
@@ -235,7 +235,7 @@ Plätze des Arrays sind gerade gültig?
 
 </details>
 
-<details><summary>Tipp 3 — Gerüst</summary>
+<details><summary>Tipp 3: Gerüst</summary>
 
 ```java
 public void add(E element) {
@@ -255,9 +255,9 @@ private void pruefeIndex(int index) {
 
 </details>
 
-## Aufgabe 6: `MeineListe` — `set`, `remove`, `contains`
+## Aufgabe 6: `MeineListe`: `set`, `remove`, `contains`
 
-<details><summary>Tipp 1 — Richtung</summary>
+<details><summary>Tipp 1: Richtung</summary>
 
 Abschnitt 14.5, `remove(0)` ist O(n). Zeichne `[a | b | c | d]` auf und streiche
 `b`. Frag dich: Welche Elemente müssen wohin, und was steht danach auf dem
@@ -266,7 +266,7 @@ letzten, jetzt ungültigen Platz? Für `contains` hilft Kapitel 3 (`==` gegen
 
 </details>
 
-<details><summary>Tipp 2 — Ansatz</summary>
+<details><summary>Tipp 2: Ansatz</summary>
 
 - `set`: Index prüfen, alten Wert merken, überschreiben, alten Wert zurückgeben.
 - `remove`: Index prüfen und das Element merken. Dann in einer Schleife von
@@ -281,7 +281,7 @@ letzten, jetzt ungültigen Platz? Für `contains` hilft Kapitel 3 (`==` gegen
 
 </details>
 
-<details><summary>Tipp 3 — Gerüst</summary>
+<details><summary>Tipp 3: Gerüst</summary>
 
 ```java
 public E remove(int index) {
@@ -307,7 +307,7 @@ public boolean contains(Object o) {
 
 ## Aufgabe 7: `Stapel`
 
-<details><summary>Tipp 1 — Richtung</summary>
+<details><summary>Tipp 1: Richtung</summary>
 
 Abschnitt 14.6, das Bild mit `oben --> [3|o]--> [2|o]--> [1|null]`. Zeichne auf,
 was sich bei `push(4)` und bei `pop()` an den Pfeilen ändert. Es ist jeweils
@@ -315,7 +315,7 @@ genau **ein** Pfeil, nämlich `oben`.
 
 </details>
 
-<details><summary>Tipp 2 — Ansatz</summary>
+<details><summary>Tipp 2: Ansatz</summary>
 
 - `push`: ein neuer `Knoten` mit dem Wert und dem **bisherigen** `oben` als
   `naechster`. Dann zeigt `oben` auf den neuen Knoten, `anzahl++`. Bei leerem
@@ -331,7 +331,7 @@ Pfeil `oben`.
 
 </details>
 
-<details><summary>Tipp 3 — Gerüst</summary>
+<details><summary>Tipp 3: Gerüst</summary>
 
 ```java
 public void push(E element) {
@@ -351,7 +351,7 @@ public E pop() {
 
 ## Aufgabe 8a: `klammernKorrekt`
 
-<details><summary>Tipp 1 — Richtung</summary>
+<details><summary>Tipp 1: Richtung</summary>
 
 Warum reicht Zählen nicht? Schau dir `"([)]"` an: Welche Klammer muss
 geschlossen werden, wenn das `)` kommt, und welche ist gerade die zuletzt
@@ -359,7 +359,7 @@ geöffnete? "Zuletzt geöffnet, zuerst geschlossen" ist genau LIFO (14.6).
 
 </details>
 
-<details><summary>Tipp 2 — Ansatz</summary>
+<details><summary>Tipp 2: Ansatz</summary>
 
 Einen `Stapel<Character>` anlegen und den String Zeichen für Zeichen mit
 `charAt` durchlaufen:
@@ -377,7 +377,7 @@ Nach der Schleife ist das Ergebnis nur dann `true`, wenn nichts mehr offen ist
 
 </details>
 
-<details><summary>Tipp 3 — Gerüst</summary>
+<details><summary>Tipp 3: Gerüst</summary>
 
 ```java
 Stapel<Character> offen = new Stapel<>();
@@ -398,14 +398,14 @@ return ...;
 
 ## Aufgabe 8b: `umkehren`
 
-<details><summary>Tipp 1 — Richtung</summary>
+<details><summary>Tipp 1: Richtung</summary>
 
 Was kommt aus einem Stapel zuerst wieder heraus, das erste oder das letzte
 Element, das hineingelegt wurde?
 
 </details>
 
-<details><summary>Tipp 2 — Ansatz</summary>
+<details><summary>Tipp 2: Ansatz</summary>
 
 Erst alle Zeichen des Strings der Reihe nach pushen. Dann poppen, solange der
 Stapel nicht leer ist, und jedes Zeichen an einen `StringBuilder` hängen. Kein
@@ -414,7 +414,7 @@ String funktioniert von selbst: nichts hinein, nichts heraus.
 
 </details>
 
-<details><summary>Tipp 3 — Gerüst</summary>
+<details><summary>Tipp 3: Gerüst</summary>
 
 ```java
 Stapel<Character> stapel = new Stapel<>();
@@ -432,7 +432,7 @@ return sb.toString();
 
 ## Aufgabe 9: `Stapel` als `Iterable`
 
-<details><summary>Tipp 1 — Richtung</summary>
+<details><summary>Tipp 1: Richtung</summary>
 
 Abschnitt 14.9 und das Bild mit dem Zeiger `aktuell`. Der Iterator ist eine
 Art Lesezeichen in der Kette. Frag dich: Wo steht das Lesezeichen am Anfang,
@@ -441,7 +441,7 @@ woran erkennst du, dass es hinter dem letzten Knoten steht, und was muss
 
 </details>
 
-<details><summary>Tipp 2 — Ansatz</summary>
+<details><summary>Tipp 2: Ansatz</summary>
 
 `iterator()` ist schon fertig. In `StapelIterator` fehlt ein Feld
 `private Knoten<E> aktuell = oben;`. Das darf direkt `oben` lesen, weil die
@@ -458,7 +458,7 @@ Iterator, nicht in den Stapel, sonst stören sich zwei Schleifen gegenseitig.
 
 </details>
 
-<details><summary>Tipp 3 — Gerüst</summary>
+<details><summary>Tipp 3: Gerüst</summary>
 
 ```java
 private class StapelIterator implements Iterator<E> {
@@ -485,7 +485,7 @@ private class StapelIterator implements Iterator<E> {
 
 ## Aufgabe 10: Befehle und Verlauf
 
-<details><summary>Tipp 1 — Richtung</summary>
+<details><summary>Tipp 1: Richtung</summary>
 
 Abschnitt 14.10 und das Bild mit den zwei Stapeln. Erst die beiden Befehle, dann
 den Verlauf. Frag dich bei jedem Befehl: Welche Angaben brauche ich, um die
@@ -493,7 +493,7 @@ Aktion **rückgängig** zu machen, und wann kenne ich sie?
 
 </details>
 
-<details><summary>Tipp 2 — Ansatz</summary>
+<details><summary>Tipp 2: Ansatz</summary>
 
 - `EinfuegenBefehl`: Die drei Konstruktorparameter in `final`-Felder.
   `ausfuehren`: `puffer.einfuegen(pos, text)`. `rueckgaengig`: dasselbe Stück
@@ -515,7 +515,7 @@ Aktion **rückgängig** zu machen, und wann kenne ich sie?
 
 </details>
 
-<details><summary>Tipp 3 — Gerüst</summary>
+<details><summary>Tipp 3: Gerüst</summary>
 
 ```java
 private final Deque<Befehl> rueckgaengigStapel = new ArrayDeque<>();
@@ -540,7 +540,7 @@ public boolean rueckgaengig() {
 
 </details>
 
-## Selbstcheck — Antworten
+## Selbstcheck: Antworten
 
 <details><summary>Warum ist O(n^2) bei einer Million Elementen ein Problem, O(n log n) aber nicht?</summary>
 

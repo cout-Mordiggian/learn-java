@@ -1,4 +1,4 @@
-# Kapitel 10 — Modernes Java
+# Kapitel 10: Modernes Java
 
 **Ziel:** Du schreibst Java, wie es 2026 geschrieben wird: `record` statt
 Boilerplate, `enum` mit Verhalten, `sealed` plus `switch`-Pattern-Matching
@@ -6,7 +6,7 @@ statt `instanceof`-Ketten.
 
 ---
 
-## 10.1 `var` — lokale Typinferenz (Java 10)
+## 10.1 `var`, lokale Typinferenz (Java 10)
 
 ```java
 var namen = new ArrayList<String>();          // ArrayList<String>
@@ -22,7 +22,7 @@ der Typ so lang ist, dass er nichts erklärt.
 **Nimm ihn nicht,** wenn der Typ die einzige Information ist:
 `var ergebnis = berechne();` sagt dem Leser nichts.
 
-## 10.2 `record` — Datenklassen in einer Zeile (Java 16)
+## 10.2 `record`: Datenklassen in einer Zeile (Java 16)
 
 ```java
 public record Punkt(double x, double y) { }
@@ -30,7 +30,7 @@ public record Punkt(double x, double y) { }
 
 Der Compiler erzeugt daraus: private final Felder, einen Konstruktor,
 Zugriffsmethoden `x()` und `y()` (ohne `get`!), `equals`, `hashCode` und
-`toString` — die ganze Klasse aus Kapitel 5 in einer Zeile.
+`toString`: die ganze Klasse aus Kapitel 5 in einer Zeile.
 
 ```java
 var p = new Punkt(3, 4);
@@ -39,7 +39,7 @@ p.toString();               // "Punkt[x=3.0, y=4.0]"
 p.equals(new Punkt(3, 4));  // true
 ```
 
-### Kompakter Konstruktor — für Validierung
+### Kompakter Konstruktor, für Validierung
 
 ```java
 public record Artikel(String name, long preisCent) {
@@ -86,7 +86,7 @@ DTOs, Koordinaten, Ergebnisobjekte, Konfigurationswerte, Schlüssel für Maps.
 Wenn der Typ dagegen veränderlichen Zustand und Verhalten kapselt (wie das
 `Konto` aus Kapitel 5), bleibt es eine normale Klasse.
 
-## 10.3 `enum` — mehr als eine Liste von Konstanten
+## 10.3 `enum`, mehr als eine Liste von Konstanten
 
 ```java
 public enum Ampel {
@@ -100,7 +100,7 @@ Ampel.values(); // Ampel[]{ROT, GELB, GRUEN}
 Ampel.valueOf("ROT");
 ```
 
-Enums sind vollwertige Klassen — mit Feldern, Konstruktor und Methoden:
+Enums sind vollwertige Klassen, mit Feldern, Konstruktor und Methoden:
 
 ```java
 public enum Wochentag {
@@ -128,7 +128,7 @@ public enum Rechenart {
 ```
 
 Im `switch`-**Ausdruck** (Pfeilform mit Ergebnis, Kapitel 2) prüft der
-Compiler bei Enums die Vollständigkeit — kommt eine Konstante dazu, zeigt er
+Compiler bei Enums die Vollständigkeit, kommt eine Konstante dazu, zeigt er
 dir jede Stelle, die du anpassen musst. (Eine klassische `switch`-Anweisung
 ohne Ergebnis prüft er nicht; ein weiterer Grund für die Pfeilform.) Das ist der
 Hauptgrund, Enums statt `String`-Konstanten oder `int`-Codes zu verwenden.
@@ -136,7 +136,7 @@ Hauptgrund, Enums statt `String`-Konstanten oder `int`-Codes zu verwenden.
 `ordinal()` hängt an der Deklarationsreihenfolge. Speicherst du den Wert
 irgendwo, bricht das erste Umsortieren deine Daten. Nutze `name()`.
 
-## 10.4 `sealed` — kontrollierte Hierarchien (Java 17)
+## 10.4 `sealed`, kontrollierte Hierarchien (Java 17)
 
 ```java
 public sealed interface Form permits Kreis, Rechteck, Dreieck { }
@@ -152,7 +152,7 @@ der Compiler, dass die Liste vollständig ist.
 Sind alle Untertypen in **derselben Datei** (z. B. als verschachtelte Records),
 darf `permits` entfallen.
 
-Jeder erlaubte Untertyp muss selbst `final`, `sealed` oder `non-sealed` sein —
+Jeder erlaubte Untertyp muss selbst `final`, `sealed` oder `non-sealed` sein,
 sonst wäre das Siegel löchrig. Records sind automatisch `final`.
 
 ## 10.5 Pattern Matching
@@ -199,7 +199,7 @@ double flaeche = switch (form) {
 };
 ```
 
-Das Muster **zerlegt** den Record direkt in seine Komponenten — kein
+Das Muster **zerlegt** den Record direkt in seine Komponenten, kein
 `k.radius()` nötig. Statt des Typs darfst du auch `var` schreiben
 (`case Kreis(var r)`), und *seit Java 22* steht `_` für eine Komponente, die
 dich nicht interessiert: `case Rechteck(var b, _) -> ...`. Und weil `Form` `sealed` ist, braucht dieser `switch`
@@ -240,7 +240,7 @@ String brief = """
 
 ## 10.7 Datum und Zeit mit `java.time`
 
-Seit Java 8 gibt es eine durchdachte Datums-API — und sie folgt genau den
+Seit Java 8 gibt es eine durchdachte Datums-API, und sie folgt genau den
 Ideen dieses Kapitels: unveränderliche Wertobjekte, Enums, klare Typen.
 
 | Typ | Bedeutung | Beispiel |
@@ -268,14 +268,14 @@ termin.format(deutsch)                  // "24.12.2026"
 LocalDate.parse("24.12.2026", deutsch)  // und zurueck
 ```
 
-`LocalDate.parse("2026-02-30")` wirft eine `DateTimeParseException` — ungültige
+`LocalDate.parse("2026-02-30")` wirft eine `DateTimeParseException`, ungültige
 Daten gibt es gar nicht erst.
 
 Merke dir drei Dinge:
 
 - Wie bei `String`: `plusDays` & Co. ändern nichts, sie liefern ein **neues**
   Objekt. `termin.plusDays(7);` ohne Zuweisung tut nichts.
-- **Nie** `java.util.Date` oder `Calendar` — veränderlich, Monate ab 0
+- **Nie** `java.util.Date` oder `Calendar`, veränderlich, Monate ab 0
   gezählt, voller Fallen. Nur noch in altem Code.
 - Für testbaren Code `LocalDate.now()` nicht tief im Inneren aufrufen, sondern
   "heute" als Parameter hereinreichen: `istUeberfaellig(LocalDate heute)`.
@@ -299,7 +299,7 @@ Merke dir drei Dinge:
 | 23 | Javadoc-Kommentare in Markdown (`///`) |
 | 25 | `void main()` ohne Klasse + `IO.println`, Anweisungen vor `super(...)`, `import module java.base;` |
 
-**LTS-Versionen** (8, 11, 17, 21, 25) bekommen jahrelang Updates — in
+**LTS-Versionen** (8, 11, 17, 21, 25) bekommen jahrelang Updates, in
 Unternehmen läuft fast immer eine davon. Die Versionen dazwischen erscheinen
 alle sechs Monate und sind ein guter Blick auf das, was als Nächstes kommt.
 Neue Features starten oft als *Preview* und müssen dann mit
@@ -310,7 +310,7 @@ Neue Features starten oft als *Preview* und müssen dann mit
 Entwurfsmuster kennst du seit 5.10. Mit den Sprachmitteln dieses Kapitels
 bekommen vier davon eine moderne Form. Einen, den Builder, schreibst du selbst.
 
-### Builder — wenn es für einen Record zu viele Angaben werden
+### Builder, wenn es für einen Record zu viele Angaben werden
 
 Ein `record` ist ideal für wenige Pflichtfelder. Hat ein Objekt aber viele
 Felder, die meisten freiwillig, werden Konstruktoraufrufe unlesbar:
@@ -404,7 +404,7 @@ Für zustandslose Helfer wie diesen ist das unproblematisch. Hat der Singleton
 **Zustand** und benutzen ihn mehrere Threads, reicht das nicht. Das zeigt 12.3,
 dort baust du einen thread-sicheren ID-Generator.
 
-### Zustand (State) — das Verhalten hängt am Zustand
+### Zustand (State), das Verhalten hängt am Zustand
 
 Ein Objekt, das sich je nach Zustand anders verhält, bekommt schnell überall
 `if (status == ...)`-Ketten. Das Muster **Zustand** legt das Verhalten in die
@@ -428,7 +428,7 @@ Kommt ein Zustand dazu, verlangt der Compiler sein `weiter()`, und jeder
 `switch`-Ausdruck über den Status meldet die fehlende Konstante. Dein
 `Wochentag.naechster()` ist ein kleiner Verwandter davon.
 
-### Besucher (Visitor) — heute `sealed` + `switch`
+### Besucher (Visitor), heute `sealed` + `switch`
 
 Das GoF-Muster **Besucher** löst ein Problem, das du aus 10.5 kennst: Eine feste
 Typ-Hierarchie (`Form` mit `Kreis`, `Rechteck`, `Dreieck`) soll immer neue
@@ -455,11 +455,11 @@ Den Besucher schreibt man nur noch, wo es kein `sealed` gibt, etwa in altem Code
 ## Aufgaben
 
 > Hängst du fest? Gestufte Hinweise zu jeder Aufgabe stehen in
-> [`TIPPS.md`](TIPPS.md) — erst Tipp 1, dann wieder selbst probieren.
+> [`TIPPS.md`](TIPPS.md): erst Tipp 1, dann wieder selbst probieren.
 
-Fünf Dateien in [`src/`](src/) — prüfen mit `./lerne.sh 10`.
+Fünf Dateien in [`src/`](src/), prüfen mit `./lerne.sh 10`.
 
-### `Artikel.java` — Record mit Validierung
+### `Artikel.java`: Record mit Validierung
 
 `record Artikel(String name, long preisCent, int menge)`:
 
@@ -469,39 +469,39 @@ Fünf Dateien in [`src/`](src/) — prüfen mit `./lerne.sh 10`.
   `strip()` normalisieren
 - `long gesamtCent()`
 - `static Artikel einzeln(String name, long preisCent)`
-- `Artikel mitMenge(int neueMenge)` — neues Objekt, unveränderlich bleiben!
+- `Artikel mitMenge(int neueMenge)`: neues Objekt, unveränderlich bleiben!
 
-### `Wochentag.java` — Enum mit Zustand
+### `Wochentag.java`: Enum mit Zustand
 
 Sieben Konstanten, Feld `werktag`, dazu:
 
 - `boolean istWerktag()`
-- `Wochentag naechster()` — nach `SONNTAG` kommt wieder `MONTAG`
+- `Wochentag naechster()`: nach `SONNTAG` kommt wieder `MONTAG`
   (Tipp: `values()` und `ordinal()`)
-- `static Wochentag vonNummer(int n)` — 1 = MONTAG … 7 = SONNTAG,
+- `static Wochentag vonNummer(int n)`: 1 = MONTAG … 7 = SONNTAG,
   alles andere -> `IllegalArgumentException`
 
-### `Form.java` — sealed interface mit verschachtelten Records
+### `Form.java`, sealed interface mit verschachtelten Records
 
 `Kreis`, `Rechteck`, `Dreieck` als Records **innerhalb** des Interfaces.
 Negative Werte (bei jeder Komponente) mit `IllegalArgumentException` ablehnen.
 
 Bewusst offen gelassen: Ein "Dreieck" wie `(1, 1, 5)` verletzt die
-Dreiecksungleichung, und `NaN` rutscht durch jede `< 0`-Prüfung — in beiden
+Dreiecksungleichung, und `NaN` rutscht durch jede `< 0`-Prüfung, in beiden
 Fällen liefert `flaeche` dann `NaN`. Wer mag, lehnt auch das ab; die Tests
 prüfen nur negative Werte.
 
 ### `Aufgaben.java`
 
-1. **`flaeche(Form)`** — `switch` mit **Record-Mustern**, **ohne `default`**.
+1. **`flaeche(Form)`**: `switch` mit **Record-Mustern**, **ohne `default`**.
    Dreieck nach Heron: `s = (a+b+c)/2`, `A = sqrt(s(s-a)(s-b)(s-c))`.
 2. **`benenne(Form)`** -> `"Kreis mit Radius 2.0"`, `"Rechteck 3.0x4.0"`,
    `"Dreieck 3.0/4.0/5.0"`. Nutze `Locale.ROOT` beim Formatieren.
-3. **`beschreibe(Object)`** — Pattern Matching mit Bedingungen:
+3. **`beschreibe(Object)`**: Pattern Matching mit Bedingungen:
    `null` -> `"nichts"`, negative Zahl -> `"negative Zahl"`, `0` -> `"null"`,
    positive Zahl -> `"positive Zahl"`, leerer String -> `"leerer Text"`,
    sonst String -> `"Text der Laenge 5"`, alles andere -> `"unbekannt"`.
-4. **`steckbrief(Artikel)`** — Textblock:
+4. **`steckbrief(Artikel)`**: Textblock:
    ```
    Artikel: Kaffee
    Preis:   499 Cent
@@ -511,7 +511,7 @@ prüfen nur negative Werte.
    (mit abschliessendem Zeilenumbruch)
 5. **`werktageZaehlen(List<Wochentag>)`** -> `long`.
 
-### `Pizza.java` — Builder (10.9)
+### `Pizza.java`: Builder (10.9)
 
 `Pizza.Groesse` ist fertig. Du schreibst den `Builder` und den privaten
 Konstruktor von `Pizza`:
@@ -542,7 +542,7 @@ System.out.println(new Punkt(1, 2));
 
 <details><summary>Auflösung</summary>
 
-`Punkt[x=1, y=2]` — Das `toString` hat der Compiler erzeugt. Beachte die eckigen Klammern und die Feldnamen.
+`Punkt[x=1, y=2]`: Das `toString` hat der Compiler erzeugt. Beachte die eckigen Klammern und die Feldnamen.
 
 </details>
 
@@ -559,7 +559,7 @@ System.out.println(t.namen());
 
 <details><summary>Auflösung</summary>
 
-`[Anna, Bert]` — Der Record speichert nur die **Referenz** auf die Liste. Wer die Liste von aussen ändert, ändert den "unveränderlichen" Record mit. Abhilfe: `namen = List.copyOf(namen);` im kompakten Konstruktor.
+`[Anna, Bert]`: Der Record speichert nur die **Referenz** auf die Liste. Wer die Liste von aussen ändert, ändert den "unveränderlichen" Record mit. Abhilfe: `namen = List.copyOf(namen);` im kompakten Konstruktor.
 
 </details>
 
@@ -577,7 +577,7 @@ System.out.println(s);
 
 <details><summary>Auflösung</summary>
 
-`gross` — Die Fälle werden von oben nach unten geprüft, das erste passende Muster samt Bedingung gewinnt. Stünde `case Integer i` ohne `when` oben, meldete der Compiler den zweiten Fall als unerreichbar (*dominated*).
+`gross`: Die Fälle werden von oben nach unten geprüft, das erste passende Muster samt Bedingung gewinnt. Stünde `case Integer i` ohne `when` oben, meldete der Compiler den zweiten Fall als unerreichbar (*dominated*).
 
 </details>
 

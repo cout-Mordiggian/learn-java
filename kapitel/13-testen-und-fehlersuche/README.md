@@ -1,4 +1,4 @@
-# Kapitel 13 — Testen und Fehlersuche
+# Kapitel 13: Testen und Fehlersuche
 
 **Ziel:** Du schreibst Tests, die echte Fehler finden, weil du weisst, *welche*
 Fälle du prüfen musst. Und wenn etwas schiefgeht, suchst du den Fehler
@@ -28,7 +28,7 @@ es in diesem Kapitel vor allem darum, **die richtigen Fälle** zu wählen.
 **Ein Verhalten pro Prüfung.** Schlägt "genau 20 Euro: 2,90 Versand" fehl,
 weisst du sofort, wo du suchen musst. Bei "Versand funktioniert" weisst du nichts.
 
-**Vorbereiten — Ausführen — Prüfen** (englisch *Arrange — Act — Assert*):
+**Vorbereiten, Ausführen, Prüfen** (englisch *Arrange, Act, Assert*):
 
 ```java
 Konto konto = new Konto("Anna", 1000);          // Vorbereiten
@@ -53,9 +53,9 @@ gleich verhalten *sollte*. Aus jeder Klasse nimmst du einen typischen Vertreter.
 Dann testest du die **Grenzen** zwischen den Klassen, denn dort sitzen die
 meisten Fehler (`>` statt `>=`, `<=` statt `<`).
 
-Checkliste für Grenzwerte: **0, 1, viele** — **leer** (`""`, `{}`) —
-**`null`**, wenn die Spezifikation etwas dazu sagt — **negativ** (`-1`) —
-**genau an der Grenze** (`2000` bei "ab 2000") — **knapp daneben** (`1999`) —
+Checkliste für Grenzwerte: **0, 1, viele**, **leer** (`""`, `{}`),
+**`null`** (wenn die Spezifikation etwas dazu sagt), **negativ** (`-1`),
+**genau an der Grenze** (`2000` bei "ab 2000"), **knapp daneben** (`1999`),
 **sehr gross** (über `Integer.MAX_VALUE` = 2.147.483.647, wenn `long` erlaubt ist).
 
 ### Durchgerechnet: Versandkosten
@@ -64,7 +64,7 @@ Checkliste für Grenzwerte: **0, 1, viele** — **leer** (`""`, `{}`) —
 4,90 Euro, ab 20 Euro 2,90 Euro, ab 50 Euro nichts. Negativer Warenwert:
 `IllegalArgumentException`.
 
-Schritt 1 — **Äquivalenzklassen** (alles in Cent):
+Schritt 1, **Äquivalenzklassen** (alles in Cent):
 
 ```
       ungueltig   |      490      |      290      |       0
@@ -72,7 +72,7 @@ Schritt 1 — **Äquivalenzklassen** (alles in Cent):
                   0             1999 2000       4999 5000       Warenwert
 ```
 
-Schritt 2 — **Testwerte wählen**: je ein Vertreter und dann beide Seiten jeder Grenze.
+Schritt 2, **Testwerte wählen**: je ein Vertreter und dann beide Seiten jeder Grenze.
 
 | Warenwert | Erwartet | Warum dieser Wert? |
 |----------:|---------:|--------------------|
@@ -339,11 +339,11 @@ muss, gehört in einen Parameter oder den Konstruktor.
 ## Aufgaben
 
 > Hängst du fest? Gestufte Hinweise zu jeder Aufgabe stehen in
-> [`TIPPS.md`](TIPPS.md) — erst Tipp 1, dann wieder selbst probieren.
+> [`TIPPS.md`](TIPPS.md): erst Tipp 1, dann wieder selbst probieren.
 
 Prüfen mit `./lerne.sh 13`.
 
-### Teil A — Tests schreiben, die Fehler finden
+### Teil A: Tests schreiben, die Fehler finden
 
 Das Interface [`Rabattrechner`](src/Rabattrechner.java) hat eine einzige Methode
 `long endpreisCent(long preisCent, int menge)`. Die Regeln:
@@ -374,7 +374,7 @@ Ein Mutant, der überlebt, zeigt eine Lücke in deinen Tests.
 Das heisst **Mutationstest** (Werkzeuge wie PIT erzeugen Mutanten automatisch).
 Spielregel: Prüfe nur über `r.endpreisCent(...)`, kein `instanceof`.
 
-### Teil B — Fehlersuche
+### Teil B: Fehlersuche
 
 [`src/Fehlerhaft.java`](src/Fehlerhaft.java) enthält sechs kleine Methoden.
 Jede kompiliert, und jede hat **genau einen** Fehler aus der Checkliste in 13.7.
@@ -400,7 +400,7 @@ System.out.println(mikro);
 
 <details><summary>Auflösung</summary>
 
-`-727379968` — Beide Faktoren sind `int`-Literale, also rechnet Java in `int`. Das Ergebnis 10^12 passt nicht hinein und läuft über. Erst **danach** wird der kaputte Wert in den `long` erweitert. Die Zielvariable bestimmt nicht, womit gerechnet wird. Richtig: `1_000_000L * 1_000_000`.
+`-727379968`: Beide Faktoren sind `int`-Literale, also rechnet Java in `int`. Das Ergebnis 10^12 passt nicht hinein und läuft über. Erst **danach** wird der kaputte Wert in den `long` erweitert. Die Zielvariable bestimmt nicht, womit gerechnet wird. Richtig: `1_000_000L * 1_000_000`.
 
 </details>
 
@@ -416,7 +416,7 @@ System.out.println(summe);
 
 <details><summary>Auflösung</summary>
 
-`10` — Das Semikolon hinter der `for`-Klammer ist der ganze Schleifenrumpf: eine leere Anweisung, dreimal ausgeführt. Der Block `{ summe += 10; }` gehört nicht zur Schleife und läuft genau einmal. Derselbe Fehler wie `;` nach `if` aus 13.7.
+`10`: Das Semikolon hinter der `for`-Klammer ist der ganze Schleifenrumpf: eine leere Anweisung, dreimal ausgeführt. Der Block `{ summe += 10; }` gehört nicht zur Schleife und läuft genau einmal. Derselbe Fehler wie `;` nach `if` aus 13.7.
 
 </details>
 
@@ -430,7 +430,7 @@ System.out.println("weiter mit " + konto);
 
 <details><summary>Auflösung</summary>
 
-`weiter mit -50` — Assertions sind standardmäßig ausgeschaltet, die Zeile mit `assert` wird gar nicht ausgewertet. Erst mit `java -ea` gibt es einen `AssertionError: Konto negativ: -50`. Genau deshalb taugt `assert` nicht zur Prüfung von Eingaben. In `jshell` siehst du den Unterschied mit `jshell -R-ea`.
+`weiter mit -50`: Assertions sind standardmäßig ausgeschaltet, die Zeile mit `assert` wird gar nicht ausgewertet. Erst mit `java -ea` gibt es einen `AssertionError: Konto negativ: -50`. Genau deshalb taugt `assert` nicht zur Prüfung von Eingaben. In `jshell` siehst du den Unterschied mit `jshell -R-ea`.
 
 </details>
 
@@ -451,7 +451,7 @@ testB();
 
 <details><summary>Auflösung</summary>
 
-`A:en B:en` — `testB` erwartet vermutlich die Standard-Sprache, bekommt aber die, die `testA` zurückgelassen hat. Es gibt nur **eine** Instanz, und sie überlebt jeden Test. Ruft man `testB` zuerst auf, kommt `B:de` heraus: Das Ergebnis hängt von der **Reihenfolge** ab, ein klassisch nicht wiederholbarer Test (13.2). Mit einer hineingereichten Konfiguration (13.8) erzeugt jeder Test sein eigenes Objekt, und das Problem verschwindet.
+`A:en B:en`: `testB` erwartet vermutlich die Standard-Sprache, bekommt aber die, die `testA` zurückgelassen hat. Es gibt nur **eine** Instanz, und sie überlebt jeden Test. Ruft man `testB` zuerst auf, kommt `B:de` heraus: Das Ergebnis hängt von der **Reihenfolge** ab, ein klassisch nicht wiederholbarer Test (13.2). Mit einer hineingereichten Konfiguration (13.8) erzeugt jeder Test sein eigenes Objekt, und das Problem verschwindet.
 
 </details>
 
@@ -469,5 +469,5 @@ Erst selbst antworten, dann vergleichen: Die Antworten stehen am Ende von
 
 ---
 
-**Wie geht es weiter?** Zurück in die Hauptlinie: [Kapitel 8 — Collections und Generics](../08-collections-und-generics/README.md).
+**Wie geht es weiter?** Zurück in die Hauptlinie: [Kapitel 8: Collections und Generics](../08-collections-und-generics/README.md).
 Ab jetzt lohnt es sich, bei jeder Aufgabe kurz zu überlegen: Welche Grenzfälle hätten *deine* Tests geprüft?

@@ -1,6 +1,6 @@
-# Kapitel 07 — Tipps und Antworten
+# Kapitel 07: Tipps und Antworten
 
-> Erst selbst probieren. Klappe immer nur die **nächste** Stufe auf — jede verrät mehr.
+> Erst selbst probieren. Klappe immer nur die **nächste** Stufe auf, jede verrät mehr.
 > Die Tests in `tests/Tests.java` zeigen dir ausserdem genau, welche Eingabe welches Ergebnis erwartet.
 
 > **Reihenfolge:** Aufgabe 6 braucht `UnzureichendeDeckungException`, Aufgabe 7
@@ -9,18 +9,18 @@
 
 ## Aufgabe 1: `sicherTeilen`
 
-<details><summary>Tipp 1 — Richtung</summary>
+<details><summary>Tipp 1: Richtung</summary>
 
 Abschnitt 7.3 (`try` / `catch` / `finally`). Frag dich: Welche Exception wirft
 die Ganzzahl-Division `a / b`, wenn `b` null ist? Die Hierarchie in 7.1 hilft.
 
 </details>
 
-<details><summary>Tipp 2 — Ansatz</summary>
+<details><summary>Tipp 2: Ansatz</summary>
 
 Die Division steht im `try`-Block und wird dort direkt zurückgegeben. Im
 `catch` für genau diese eine Exception gibst du `0` zurück. Fang nicht
-`Exception` — nur den Typ, den du wirklich erwartest (Abschnitt 7.8).
+`Exception`: nur den Typ, den du wirklich erwartest (Abschnitt 7.8).
 
 Das Abschneiden Richtung null (`-10 / 3` ergibt `-3`) erledigt die
 `int`-Division von selbst. Nebenbei: Nur die **Ganzzahl**-Division wirft; bei
@@ -30,10 +30,10 @@ Das Abschneiden Richtung null (`-10 / 3` ergibt `-3`) erledigt die
 
 ## Aufgabe 2: `parseOderStandard`
 
-<details><summary>Tipp 1 — Richtung</summary>
+<details><summary>Tipp 1: Richtung</summary>
 
 Abschnitt 7.3 und die Hierarchie in 7.1. Frag dich: Welche Exception wirft
-`Integer.parseInt` bei `"abc"` — und welche bei `null`? Probier es in `jshell`
+`Integer.parseInt` bei `"abc"`, und welche bei `null`? Probier es in `jshell`
 aus, bevor du rätst:
 
 ```java
@@ -42,17 +42,17 @@ Integer.parseInt(null)
 
 </details>
 
-<details><summary>Tipp 2 — Ansatz</summary>
+<details><summary>Tipp 2: Ansatz</summary>
 
 `Integer.parseInt(null)` wirft **keine** `NullPointerException`, sondern eine
 `NumberFormatException` mit der Meldung `Cannot parse null string`. Ein
 einziger `catch`-Block für `NumberFormatException` deckt also `null`, `""` und
-`"abc"` ab — alle drei stehen in den Tests. Eine zusätzliche `if`-Prüfung
+`"abc"` ab, alle drei stehen in den Tests. Eine zusätzliche `if`-Prüfung
 auf `null` ist nicht nötig.
 
 </details>
 
-<details><summary>Tipp 3 — Gerüst</summary>
+<details><summary>Tipp 3: Gerüst</summary>
 
 ```java
 try {
@@ -66,7 +66,7 @@ try {
 
 ## Aufgabe 3: `auswerten`
 
-<details><summary>Tipp 1 — Richtung</summary>
+<details><summary>Tipp 1: Richtung</summary>
 
 Abschnitt 7.3, Unterabschnitt "Multi-Catch". Frag dich: Welche **zwei**
 verschiedenen Dinge können in `Integer.parseInt(werte[index])` schiefgehen, und
@@ -74,10 +74,10 @@ welche Exception gehört zu welchem?
 
 </details>
 
-<details><summary>Tipp 2 — Ansatz</summary>
+<details><summary>Tipp 2: Ansatz</summary>
 
 Ein falscher Index beim Arrayzugriff wirft eine
-`ArrayIndexOutOfBoundsException` — auch bei **negativem** Index, der Test prüft
+`ArrayIndexOutOfBoundsException`: auch bei **negativem** Index, der Test prüft
 `-1` ausdrücklich. Unparsbarer Text wirft eine `NumberFormatException`. Beide
 fängst du in **einem** Block mit `Typ1 | Typ2 e`.
 
@@ -85,13 +85,13 @@ Wichtig: Auch der Arrayzugriff muss **im** `try` stehen. Holst du
 `werte[index]` vorher in eine Variable, fliegt die Exception, bevor der
 `try`-Block beginnt.
 
-Die beiden Typen dürfen nicht voneinander erben —
+Die beiden Typen dürfen nicht voneinander erben,
 `NumberFormatException | IllegalArgumentException` wäre ein Compilerfehler,
 weil der zweite den ersten schon enthält.
 
 </details>
 
-<details><summary>Tipp 3 — Gerüst</summary>
+<details><summary>Tipp 3: Gerüst</summary>
 
 ```java
 try {
@@ -105,17 +105,17 @@ try {
 
 ## Aufgabe 4: `konfigWert`
 
-<details><summary>Tipp 1 — Richtung</summary>
+<details><summary>Tipp 1: Richtung</summary>
 
 Abschnitt 7.6 (Ursachen verketten). Frag dich: Wie gibst du einer neuen
 Exception die alte mit, damit im Stacktrace `Caused by` erscheint?
 
 </details>
 
-<details><summary>Tipp 2 — Ansatz</summary>
+<details><summary>Tipp 2: Ansatz</summary>
 
 Fang die `NumberFormatException` und wirf **in** ihrem `catch`-Block eine neue
-`IllegalStateException`. Sie hat einen Konstruktor `(String message, Throwable cause)` —
+`IllegalStateException`. Sie hat einen Konstruktor `(String message, Throwable cause)`,
 das zweite Argument ist die gefangene Exception.
 
 Die Tests prüfen zwei Dinge: die Nachricht zeichengenau
@@ -125,7 +125,7 @@ Die Tests prüfen zwei Dinge: die Nachricht zeichengenau
 
 </details>
 
-<details><summary>Tipp 3 — Gerüst</summary>
+<details><summary>Tipp 3: Gerüst</summary>
 
 ```java
 try {
@@ -139,18 +139,18 @@ try {
 
 ## Aufgabe 5: `ablauf`
 
-<details><summary>Tipp 1 — Richtung</summary>
+<details><summary>Tipp 1: Richtung</summary>
 
 Abschnitt 7.3, der Absatz zu `finally`. Frag dich: Welcher der drei Blöcke
-läuft in **jedem** Fall — und welcher nur im Fehlerfall?
+läuft in **jedem** Fall, und welcher nur im Fehlerfall?
 
 </details>
 
-<details><summary>Tipp 2 — Ansatz</summary>
+<details><summary>Tipp 2: Ansatz</summary>
 
 Das Gerüst steht schon als Kommentar im TODO. Im `try` wirfst du bei
 `fehlerWerfen` eine `RuntimeException`; die Zeile, die `"ok|"` anhängt, steht
-**danach** — sie wird im Fehlerfall übersprungen. Das `catch` hängt
+**danach**: sie wird im Fehlerfall übersprungen. Das `catch` hängt
 `"fehler|"` an, das `finally` hängt `"ende"` an. Das `return sb.toString()`
 bleibt hinter dem ganzen Konstrukt stehen. Achte auf die Trennzeichen: nach
 `"ende"` kommt kein `|` mehr.
@@ -159,7 +159,7 @@ bleibt hinter dem ganzen Konstrukt stehen. Achte auf die Trennzeichen: nach
 
 ## Aufgabe 6: `abheben`
 
-<details><summary>Tipp 1 — Richtung</summary>
+<details><summary>Tipp 1: Richtung</summary>
 
 Abschnitt 7.4 (`throw` und `throws`) und 7.2 (checked gegen unchecked). Frag
 dich: Welcher der beiden Fehlerfälle ist ein Programmierfehler des Aufrufers,
@@ -168,7 +168,7 @@ wirfst. (Voraussetzung: `UnzureichendeDeckungException` ist fertig.)
 
 </details>
 
-<details><summary>Tipp 2 — Ansatz</summary>
+<details><summary>Tipp 2: Ansatz</summary>
 
 - `betrag <= 0` -> `IllegalArgumentException` (unchecked). Diese Prüfung kommt
   **zuerst**.
@@ -177,7 +177,7 @@ wirfst. (Voraussetzung: `UnzureichendeDeckungException` ist fertig.)
   das 250, nicht 350 und nicht -250.
 - Sonst das neue Guthaben zurückgeben.
 
-Der Test "exakt aufgebraucht" (500 von 500) muss `0` liefern, nicht werfen —
+Der Test "exakt aufgebraucht" (500 von 500) muss `0` liefern, nicht werfen,
 die Deckung fehlt erst, wenn der Betrag **größer** ist.
 
 Das `throws UnzureichendeDeckungException` steht schon in der Signatur; ohne es
@@ -185,7 +185,7 @@ würde der Compiler das `throw` der checked Exception ablehnen.
 
 </details>
 
-<details><summary>Tipp 3 — Gerüst</summary>
+<details><summary>Tipp 3: Gerüst</summary>
 
 ```java
 if (...) {
@@ -201,17 +201,17 @@ return ...;
 
 ## Aufgabe 7: `protokoll`
 
-<details><summary>Tipp 1 — Richtung</summary>
+<details><summary>Tipp 1: Richtung</summary>
 
 Abschnitt 7.7 (try-with-resources). Frag dich: Was muss eine Klasse
-implementieren, damit sie in den Klammern von `try (...)` stehen darf — und wann
+implementieren, damit sie in den Klammern von `try (...)` stehen darf, und wann
 genau wird dann `close()` aufgerufen? (Voraussetzung: `Tresor` ist fertig.)
 
 </details>
 
-<details><summary>Tipp 2 — Ansatz</summary>
+<details><summary>Tipp 2: Ansatz</summary>
 
-Das Gerüst steht als Kommentar im TODO — du musst es nur einkommentieren. Der
+Das Gerüst steht als Kommentar im TODO, du musst es nur einkommentieren. Der
 Punkt der Aufgabe ist das Verstehen: Der Tresor wird **in** den runden Klammern
 erzeugt, und `close()` läuft automatisch am Ende des Blocks, **bevor** das
 `catch` ausgeführt wird. Deshalb steht auch im Fehlerfall `geschlossen` im
@@ -225,27 +225,27 @@ an `Tresor` (fehlendes `"geoeffnet|"`, `"benutzt|"` oder `"geschlossen"`).
 
 ## `UnzureichendeDeckungException.java`
 
-<details><summary>Tipp 1 — Richtung</summary>
+<details><summary>Tipp 1: Richtung</summary>
 
 Abschnitt 7.5 (Eigene Exceptions) zeigt diese Klasse. Frag dich: Wer füllt
-eigentlich `getMessage()` — und wie kommt deine Nachricht dorthin?
+eigentlich `getMessage()`, und wie kommt deine Nachricht dorthin?
 
 </details>
 
-<details><summary>Tipp 2 — Ansatz</summary>
+<details><summary>Tipp 2: Ansatz</summary>
 
 `extends Exception` steht schon da und macht sie **checked**. Die Nachricht
 gibst du per `super(...)` an `Exception` weiter; `getMessage()` musst du nicht
 selbst schreiben. `super(...)` muss (in Java 21) die erste Anweisung sein, also
 baust du die Nachricht direkt aus dem **Parameter** `fehlbetrag` zusammen, nicht
-aus dem Feld — das ist in dem Moment noch gar nicht gesetzt.
+aus dem Feld, das ist in dem Moment noch gar nicht gesetzt.
 
 Danach setzt du das Feld `private final long fehlbetrag`, und `getFehlbetrag()`
 gibt es zurück. Die Nachricht muss zeichengenau `"Es fehlen 250 Cent"` lauten.
 
 </details>
 
-<details><summary>Tipp 3 — Gerüst</summary>
+<details><summary>Tipp 3: Gerüst</summary>
 
 ```java
 private final long fehlbetrag;
@@ -260,7 +260,7 @@ public UnzureichendeDeckungException(long fehlbetrag) {
 
 ## `Tresor.java`
 
-<details><summary>Tipp 1 — Richtung</summary>
+<details><summary>Tipp 1: Richtung</summary>
 
 Abschnitt 7.7 (`AutoCloseable`) und 7.2 ("Objekt im falschen Zustand"). Frag
 dich: Welchen Zustand muss sich der Tresor merken, damit `benutzen()` und ein
@@ -268,12 +268,12 @@ zweites `close()` richtig reagieren können?
 
 </details>
 
-<details><summary>Tipp 2 — Ansatz</summary>
+<details><summary>Tipp 2: Ansatz</summary>
 
 Zwei Felder: der übergebene `StringBuilder` (`final`) und ein `boolean offen`.
 
 - Konstruktor: Feld setzen, `offen = true`, `"geoeffnet|"` anhängen.
-- `benutzen()`: ist der Tresor zu, `IllegalStateException` — es liegt am
+- `benutzen()`: ist der Tresor zu, `IllegalStateException`, es liegt am
   **Zustand** des Objekts, nicht an einem Argument. Sonst `"benutzt|"` anhängen.
 - `close()`: ist der Tresor schon zu, sofort zurückkehren. Sonst `offen = false`
   und `"geschlossen"` (ohne `|`) anhängen.
@@ -283,11 +283,11 @@ danach genau `"geoeffnet|geschlossen"`. Ohne die Prüfung am Anfang von
 `close()` steht `geschlossen` doppelt im Protokoll.
 
 `close()` braucht kein `throws`: Eine Überschreibung darf weniger Exceptions
-deklarieren als `AutoCloseable.close()` — das erspart jedem Aufrufer ein `catch`.
+deklarieren als `AutoCloseable.close()`, das erspart jedem Aufrufer ein `catch`.
 
 </details>
 
-<details><summary>Tipp 3 — Gerüst</summary>
+<details><summary>Tipp 3: Gerüst</summary>
 
 ```java
 private final StringBuilder protokoll;
@@ -314,7 +314,7 @@ public void close() {
 
 ---
 
-## Selbstcheck — Antworten
+## Selbstcheck: Antworten
 
 <details><summary>Wann checked, wann unchecked?</summary>
 
@@ -324,8 +324,8 @@ reagieren kann: Datei fehlt, Netzwerk weg, zu wenig Deckung. Der Compiler zwingt
 ihn dann zum Fangen oder Weiterreichen. **Unchecked** (`RuntimeException` und
 Unterklassen) steht für Programmierfehler: ungültiges Argument
 (`IllegalArgumentException`), falscher Objektzustand (`IllegalStateException`),
-`null`, wo keins sein darf. Faustregel: Kann der Aufrufer es sinnvoll behandeln —
-checked. Ist es ein Bug — unchecked. Und checked Exceptions sparsam einsetzen.
+`null`, wo keins sein darf. Faustregel: Kann der Aufrufer es sinnvoll behandeln,
+checked. Ist es ein Bug, unchecked. Und checked Exceptions sparsam einsetzen.
 
 </details>
 
@@ -343,7 +343,7 @@ erlaubt, aber unüblich.
 <details><summary>Warum ist ein leerer <code>catch</code>-Block gefährlicher als gar kein <code>catch</code>?</summary>
 
 Ohne `catch` fliegt die Exception weiter nach oben und bricht das Programm im
-schlimmsten Fall mit einem Stacktrace ab — laut, aber du siehst sofort, was und
+schlimmsten Fall mit einem Stacktrace ab, laut, aber du siehst sofort, was und
 wo es passiert ist. Ein leerer `catch`-Block verschluckt den Fehler still: Das
 Programm läuft mit einem womöglich kaputten Zustand weiter, und der Folgefehler
 taucht irgendwann ganz woanders auf, ohne jeden Hinweis auf die Ursache. Kannst
@@ -356,7 +356,7 @@ du eine Exception nicht sinnvoll behandeln, reich sie weiter.
 Das zweite Argument ist die **Ursache** (cause). Mit ihr hängt die neue
 Exception die alte samt ihrem Stacktrace an, und im Log erscheint die Zeile
 `Caused by: ...` mit dem Ort, an dem es wirklich schiefging. Ohne `e` siehst du
-nur die neue, allgemeine Meldung und die Stelle, an der übersetzt wurde — die
+nur die neue, allgemeine Meldung und die Stelle, an der übersetzt wurde, die
 eigentliche Fehlerquelle ist verloren. Abfragen kannst du sie später mit
 `getCause()`.
 

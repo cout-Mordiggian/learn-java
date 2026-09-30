@@ -1,20 +1,20 @@
-# Kapitel 08 — Tipps und Antworten
+# Kapitel 08: Tipps und Antworten
 
-> Erst selbst probieren. Klappe immer nur die **nächste** Stufe auf — jede verrät mehr.
+> Erst selbst probieren. Klappe immer nur die **nächste** Stufe auf, jede verrät mehr.
 > Die Tests in `tests/Tests.java` zeigen dir ausserdem genau, welche Eingabe welches Ergebnis erwartet.
 
 ## Paar.java: Felder, Getter, `getauscht` und `toString`
 
-<details><summary>Tipp 1 — Richtung</summary>
+<details><summary>Tipp 1: Richtung</summary>
 
-Abschnitt 8.8, Unterabschnitt "Eigene generische Typen" — die `Box<T>` dort ist
+Abschnitt 8.8, Unterabschnitt "Eigene generische Typen", die `Box<T>` dort ist
 dasselbe Prinzip mit einem statt zwei Typparametern. Frag dich bei
 `getauscht()`: Was verrät dir der Rückgabetyp `Paar<B, A>` darüber, welcher
 Wert an welche Stelle muss?
 
 </details>
 
-<details><summary>Tipp 2 — Ansatz</summary>
+<details><summary>Tipp 2: Ansatz</summary>
 
 Zwei Felder `private final A erstes` und `private final B zweites`, gesetzt im
 Konstruktor, zurückgegeben von den Gettern. Innerhalb der Klasse benutzt du `A`
@@ -22,18 +22,18 @@ und `B` wie ganz normale Typnamen.
 
 `getauscht()` erzeugt ein **neues** Paar, dessen erste Position vom Typ `B` ist.
 Du musst die Typen nicht hinschreiben: Mit dem Diamond `new Paar<>(...)` leitet
-der Compiler sie aus dem Rückgabetyp ab — und meldet einen Fehler, wenn du die
+der Compiler sie aus dem Rückgabetyp ab, und meldet einen Fehler, wenn du die
 Argumente in der falschen Reihenfolge übergibst. Der Compiler prüft hier also
 für dich mit.
 
 `toString` ergibt `(Anna, 34)`: runde Klammern, Komma **plus Leerzeichen**.
-Die Fabrikmethode `von` ist schon fertig — schau dir nur ihre Signatur an.
+Die Fabrikmethode `von` ist schon fertig, schau dir nur ihre Signatur an.
 
 </details>
 
 ## Paar.java: `equals` und `hashCode`
 
-<details><summary>Tipp 1 — Richtung</summary>
+<details><summary>Tipp 1: Richtung</summary>
 
 Dasselbe Muster wie `Punkt` in Kapitel 5 (Abschnitt 5.6), mit zwei
 Besonderheiten. Frag dich: Welchen Typ kannst du wegen der Typlöschung
@@ -42,7 +42,7 @@ Und was passiert, wenn `erstes` `null` ist?
 
 </details>
 
-<details><summary>Tipp 2 — Ansatz</summary>
+<details><summary>Tipp 2: Ansatz</summary>
 
 - `o instanceof Paar<A, B> p` kompiliert **nicht** ("Object cannot be safely
   cast to Paar<A,B>"), weil `A` und `B` zur Laufzeit nicht mehr existieren.
@@ -50,12 +50,12 @@ Und was passiert, wenn `erstes` `null` ist?
 - Die Felder vergleichst du mit `Objects.equals(a, b)` statt mit `a.equals(b)`:
   Der Test "null-Inhalte sind erlaubt" baut `Paar.von(null, null)`, und
   `null.equals(...)` würde eine `NullPointerException` werfen.
-- `hashCode`: `Objects.hash(...)` über genau die beiden Felder — das ist
+- `hashCode`: `Objects.hash(...)` über genau die beiden Felder, das ist
   ebenfalls null-sicher.
 
 </details>
 
-<details><summary>Tipp 3 — Gerüst</summary>
+<details><summary>Tipp 3: Gerüst</summary>
 
 ```java
 @Override
@@ -70,21 +70,21 @@ public boolean equals(Object o) {
 
 ## Person.java: Konstruktor, Getter, `toString` und `compareTo`
 
-<details><summary>Tipp 1 — Richtung</summary>
+<details><summary>Tipp 1: Richtung</summary>
 
 Abschnitt 8.7 (`Comparable`). Frag dich: Wonach ist die **natürliche** Ordnung
-laut Aufgabe definiert — und kann `String` sich nicht schon selbst vergleichen?
+laut Aufgabe definiert, und kann `String` sich nicht schon selbst vergleichen?
 
 </details>
 
-<details><summary>Tipp 2 — Ansatz</summary>
+<details><summary>Tipp 2: Ansatz</summary>
 
 `name` und `alter` als `private final`, Getter wie gehabt, `toString` im Format
 `Anna(34)` (keine Leerzeichen).
 
 `compareTo` vergleicht **nur den Namen** und reicht dazu das Ergebnis von
 `String.compareTo` durch. Negativ / 0 / positiv musst du nicht selbst basteln.
-Der Test "gleicher Name -> 0" vergleicht Anna(34) mit Anna(99) — nimmst du das
+Der Test "gleicher Name -> 0" vergleicht Anna(34) mit Anna(99), nimmst du das
 Alter mit in `compareTo` auf, wird er rot.
 
 Für numerische Vergleiche gilt allgemein: `Integer.compare(a, b)` statt `a - b`
@@ -94,16 +94,16 @@ Für numerische Vergleiche gilt allgemein: `Integer.compare(a, b)` statt `a - b`
 
 ## Person.java: `equals` und `hashCode`
 
-<details><summary>Tipp 1 — Richtung</summary>
+<details><summary>Tipp 1: Richtung</summary>
 
 Abschnitt 5.6 und 8.4 (warum `hashCode` für `HashSet` zählt). Frag dich:
 Welche Felder entscheiden laut Tests, ob zwei Personen gleich sind?
 
 </details>
 
-<details><summary>Tipp 2 — Ansatz</summary>
+<details><summary>Tipp 2: Ansatz</summary>
 
-Anders als `compareTo` beachtet `equals` **beide** Felder — der Test "equals
+Anders als `compareTo` beachtet `equals` **beide** Felder, der Test "equals
 beachtet auch das Alter" prüft das. Also: gleiche Referenz, `instanceof Person p`,
 dann `alter` mit `==` (bei `int` völlig in Ordnung) und `name` mit `equals`
 (**nicht** `==`, Kapitel 3.2). `hashCode` mit `Objects.hash` über genau diese
@@ -117,21 +117,21 @@ dasselbe Element.
 
 ## Aufgabe 1: `haeufigkeiten`
 
-<details><summary>Tipp 1 — Richtung</summary>
+<details><summary>Tipp 1: Richtung</summary>
 
 Abschnitt 8.5 (`merge`) und aus Kapitel 3 der Abschnitt 3.3 (`strip`, `split`).
-Frag dich: Was liefert `split("\\s+")` für einen **leeren** String — und für
+Frag dich: Was liefert `split("\\s+")` für einen **leeren** String, und für
 einen String, der mit Leerzeichen **beginnt**? Probier es in `jshell` aus.
 
 </details>
 
-<details><summary>Tipp 2 — Ansatz</summary>
+<details><summary>Tipp 2: Ansatz</summary>
 
 Die drei Randfälle der Tests hängen alle an `split`:
 
-- `"".split("\\s+")` liefert **nicht** ein leeres Array, sondern `[""]` — ohne
+- `"".split("\\s+")` liefert **nicht** ein leeres Array, sondern `[""]`, ohne
   Sonderbehandlung zählst du ein leeres Wort.
-- `"  a b".split("\\s+")` liefert `["", "a", "b"]` — führender Whitespace
+- `"  a b".split("\\s+")` liefert `["", "a", "b"]`, führender Whitespace
   erzeugt vorne ein leeres Wort. (Leere Stücke **am Ende** wirft `split` dagegen
   von selbst weg.)
 - Deshalb: erst `strip()`, dann auf leer prüfen und ggf. die leere Map
@@ -143,7 +143,7 @@ Ist das Wort neu, wird 1 eingetragen, sonst wird die alte Zahl plus 1 gespeicher
 
 </details>
 
-<details><summary>Tipp 3 — Gerüst</summary>
+<details><summary>Tipp 3: Gerüst</summary>
 
 ```java
 Map<String, Integer> zaehler = new HashMap<>();
@@ -159,7 +159,7 @@ return zaehler;
 
 ## Aufgabe 2: `deduplizieren`
 
-<details><summary>Tipp 1 — Richtung</summary>
+<details><summary>Tipp 1: Richtung</summary>
 
 Abschnitt 8.1, die Landkarte und die Auswahlregel. Frag dich: Welche
 `Set`-Implementierung verhindert Duplikate **und** merkt sich die
@@ -167,29 +167,29 @@ Einfügereihenfolge?
 
 </details>
 
-<details><summary>Tipp 2 — Ansatz</summary>
+<details><summary>Tipp 2: Ansatz</summary>
 
-`HashSet` verliert die Reihenfolge, `TreeSet` sortiert alphabetisch — die Tests
+`HashSet` verliert die Reihenfolge, `TreeSet` sortiert alphabetisch, die Tests
 erwarten aber `[b, a, c]` aus `[b, a, b, c, a]`. Die richtige Implementierung
 steht in der Landkarte direkt zwischen den beiden. Fast alle Collections haben
 einen Konstruktor, der eine andere Collection entgegennimmt und alle Elemente
-übernimmt — damit brauchst du nicht einmal eine Schleife. Der Rückgabetyp ist
+übernimmt, damit brauchst du nicht einmal eine Schleife. Der Rückgabetyp ist
 aber `List`, du musst also am Ende wieder eine Liste daraus machen.
 
 </details>
 
 ## Aufgabe 3: `haeufigsteWoerter`
 
-<details><summary>Tipp 1 — Richtung</summary>
+<details><summary>Tipp 1: Richtung</summary>
 
 Abschnitt 8.5 (`entrySet`) und 8.7 (`Comparator`, `reversed`, `thenComparing`).
-Frag dich: Eine Map kann man nicht sortieren — aber was kann man stattdessen
+Frag dich: Eine Map kann man nicht sortieren, aber was kann man stattdessen
 sortieren? Und wie drückst du "erst nach Anzahl absteigend, dann nach Wort
 aufsteigend" als **einen** Comparator aus?
 
 </details>
 
-<details><summary>Tipp 2 — Ansatz</summary>
+<details><summary>Tipp 2: Ansatz</summary>
 
 Kopiere `zaehler.entrySet()` in eine `ArrayList<Map.Entry<String, Integer>>`,
 sortiere sie, und sammle die Schlüssel der ersten `n` Einträge ein.
@@ -204,12 +204,12 @@ schreibst du den Comparator als Lambda `(x, y) -> ...` und vergleichst selbst mi
 
 Randfälle der Tests: `n` größer als die Map (dann eben alle), leere Map (dann
 leere Liste). Ein `subList(0, n)` ohne Begrenzung würde bei `n = 99` eine
-`IndexOutOfBoundsException` werfen — begrenze mit `Math.min` oder brich die
+`IndexOutOfBoundsException` werfen, begrenze mit `Math.min` oder brich die
 Schleife ab, sobald `n` Einträge gesammelt sind.
 
 </details>
 
-<details><summary>Tipp 3 — Gerüst</summary>
+<details><summary>Tipp 3: Gerüst</summary>
 
 ```java
 List<Map.Entry<String, Integer>> eintraege = new ArrayList<>(zaehler.entrySet());
@@ -228,7 +228,7 @@ return ergebnis;
 
 ## Aufgabe 4: `groesstes`
 
-<details><summary>Tipp 1 — Richtung</summary>
+<details><summary>Tipp 1: Richtung</summary>
 
 Abschnitt 8.8, Unterabschnitt "Generische Methoden". Die Signatur ist schon
 vorgegeben. Frag dich: Was darfst du mit einem `T` nur deshalb tun, weil dort
@@ -236,22 +236,22 @@ vorgegeben. Frag dich: Was darfst du mit einem `T` nur deshalb tun, weil dort
 
 </details>
 
-<details><summary>Tipp 2 — Ansatz</summary>
+<details><summary>Tipp 2: Ansatz</summary>
 
 Die Operatoren `<` und `>` funktionieren nur für primitive Zahlen, nicht für
-`T` — du vergleichst mit `a.compareTo(b)`, und "größer" heisst "Ergebnis `> 0`".
+`T`: du vergleichst mit `a.compareTo(b)`, und "größer" heisst "Ergebnis `> 0`".
 Das Vorgehen ist dieselbe Maximumsuche wie bei `Figuren.groesste` in Kapitel 6:
 leere Liste -> `null`, sonst mit dem ersten Element starten und bei jedem
 größeren Element ersetzen. Die Tests prüfen das Maximum vorne und in der
 Mitte.
 
 `Collections.max(liste)` würde auch funktionieren, wirft aber bei leerer Liste
-eine `NoSuchElementException` — und der Übungszweck ist gerade das eigene
+eine `NoSuchElementException`, und der Übungszweck ist gerade das eigene
 `compareTo`.
 
 </details>
 
-<details><summary>Tipp 3 — Gerüst</summary>
+<details><summary>Tipp 3: Gerüst</summary>
 
 ```java
 if (liste.isEmpty()) return null;
@@ -268,28 +268,28 @@ return max;
 
 ## Aufgabe 5: `summe`
 
-<details><summary>Tipp 1 — Richtung</summary>
+<details><summary>Tipp 1: Richtung</summary>
 
 Abschnitt 8.8, Unterabschnitt "Wildcards und PECS". Frag dich: Als welchen Typ
 kannst du die Elemente einer `List<? extends Number>` sicher lesen?
 
 </details>
 
-<details><summary>Tipp 2 — Ansatz</summary>
+<details><summary>Tipp 2: Ansatz</summary>
 
-Jedes Element ist garantiert eine `Number` — mehr weiss der Compiler nicht.
+Jedes Element ist garantiert eine `Number`, mehr weiss der Compiler nicht.
 Deine Schleifenvariable ist also vom Typ `Number` (nicht `Integer`, denn es
 könnte ja eine `List<Double>` sein). Mit einer `Number` kannst du nicht direkt
 rechnen: `summe += z` kompiliert nicht, weil `Number` kein Wrapper eines
 bestimmten primitiven Typs ist. Aber jede `Number` kann sich selbst als
-`double` liefern — der Kommentar im TODO nennt die Methode. Eine leere Liste
+`double` liefern, der Kommentar im TODO nennt die Methode. Eine leere Liste
 ergibt von selbst `0.0`.
 
 </details>
 
 ## Aufgabe 6: `nachAlterDannName`
 
-<details><summary>Tipp 1 — Richtung</summary>
+<details><summary>Tipp 1: Richtung</summary>
 
 Abschnitt 8.7 (`Comparator`) und Abschnitt 4.2 (versteckte Nebenwirkungen).
 Frag dich: Was passiert mit der **übergebenen** Liste, wenn du direkt darauf
@@ -297,7 +297,7 @@ Frag dich: Was passiert mit der **übergebenen** Liste, wenn du direkt darauf
 
 </details>
 
-<details><summary>Tipp 2 — Ansatz</summary>
+<details><summary>Tipp 2: Ansatz</summary>
 
 `sort` arbeitet **in place**: Sortierst du die Eingabe direkt, ist sie hinterher
 verändert, und der Test "Eingabeliste unverändert" wird rot. Wäre die Eingabe
@@ -313,7 +313,7 @@ klappt es.
 
 </details>
 
-<details><summary>Tipp 3 — Gerüst</summary>
+<details><summary>Tipp 3: Gerüst</summary>
 
 ```java
 List<Person> kopie = ...;
@@ -325,19 +325,19 @@ return kopie;
 
 ## Aufgabe 7: `gruppiereNachAnfangsbuchstabe`
 
-<details><summary>Tipp 1 — Richtung</summary>
+<details><summary>Tipp 1: Richtung</summary>
 
 Abschnitt 8.5 (`computeIfAbsent`, "Gruppieren") und die Auswahlregel in 8.1.
 Frag dich: Welche `Map`-Implementierung behält die Einfügereihenfolge der
-Schlüssel — und was passiert bei `"".charAt(0)`?
+Schlüssel, und was passiert bei `"".charAt(0)`?
 
 </details>
 
-<details><summary>Tipp 2 — Ansatz</summary>
+<details><summary>Tipp 2: Ansatz</summary>
 
 - Nimm eine `LinkedHashMap`. Mit einer `HashMap` kommen die Schlüssel des Tests
   `[Bert, Anna, Cem]` als `[A, B, C]` statt `[B, A, C]` heraus.
-- Leere Wörter überspringst du (`continue`), bevor du `charAt(0)` aufrufst —
+- Leere Wörter überspringst du (`continue`), bevor du `charAt(0)` aufrufst,
   auf einem leeren String wirft das eine `StringIndexOutOfBoundsException`.
 - Der `char` aus `charAt(0)` wird automatisch zu `Character` geboxt, passend zum
   Schlüsseltyp.
@@ -347,7 +347,7 @@ Schlüssel — und was passiert bei `"".charAt(0)`?
 
 </details>
 
-<details><summary>Tipp 3 — Gerüst</summary>
+<details><summary>Tipp 3: Gerüst</summary>
 
 ```java
 Map<Character, List<String>> gruppen = new LinkedHashMap<>();
@@ -362,12 +362,12 @@ return gruppen;
 
 ---
 
-## Selbstcheck — Antworten
+## Selbstcheck: Antworten
 
 <details><summary>Wann <code>ArrayList</code>, wann <code>HashSet</code>, wann <code>TreeMap</code>?</summary>
 
 `ArrayList`, wenn du eine geordnete Folge mit Duplikaten und Zugriff per Index
-brauchst — das ist der Normalfall. `HashSet`, wenn jedes Element höchstens
+brauchst, das ist der Normalfall. `HashSet`, wenn jedes Element höchstens
 einmal vorkommen soll und du vor allem schnell (O(1)) fragen willst, ob etwas
 enthalten ist; eine Reihenfolge garantiert es nicht. `TreeMap`, wenn du
 Schlüssel-Wert-Paare brauchst und die Schlüssel dabei **sortiert** sein sollen
@@ -380,7 +380,7 @@ Schlüssel-Wert-Paare brauchst und die Schlüssel dabei **sortiert** sein sollen
 Dann haben zwei `equals`-gleiche Objekte in aller Regel verschiedene Hashwerte,
 denn der geerbte `Object.hashCode` unterscheidet einzelne Objekte. `HashSet` und
 `HashMap` wählen per `hashCode` den Eimer und fragen `equals` nur innerhalb
-dieses Eimers — so wird `equals` gar nicht erst gefragt. Folge: Duplikate im
+dieses Eimers, so wird `equals` gar nicht erst gefragt. Folge: Duplikate im
 `HashSet`, und `map.get(neuerGleicherSchluessel)` liefert `null`, obwohl der
 Eintrag drinsteckt. Der Fehler kompiliert problemlos und fällt erst zur
 Laufzeit auf.
@@ -394,15 +394,15 @@ strukturelle Änderung mit, und der Iterator prüft bei jedem `next()`, ob sich
 dieser Zähler seit seiner Erzeugung geändert hat. Hat er das, wirft er eine
 `ConcurrentModificationException` (fail-fast), statt mit einem inkonsistenten
 Stand weiterzulaufen. (Entfernst du zufällig das vorletzte Element, endet die
-Schleife ohne Exception, überspringt aber das letzte — auch das ist ein Bug.)
+Schleife ohne Exception, überspringt aber das letzte, auch das ist ein Bug.)
 Auswege: `removeIf`, `Iterator.remove()` oder über eine Kopie laufen.
 
 </details>
 
-<details><summary><code>Comparable</code> oder <code>Comparator</code> — woran machst du das fest?</summary>
+<details><summary><code>Comparable</code> oder <code>Comparator</code>, woran machst du das fest?</summary>
 
 `Comparable` definiert die **eine natürliche** Ordnung einer Klasse und steckt in
-der Klasse selbst (`compareTo`) — wie Namen alphabetisch oder Zahlen der Größe
+der Klasse selbst (`compareTo`), wie Namen alphabetisch oder Zahlen der Größe
 nach. Einen `Comparator` nimmst du für jede weitere oder situationsabhängige
 Ordnung und für Klassen, die du nicht ändern kannst; davon kann es beliebig
 viele geben. Faustregel aus dem README: Wenn du schwankst, welche Ordnung "die
@@ -425,7 +425,7 @@ zahlen.add(3.14);             // sonst laege ein Double in der Integer-Liste
 ```
 
 Generics sind deshalb *invariant*, obwohl `Integer` ein Untertyp von `Number`
-ist. Willst du nur lesen, nimm `List<? extends Number>` — damit darfst du jede
+ist. Willst du nur lesen, nimm `List<? extends Number>`, damit darfst du jede
 Liste von Zahlen übergeben, aber nichts hineinlegen (PECS).
 
 </details>
