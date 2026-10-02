@@ -134,7 +134,66 @@ public class Tests {
         Pruef.wirft(NullPointerException.class, () -> new NurMit(null, new TextProtokoll()),
                 "new NurMit(null, ..) -> sofort NullPointerException");
 
+        Pruef.abschnitt("Aufgabe 8b: Verhalten (Strategien)");
+        Pruef.gleich("Ich fliege!", new FliegtMitFluegeln().fliegen(), "FliegtMitFluegeln");
+        Pruef.gleich("Ich kann nicht fliegen.", new FliegtNicht().fliegen(), "FliegtNicht");
+        Pruef.gleich("Quak", new Quaken().quaken(), "Quaken");
+        Pruef.gleich("Quietsch", new Quietschen().quaken(), "Quietschen");
+        Pruef.gleich("<< Stille >>", new Stumm().quaken(), "Stumm");
+
+        Pruef.abschnitt("Aufgabe 8a/8c: Enten delegieren an ihre Verhalten");
+        pruefeEnte(new Stockente(), "Ich bin eine Stockente", "Ich fliege!", "Quak");
+        pruefeEnte(new Gummiente(), "Ich bin eine Gummiente", "Ich kann nicht fliegen.", "Quietsch");
+        pruefeEnte(new Lockente(), "Ich bin eine Lockente", "Ich kann nicht fliegen.", "<< Stille >>");
+        pruefeEnte(new Modellente(), "Ich bin eine Modellente", "Ich kann nicht fliegen.", "Quak");
+        Pruef.gleich("Alle Enten schwimmen, sogar Lockenten.", new Gummiente().schwimmen(),
+                "schwimmen kommt fuer alle aus Ente");
+
+        Pruef.abschnitt("Aufgabe 8a: Polymorphie ueber den Teich");
+        // Die Schleife kennt nur Ente - welche Strategie dahinter steckt, entscheidet jedes Objekt.
+        Ente[] teich = { new Stockente(), new Gummiente(), new Lockente() };
+        StringBuilder laute = new StringBuilder();
+        for (Ente e : teich) {
+            laute.append(e.quaken()).append(' ');
+        }
+        Pruef.gleich("Quak Quietsch << Stille >> ", laute.toString(), "jede Ente quakt auf ihre Art");
+
+        Pruef.abschnitt("Aufgabe 8a/8d: Verhalten zur Laufzeit austauschen");
+        Modellente modell = new Modellente();
+        Modellente zweitesModell = new Modellente();
+        Pruef.gleich("Ich kann nicht fliegen.", modell.fliegen(), "vorher: Modellente fliegt nicht");
+        modell.setzeFlugVerhalten(new FliegtMitRaketenantrieb());
+        Pruef.gleich("Ich fliege mit Raketenantrieb!", modell.fliegen(), "nachher: mit Raketenantrieb");
+        Pruef.gleich("Quak", modell.quaken(), "das QuakVerhalten bleibt dabei unberuehrt");
+        Pruef.gleich("Ich kann nicht fliegen.", zweitesModell.fliegen(),
+                "jede Ente hat ihr eigenes Verhalten (kein static-Feld!)");
+        Gummiente gummi = new Gummiente();
+        gummi.setzeQuakVerhalten(new Quaken());
+        Pruef.gleich("Quak", gummi.quaken(), "auch das QuakVerhalten ist austauschbar");
+        Pruef.gleich("Ich bin eine Gummiente", gummi.anzeigen(), "die Ente bleibt, was sie ist");
+
+        Pruef.abschnitt("Aufgabe 8a: null frueh ablehnen");
+        Pruef.wirft(NullPointerException.class, () -> new Stockente().setzeFlugVerhalten(null),
+                "setzeFlugVerhalten(null) -> NullPointerException");
+        Pruef.wirft(NullPointerException.class, () -> new Stockente().setzeQuakVerhalten(null),
+                "setzeQuakVerhalten(null) -> NullPointerException");
+        // Eine Unterklasse, die null an den Ente-Konstruktor reicht. Die Schreibweise
+        // "new Ente(...) { ... }" (anonyme Klasse) lernst du in Kapitel 9 kennen.
+        Pruef.wirft(NullPointerException.class, () -> new Ente(null, new Quaken()) {
+                    @Override public String anzeigen() { return "kaputt"; }
+                }, "new Ente(null, ..) -> sofort NullPointerException");
+        Pruef.wirft(NullPointerException.class, () -> new Ente(new FliegtNicht(), null) {
+                    @Override public String anzeigen() { return "kaputt"; }
+                }, "new Ente(.., null) -> sofort NullPointerException");
+
         Pruef.bericht();
+    }
+
+    /** Prueft anzeigen, fliegen und quaken einer Ente auf einmal. */
+    private static void pruefeEnte(Ente e, String anzeige, String flug, String laut) {
+        Pruef.gleich(anzeige, e.anzeigen(), "anzeigen: " + anzeige);
+        Pruef.gleich(flug, e.fliegen(), anzeige + ": fliegen");
+        Pruef.gleich(laut, e.quaken(), anzeige + ": quaken");
     }
 
     /** Schreibt alle Zeilen der Reihe nach in das Protokoll. */

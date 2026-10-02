@@ -310,6 +310,73 @@ public class NurMit implements Protokoll {
 
 </details>
 
+## 8. Enten: das Strategie-Muster
+
+<details><summary>Tipp 1: Richtung</summary>
+
+Abschnitt 6.9, "Strategie". Die `Ente` spielt dieselbe Rolle wie dort die
+`Kasse`, nur mit zwei Strategien statt einer. Fang mit den fünf Verhalten an
+(8b), die sind je eine Zeile. Frag dich dann für `Ente`: Woher weiss
+`fliegen()`, was es zurückgeben soll, wenn die Ente selbst gar nicht weiss, wie
+sie fliegt?
+
+</details>
+
+<details><summary>Tipp 2: Ansatz</summary>
+
+- **8a:** Zwei Felder `private FlugVerhalten flugVerhalten` und
+  `private QuakVerhalten quakVerhalten`. Sie sind **nicht** `final`, weil die
+  setze-Methoden sie ersetzen. Konstruktor und Setter setzen sie über
+  `Objects.requireNonNull(...)` (5.7), `import java.util.Objects;` nicht
+  vergessen. `fliegen()` gibt einfach zurück, was das Verhalten liefert.
+- **Die Falle:** In `Ente.fliegen()` darf nicht `return fliegen();` stehen.
+  Das ruft die Methode selbst auf, immer wieder, bis zum `StackOverflowError`.
+  Du willst die gleichnamige Methode **des Feldes** aufrufen.
+- **8c:** Die Enten brauchen kein eigenes Feld. Sie reichen im Konstruktor
+  per `super(new ..., new ...)` ihre beiden Verhalten an `Ente` und
+  überschreiben `anzeigen()`.
+- Die Felder gehören zum Objekt, nicht `static`! Sonst würde die
+  Raketen-Modellente alle anderen Modellenten mitfliegen lassen, und der Test
+  "jede Ente hat ihr eigenes Verhalten" schlägt an.
+
+</details>
+
+<details><summary>Tipp 3: Gerüst</summary>
+
+```java
+public abstract class Ente {
+    private FlugVerhalten flugVerhalten;
+    private QuakVerhalten quakVerhalten;
+
+    protected Ente(FlugVerhalten flugVerhalten, QuakVerhalten quakVerhalten) {
+        this.flugVerhalten = Objects.requireNonNull(..., "flugVerhalten");
+        this.quakVerhalten = ...;
+    }
+
+    public String fliegen() {
+        return flugVerhalten....;
+    }
+
+    public void setzeFlugVerhalten(FlugVerhalten flugVerhalten) {
+        this.flugVerhalten = ...;
+    }
+    // quaken() und setzeQuakVerhalten genauso
+}
+
+public class Gummiente extends Ente {
+    public Gummiente() {
+        super(new ...(), new ...());
+    }
+
+    @Override
+    public String anzeigen() {
+        return "...";
+    }
+}
+```
+
+</details>
+
 ---
 
 ## Selbstcheck: Antworten
@@ -388,6 +455,20 @@ Konstruktor oder über `setzeRabatt` gibt. Dank Polymorphie (6.3) ruft die Kasse
 dann automatisch die neue Rechnung auf. Mit der `if`-Kette dagegen muss jede neue
 Art in die Kasse selbst hinein, und jede Änderung kann die alten Arten kaputt
 machen. Das ist das Strategie-Muster.
+
+</details>
+
+<details><summary>Warum stecken Fliegen und Quaken in eigenen Objekten statt in Unterklassen von <code>Ente</code>?</summary>
+
+Weil sie sich unabhängig von der Entenart ändern. Steckt `fliegen()` in der
+Oberklasse, fliegt auch die Gummiente, und jede nicht fliegende Ente muss es
+mit demselben Code überschreiben. Steckt es in jeder Unterklasse, wiederholt
+sich der Flug-Code in jeder fliegenden Ente. Als eigenes Objekt gibt es jede Art
+zu fliegen genau **einmal**, und jede Ente wählt eine davon. Dazu kommt, was
+Vererbung gar nicht kann: Das Verhalten lässt sich **zur Laufzeit** und **pro
+Objekt** austauschen, wie bei der Modellente mit Raketenantrieb. Eine neue Art
+zu fliegen ist eine neue Klasse, `Ente` bleibt unverändert. Vererbung bleibt für
+das, was wirklich alle teilen (`schwimmen`) und für das "ist eine Ente".
 
 </details>
 

@@ -290,7 +290,8 @@ new Kasse(new ProzentRabatt(10)).zuZahlen(2000)    // 1800
 Eine neue Rabattart ist eine neue Klasse, die Kasse bleibt, wie sie ist. Die
 Strategie lässt sich einzeln testen und zur Laufzeit austauschen. Du wirst das
 Muster wiedertreffen: `Comparator` ist eine Sortier-Strategie (8.7), und mit
-Lambdas schrumpft jede Strategie-Klasse auf eine Zeile (9.8).
+Lambdas schrumpft jede Strategie-Klasse auf eine Zeile (9.8). In Aufgabe 8
+baust du das Muster selbst, mit einem Teich voller Enten.
 
 ### Dekorierer (Decorator): Verhalten um ein Objekt herumlegen
 
@@ -402,8 +403,9 @@ den variablen Schritt als Objekt hineinreichen, statt ihn zu überschreiben.
 > Hängst du fest? Gestufte Hinweise zu jeder Aufgabe stehen in
 > [`TIPPS.md`](TIPPS.md): erst Tipp 1, dann wieder selbst probieren.
 
-Neun Dateien in [`src/`](src/), prüfen mit `./lerne.sh 06`. `Protokoll.java`
-und `TextProtokoll.java` sind fertig und gehören zu Aufgabe 7.
+Zwanzig Dateien in [`src/`](src/) warten auf dich, prüfen mit `./lerne.sh 06`.
+Vier weitere sind fertig: `Protokoll.java` und `TextProtokoll.java` gehören zu
+Aufgabe 7, `FlugVerhalten.java` und `QuakVerhalten.java` zu Aufgabe 8.
 
 ### 1. `Figur.java`, abstrakte Basisklasse
 
@@ -470,6 +472,72 @@ sammelt; `inhalt()` liefert sie, jede mit `\n` dahinter.
 
 Die Tests stapeln die Dekorierer in verschiedenen Reihenfolgen. Überleg vorher,
 was jeweils herauskommen muss.
+
+### 8. Enten: das Strategie-Muster
+
+Das Beispiel stammt aus dem Buch *Head First Design Patterns* (Eric Freeman,
+Elisabeth Robson), wo es das allererste Muster einführt.
+
+**Die Ausgangslage:** Eine Entensimulation hat eine Oberklasse `Ente` und
+Unterklassen wie `Stockente`. Alle Enten schwimmen gleich, also gehört
+`schwimmen()` in die Oberklasse. Dann sollen Enten fliegen können. Die
+naheliegende Idee, `fliegen()` ebenfalls in `Ente` zu schreiben, geht schief:
+Plötzlich fliegt auch die `Gummiente`. Man könnte `fliegen()` in jeder
+nicht fliegenden Ente überschreiben, doch dann steht derselbe "kann nicht"-Code
+in `Gummiente`, `Lockente`, `Modellente`, ... Ein Interface `Fliegbar` hilft auch
+nicht, denn dann schreibt jede fliegende Ente dieselbe Flug-Methode noch einmal.
+
+**Der Ausweg:** Trenne, was sich ändert, von dem, was gleich bleibt. Fliegen
+und Quaken unterscheiden sich von Ente zu Ente, also wandern sie in eigene
+Klassen hinter zwei Interfaces. Die Ente **hat ein** `FlugVerhalten` und **hat
+ein** `QuakVerhalten` (6.6) und reicht die Aufrufe nur weiter:
+
+```
+  ┌──────────── Ente (abstrakt) ─────────────┐
+  │ schwimmen()        für alle gleich       │
+  │ anzeigen()         jede Unterklasse      │
+  │ fliegen()  ───┐    reicht weiter         │
+  │ quaken()   ───┼──┐ reicht weiter         │
+  └───────────────┼──┼───────────────────────┘
+          hat ein │  │ hat ein
+                  ▼  ▼
+  FlugVerhalten              QuakVerhalten
+    FliegtMitFluegeln          Quaken
+    FliegtNicht                Quietschen
+    FliegtMitRaketenantrieb    Stumm
+```
+
+- **8a. `Ente.java`**, der Kontext: zwei `private` Felder für die Verhalten,
+  im `protected`-Konstruktor gesetzt. `fliegen()` und `quaken()` delegieren an
+  sie. `setzeFlugVerhalten` und `setzeQuakVerhalten` tauschen sie zur Laufzeit
+  aus. `null` lehnen Konstruktor **und** Setter mit `NullPointerException` ab (5.7).
+  `schwimmen()` und das abstrakte `anzeigen()` sind schon vorgegeben.
+- **8b. Fünf Verhalten**, jedes eine Klasse mit einer Methode:
+
+  | Klasse | Interface | liefert |
+  |---|---|---|
+  | `FliegtMitFluegeln` | `FlugVerhalten` | `"Ich fliege!"` |
+  | `FliegtNicht` | `FlugVerhalten` | `"Ich kann nicht fliegen."` |
+  | `Quaken` | `QuakVerhalten` | `"Quak"` |
+  | `Quietschen` | `QuakVerhalten` | `"Quietsch"` |
+  | `Stumm` | `QuakVerhalten` | `"<< Stille >>"` |
+
+- **8c. Vier Enten**, jede `extends Ente`. Ihr Konstruktor wählt die Verhalten
+  über `super(...)`. `anzeigen()` liefert `"Ich bin eine Stockente"` usw.
+
+  | Ente | fliegt | quakt |
+  |---|---|---|
+  | `Stockente` | `FliegtMitFluegeln` | `Quaken` |
+  | `Gummiente` | `FliegtNicht` | `Quietschen` |
+  | `Lockente` | `FliegtNicht` | `Stumm` |
+  | `Modellente` | `FliegtNicht` | `Quaken` |
+
+- **8d. `FliegtMitRaketenantrieb`**: `"Ich fliege mit Raketenantrieb!"`. Der
+  Test baut damit eine Modellente zur Laufzeit um. Achte darauf, dass du dafür
+  weder `Ente` noch `Modellente` ändern musst.
+
+Die Platzhalter in den Enten-Konstruktoren sind absichtlich falsch, damit die
+Dateien kompilieren und die Tests trotzdem rot bleiben.
 
 ## Was gibt das aus?
 
@@ -563,4 +631,5 @@ Erst selbst antworten, dann vergleichen: Die Antworten stehen am Ende von
 - Wann Interface, wann abstrakte Klasse?
 - Warum bricht `equals` zwischen `Rechteck` und `Quadrat` die Symmetrie?
 - Warum muss die `Kasse` nicht geändert werden, wenn eine neue Rabattart dazukommt?
+- Warum stecken Fliegen und Quaken in eigenen Objekten statt in Unterklassen von `Ente`?
 - Was unterscheidet einen Dekorierer von einer Unterklasse, und was von einem Adapter?
